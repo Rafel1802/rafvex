@@ -1,0 +1,15 @@
+{
+    "article_id": 14,
+    "title": "Essential Guide to Websites & Apps - Part 3: Building an Academic Knowledge Vault",
+    "short_slug": "knowledge-vault",
+    "category_slug": "websites-apps",
+    "subcategory_slug": "personal-knowledge-management",
+    "category_name": "Websites & Apps",
+    "subcategory_name": "Personal Knowledge Management",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime art of a scholar's cozy attic sanctuary, wooden walls covered in interconnected note cards pinned with red yarn, an open laptop displaying a glowing network graph of connected ideas, soft lamplight, sleepy cat on the rug --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of an endless library labyrinth, floating illuminated parchment pages drifting gently between antique bookshelves, connecting with glowing golden links, magical intellectual atmosphere --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a writer's desk overlooking a quiet forest at twilight, an open leatherbound journal beside a sleek laptop running a markdown editor, warm tea mug, calming atmosphere --ar 16:9",
+        "Studio Ghibli anime art, close-up of a student carefully writing index cards with a fountain pen, modern ultrabook open next to them showing structured markdown outlines, warm golden lighting --ar 16:9"
+    ]
+}

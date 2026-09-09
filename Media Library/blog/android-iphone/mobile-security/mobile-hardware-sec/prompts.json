@@ -1,0 +1,15 @@
+{
+    "article_id": 4,
+    "title": "Essential Guide to Android & iPhone - Part 2: Mobile Hardware Security Architectures",
+    "short_slug": "mobile-hardware-sec",
+    "category_slug": "android-iphone",
+    "subcategory_slug": "mobile-security",
+    "category_name": "Android & iPhone",
+    "subcategory_name": "Mobile Security",
+    "prompts": [
+        "Studio Ghibli style, detailed anime artwork of a cybernetics workshop bench, a disassembled smartphone displaying an intricately drawn microscopic silicon chip glowing golden, magnifying glass, antique screwdrivers, warm ambient sunlight --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a mechanical engineering laboratory, a glowing vault mechanism juxtaposed with modern circuit schematics on parchment paper, rich wood grain, brass instruments, cinematic lighting --ar 16:9",
+        "Studio Ghibli anime style, a quiet university electronics archive at dusk, an engineer examining hardware blueprints under a green banker's lamp, warm copper tones, shelves of historical instrumentation --ar 16:9",
+        "Studio Ghibli style, whimsical watercolor concept of a tiny glowing fortress representing a silicon security enclave, built inside the heart of an open smartphone motherboard, intricate painterly details, warm whimsical atmosphere --ar 16:9"
+    ]
+}

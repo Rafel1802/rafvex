@@ -1,0 +1,16 @@
+ARTICLE #38: How Students Can Use AI as a Personal Tutor to Master Difficult Subjects
+SHORT SLUG: ai-personal-tutor
+CATEGORY: ai-for-students-work > ai-for-students
+
+IMAGE 1:
+Studio Ghibli style, cinematic anime illustration of an ancient sun-drenched university courtyard under towering oak trees, a student sitting on a stone bench studying with an open laptop and notebook, gentle breeze fluttering paper pages, warm golden light --ar 16:9
+
+IMAGE 2:
+Studio Ghibli aesthetic, anime concept art of a cozy library alcove at sunset, a student engaged in thoughtful discussion with a glowing holographic digital mentor figure hovering softly over an open textbook, magical atmosphere --ar 16:9
+
+IMAGE 3:
+Studio Ghibli style, detailed anime watercolor of a scholar's wooden study desk overflowing with diagrams, chalkboard covered in physics equations in the background, warm lamplight illuminating a steaming cup of tea --ar 16:9
+
+IMAGE 4:
+Studio Ghibli anime art, close-up concept of hands writing mathematical formulas in a leather notebook with a mechanical pencil, an open ultrabook screen displaying encouraging Socratic questions, cozy painterly textures --ar 16:9
+

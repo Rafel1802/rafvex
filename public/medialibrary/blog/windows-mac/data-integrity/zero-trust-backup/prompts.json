@@ -1,0 +1,15 @@
+{
+    "article_id": 8,
+    "title": "Essential Guide to Windows & Mac - Part 3: Zero-Trust Backups and Air-Gapped Data Retention",
+    "short_slug": "zero-trust-backup",
+    "category_slug": "windows-mac",
+    "subcategory_slug": "data-integrity",
+    "category_name": "Windows & Mac",
+    "subcategory_name": "Data Integrity",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime art of a meticulous scholar's study room at night, an array of heavy aluminum external hard drives neatly stacked beside an antique brass strongbox, glowing soft blue LEDs, cozy fire crackling in a stone hearth --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a mechanical bank vault filled with wooden library shelves, glowing digital cryptographic keys floating above velvet pillows, atmospheric dust motes, rich painterly textures --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a researcher locking an encrypted external drive into a sturdy timber desk drawer with a heavy iron key, warm amber lighting from a stained-glass lamp --ar 16:9",
+        "Studio Ghibli anime art, peaceful afternoon scene in an academic archive, sunlight filtering through tall arched windows over rows of magnetic tape reels and modern rugged storage cases, quiet and contemplative --ar 16:9"
+    ]
+}

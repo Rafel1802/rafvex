@@ -1,0 +1,15 @@
+{
+    "article_id": 36,
+    "title": "Authenticator Apps vs SMS Verification: How to Properly Secure Your Accounts",
+    "short_slug": "authenticator-vs-sms",
+    "category_slug": "basic-online-security",
+    "subcategory_slug": "two-factor-authentication",
+    "category_name": "Basic Online Security",
+    "subcategory_name": "Two-Factor Authentication",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime illustration of an apprentice watchmaker's bench at sunrise, an antique brass clockwork gear spinning next to an open smartphone displaying a green glowing 6-digit TOTP authenticator timer, warm morning light --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a secure study loft, an open laptop displaying cybersecurity shield graphics beside a small smartphone in an oak cradle, rain softly falling against the skylight --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a scholar comparing an antique mechanical compass with a modern smartphone displaying a rotating cryptographic security token, warm library lighting --ar 16:9",
+        "Studio Ghibli anime art, close-up concept of hands holding a smartphone with an authenticator app, a glowing digital key floating gently above the glass screen on an oak desk, painterly lighting --ar 16:9"
+    ]
+}

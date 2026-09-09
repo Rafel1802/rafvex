@@ -1,0 +1,16 @@
+ARTICLE #36: Authenticator Apps vs SMS Verification: How to Properly Secure Your Accounts
+SHORT SLUG: authenticator-vs-sms
+CATEGORY: basic-online-security > two-factor-authentication
+
+IMAGE 1:
+Studio Ghibli style, cinematic anime illustration of an apprentice watchmaker's bench at sunrise, an antique brass clockwork gear spinning next to an open smartphone displaying a green glowing 6-digit TOTP authenticator timer, warm morning light --ar 16:9
+
+IMAGE 2:
+Studio Ghibli aesthetic, anime concept art of a secure study loft, an open laptop displaying cybersecurity shield graphics beside a small smartphone in an oak cradle, rain softly falling against the skylight --ar 16:9
+
+IMAGE 3:
+Studio Ghibli style, detailed anime watercolor of a scholar comparing an antique mechanical compass with a modern smartphone displaying a rotating cryptographic security token, warm library lighting --ar 16:9
+
+IMAGE 4:
+Studio Ghibli anime art, close-up concept of hands holding a smartphone with an authenticator app, a glowing digital key floating gently above the glass screen on an oak desk, painterly lighting --ar 16:9
+

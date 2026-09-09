@@ -1,0 +1,16 @@
+ARTICLE #45: Claude 3.5 Sonnet vs ChatGPT Plus: Hands-On Review for Writers and Researchers
+SHORT SLUG: claude-vs-chatgpt
+CATEGORY: reviews > ai-software-reviews
+
+IMAGE 1:
+Studio Ghibli style, cinematic anime illustration of an analytical research room, two glowing antique writing consoles side-by-side, one rendered in terracotta warm tones representing Claude, the other in deep jade green representing ChatGPT, stacks of marked manuscripts and warm lamplight --ar 16:9
+
+IMAGE 2:
+Studio Ghibli aesthetic, anime concept art of a scholar comparing two distinct glowing holographic scrolls floating above a sturdy cedar workbench, warm afternoon light filtering through trailing vines, peaceful intellectual mood --ar 16:9
+
+IMAGE 3:
+Studio Ghibli style, detailed anime watercolor of a programmer's studio at dusk, dual monitors displaying clean side-by-side code execution and elegant prose, rain gently trickling down leaded window panes, cozy atmosphere --ar 16:9
+
+IMAGE 4:
+Studio Ghibli anime art, close-up concept of hands highlighting text in an academic paper, an ultrabook display open to an interactive code workspace, tea steam drifting in soft sunbeams, painterly textures --ar 16:9
+

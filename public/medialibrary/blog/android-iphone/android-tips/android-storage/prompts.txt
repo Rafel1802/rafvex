@@ -1,0 +1,16 @@
+ARTICLE #1: How to Fix Android Storage Problems Without Data Loss: The Field Researcher's Guide
+SHORT SLUG: android-storage
+CATEGORY: android-iphone > android-tips
+
+IMAGE 1:
+Studio Ghibli aesthetic, anime concept art, a quiet wooden field research desk in a mountain cabin with a weathered Android smartphone hooked to an external brass SSD drive, warm morning sunbeams, botanical notes, parchment maps, cinematic watercolor lighting, highly detailed --ar 16:9
+
+IMAGE 2:
+Studio Ghibli style, detailed anime interior of a university laboratory workbench, an open laptop displaying terminal data diagnostics next to a vintage smartphone with glowing green status indicators, potted plants, tea mug, soft evening glow --ar 16:9
+
+IMAGE 3:
+Studio Ghibli anime style, cinematic landscape of an environmental research tent during golden hour, an investigator checking an Android tablet connected to a solar battery generator, lush foliage, dust motes in sunbeams, whimsical nature aesthetic --ar 16:9
+
+IMAGE 4:
+Studio Ghibli aesthetic, close-up concept art of hands inserting a sleek USB-OTG drive into a ruggedized mobile device on a rustic cedar wood table, hand-drawn schematics, brass calipers, soft painterly textures, warm cozy atmosphere --ar 16:9
+

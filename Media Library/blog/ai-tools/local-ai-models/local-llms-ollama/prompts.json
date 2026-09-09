@@ -1,0 +1,15 @@
+{
+    "article_id": 9,
+    "title": "Essential Guide to AI Tools - Part 1: Running Local LLMs Privately with Ollama & LM Studio",
+    "short_slug": "local-llms-ollama",
+    "category_slug": "ai-tools",
+    "subcategory_slug": "local-ai-models",
+    "category_name": "AI Tools",
+    "subcategory_name": "Local AI Models",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime artwork of an AI researcher's workshop bench at twilight, a sleek computer screen displaying neural network weights and terminal streams, an antique mechanical astrolabe on the desk, golden lantern glow --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a quiet underground research vault, rows of glowing servers enclosed in dark walnut wooden cases, a solitary desk with an open laptop running local machine intelligence code, vines hanging from stone arches --ar 16:9",
+        "Studio Ghibli style, detailed anime illustration of a sunlit conservatory study, a student examining localized machine learning outputs on an ultraportable laptop, botanical sketches and specimen jars arranged on the wooden workbench --ar 16:9",
+        "Studio Ghibli anime art, close-up concept art of hands annotating printed scientific papers, next to a monitor displaying a local terminal prompt responding with structured data, warm tea steam, soft painterly aesthetic --ar 16:9"
+    ]
+}

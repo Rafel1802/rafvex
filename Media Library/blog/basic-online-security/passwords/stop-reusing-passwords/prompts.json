@@ -1,0 +1,15 @@
+{
+    "article_id": 35,
+    "title": "Why You Must Stop Reusing Passwords and How to Switch to a Password Manager",
+    "short_slug": "stop-reusing-passwords",
+    "category_slug": "basic-online-security",
+    "subcategory_slug": "passwords",
+    "category_name": "Basic Online Security",
+    "subcategory_name": "Passwords",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime illustration of an old locksmith's workshop, a heavy oak table covered in brass keys of all shapes and sizes, an open laptop displaying a sleek password vault interface glowing in soft emerald green, warm fireplace glow --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a quiet student sitting at a solid timber study desk, an open notebook beside a laptop, an antique brass lock and key resting peacefully on a stack of encyclopedias, warm afternoon sunlight --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a scholar's library desk at twilight, a small glowing digital talisman resting beside a laptop keyboard, illuminating intricate wood grain and parchment notes, calming atmosphere --ar 16:9",
+        "Studio Ghibli anime art, close-up concept of hands carefully turning an intricate brass dial on a miniature vault box resting on a modern desk beside a glowing computer monitor, warm cozy ambiance --ar 16:9"
+    ]
+}

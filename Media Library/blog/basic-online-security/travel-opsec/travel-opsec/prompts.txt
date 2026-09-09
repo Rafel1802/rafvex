@@ -1,0 +1,16 @@
+ARTICLE #15: Essential Guide to Basic Online Security - Part 1: Travel OpSec and Border Crossing Protocols
+SHORT SLUG: travel-opsec
+CATEGORY: basic-online-security > travel-opsec
+
+IMAGE 1:
+Studio Ghibli style, cinematic anime art of a solitary researcher waiting in an international airport lounge at sunrise, a sleek lightweight laptop in a canvas satchel beside a trench coat, steam rising from a paper coffee cup, giant rain-streaked windows showing planes outside --ar 16:9
+
+IMAGE 2:
+Studio Ghibli aesthetic, anime concept art of a quiet traveler's hotel desk in a foreign capital, a minimalist laptop connected to an ethernet cable, a single brass passport case and train tickets on polished mahogany, cozy and atmospheric --ar 16:9
+
+IMAGE 3:
+Studio Ghibli style, detailed anime watercolor of a minimalist tech pouch on a wooden bench, containing an encrypted flash drive, a hardware key on a braided lanyard, and an unbranded notebook, soft natural lighting --ar 16:9
+
+IMAGE 4:
+Studio Ghibli anime art, whimsical concept of an investigator walking through a misty train station archway at dawn, holding a clean leather briefcase, lantern light casting long gentle shadows across wet cobblestones --ar 16:9
+

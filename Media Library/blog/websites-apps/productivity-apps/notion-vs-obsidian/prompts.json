@@ -1,0 +1,15 @@
+{
+    "article_id": 32,
+    "title": "Notion vs Obsidian vs Apple Notes: Which Note System Fits Your Brain?",
+    "short_slug": "notion-vs-obsidian",
+    "category_slug": "websites-apps",
+    "subcategory_slug": "productivity-apps",
+    "category_name": "Websites & Apps",
+    "subcategory_name": "Productivity Apps",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime illustration of three distinct scholars' workstations in a shared conservatory: one with complex visual database boards, one surrounded by interconnected parchment scrolls, and one with a simple paper sketchpad, warm sunlight filtering through vines --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a quiet student using a tablet in a wooden library loft, glowing network diagrams softly bridging digital screens and physical books, cozy evening lighting --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a writer's oak desk, a laptop displaying an intricate node graph beside an open leather notebook, warm cup of tea, peaceful rainy day ambiance --ar 16:9",
+        "Studio Ghibli anime art, close-up concept of hands organizing index cards into an antique wooden filing cabinet next to an ultrabook running a markdown editor, warm painterly textures --ar 16:9"
+    ]
+}

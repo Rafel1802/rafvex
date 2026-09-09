@@ -1,0 +1,15 @@
+{
+    "article_id": 33,
+    "title": "How to Back Up Your Cloud Storage to Prevent Accidental Data Loss",
+    "short_slug": "backup-cloud-storage",
+    "category_slug": "websites-apps",
+    "subcategory_slug": "cloud-storage",
+    "category_name": "Websites & Apps",
+    "subcategory_name": "Cloud Storage",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime illustration of an archivist's mountain retreat, an array of external solid-state drives resting in a cedar rack connected to a quiet desktop terminal, panoramic bay windows showing distant cumulus clouds over green hills --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a mechanical waterwheel powering an antique printing press and modern data storage drives, glowing golden data pipes, tranquil countryside setting --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a scholar unplugging an external hard drive and placing it into a heavy brass lockbox on an oak desk, warm evening lamplight, cozy atmosphere --ar 16:9",
+        "Studio Ghibli anime art, close-up concept of an external SSD connected via a braided cable to a laptop, terminal displaying finished checksum verification in bright green text, steaming coffee mug, soft painterly textures --ar 16:9"
+    ]
+}

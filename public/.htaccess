@@ -1,0 +1,62 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Force HTTPS and Non-WWW Canonical Domain
+    RewriteCond %{HTTPS} off [OR]
+    RewriteCond %{HTTP_HOST} ^www\. [NC]
+    RewriteCond %{HTTP_HOST} ^(?:www\.)?(.+)$ [NC]
+    RewriteRule ^ https://%1%{REQUEST_URI} [L,NE,R=301]
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Handle X-XSRF-Token Header
+    RewriteCond %{HTTP:x-xsrf-token} .
+    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Direct /blog requests to medialibrary/blog directly
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^blog/(.*)$ medialibrary/blog/$1 [L]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+<FilesMatch "^(favicon.*|apple-touch-icon.*|android-chrome.*|logo.*)\.(ico|png|svg)$">
+    <IfModule mod_headers.c>
+        Header always set Cache-Control "no-cache, must-revalidate"
+        Header always set X-LiteSpeed-Cache-Control "no-cache"
+    </IfModule>
+</FilesMatch>
+
+<Files "service-worker.js">
+    <IfModule mod_headers.c>
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Service-Worker-Allowed "/"
+    </IfModule>
+</Files>
+
+<IfModule mod_headers.c>
+    # Ensure Vary header always includes X-Inertia and Accept
+    Header append Vary "X-Inertia, Accept"
+
+    # Prevent browsers and proxies from caching Inertia JSON responses
+    SetEnvIfNoCase X-Inertia "^true$" IS_INERTIA
+    Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0" env=IS_INERTIA
+    Header set Pragma "no-cache" env=IS_INERTIA
+    Header set X-LiteSpeed-Cache-Control "no-cache" env=IS_INERTIA
+</IfModule>
+
+

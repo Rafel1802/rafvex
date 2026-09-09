@@ -1,0 +1,15 @@
+{
+    "article_id": 28,
+    "title": "The Practical Guide to Writing Clear and High-Impact AI Prompts",
+    "short_slug": "writing-ai-prompts",
+    "category_slug": "ai-tools",
+    "subcategory_slug": "chatgpt",
+    "category_name": "AI Tools",
+    "subcategory_name": "ChatGPT",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime illustration of an architect's wooden study bench, an open laptop displaying structured code prompts and flowcharts, an intricate brass compass resting on parchment drafts, golden morning sunlight --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a writer's library at dusk, glowing green terminal text softly reflecting in the glass of an open window overlooking a misty river valley, warm cozy lighting --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a scholar refining prompt formulas on index cards spread across a cedar table, steaming cup of tea, tranquil intellectual ambiance --ar 16:9",
+        "Studio Ghibli anime art, close-up concept of hands typing clean markdown code on a sleek mechanical keyboard, framed by soft painterly plant foliage and warm amber desk lamp light --ar 16:9"
+    ]
+}

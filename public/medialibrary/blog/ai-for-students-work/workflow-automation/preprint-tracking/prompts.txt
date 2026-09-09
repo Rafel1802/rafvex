@@ -1,0 +1,16 @@
+ARTICLE #19: Essential Guide to AI for Students & Work - Part 2: Automated Preprint Tracking via RSS & LLMs
+SHORT SLUG: preprint-tracking
+CATEGORY: ai-for-students-work > workflow-automation
+
+IMAGE 1:
+Studio Ghibli style, cinematic anime art of a celestial radio observatory tower perched atop a grassy hill, large brass antenna listening to the sky, interior warm light showing automated telegraph tape rolling onto a wooden table, morning clouds --ar 16:9
+
+IMAGE 2:
+Studio Ghibli aesthetic, anime concept art of a mechanical bird delivering scroll letters through an open attic window to a student working on a laptop, morning sunbeams, cozy rustic wood textures --ar 16:9
+
+IMAGE 3:
+Studio Ghibli style, detailed anime watercolor of a computerized workstation running automated data streams, surrounded by potted herbs, botanical charts, and open encyclopedias, peaceful intellectual ambiance --ar 16:9
+
+IMAGE 4:
+Studio Ghibli anime art, close-up of an espresso cup and an ultrabook displaying automated preprint research feeds organized by color-coded priority badges, warm morning sunlight, tranquil aesthetic --ar 16:9
+

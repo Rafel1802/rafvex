@@ -1,0 +1,16 @@
+ARTICLE #40: Practical AI Workflows for Bloggers and Researchers to Accelerate Publishing
+SHORT SLUG: ai-publishing-workflows
+CATEGORY: ai-for-students-work > ai-for-writers
+
+IMAGE 1:
+Studio Ghibli style, cinematic anime illustration of an old-world printing press and editorial workshop, sheets of freshly printed scientific journals hanging from wooden rafters to dry, a modern laptop on an oak desk showing publication proofs, warm amber sunlight --ar 16:9
+
+IMAGE 2:
+Studio Ghibli aesthetic, anime concept art of a writer's sunlit study overlooking a bustling university square, coffee cup steaming on a stack of manuscript proofs, an open laptop displaying clean publication layouts, peaceful atmosphere --ar 16:9
+
+IMAGE 3:
+Studio Ghibli style, detailed anime watercolor of a scholar binding an academic thesis by hand with needle and bookbinding thread, a glowing computer screen beside them displaying finished digital chapters, warm cozy interior --ar 16:9
+
+IMAGE 4:
+Studio Ghibli anime art, close-up concept of hands carefully reviewing printed journal galleys with a red pencil on a polished walnut table, glowing laptop showing a clean markdown document nearby, painterly textures --ar 16:9
+

@@ -1,0 +1,15 @@
+{
+    "article_id": 41,
+    "title": "The Lantern Maker: An Inspiring English Reading Story About Patience and Craft",
+    "short_slug": "the-lantern-maker",
+    "category_slug": "english-reading-stories",
+    "subcategory_slug": "short-stories",
+    "category_name": "English Reading Stories",
+    "subcategory_name": "Short Stories",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime illustration of an old traditional lantern maker's wooden workshop nestled beside a rushing mountain stream, dozens of glowing handmade paper lanterns hanging from timber rafters casting warm amber light, rain pattering outside --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of an elderly craftsman showing a young apprentice how to carve delicate bamboo strips on a low cedar workbench, shavings curling like ribbons, soft morning mist --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a solitary glowing lantern hanging from a wooden post at a misty river ferry dock at midnight, warm golden beam cutting through rain and churning river mist, serene and hopeful --ar 16:9",
+        "Studio Ghibli anime art, close-up concept of skilled hands carefully pasting translucent oiled paper onto a delicate wooden hexagonal lantern frame, warm candlelight illuminating intricate wood grain, cozy and contemplative --ar 16:9"
+    ]
+}

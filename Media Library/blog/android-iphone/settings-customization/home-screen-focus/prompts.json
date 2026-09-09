@@ -1,0 +1,15 @@
+{
+    "article_id": 24,
+    "title": "How to Customize Your Smartphone Home Screen for Maximum Focus",
+    "short_slug": "home-screen-focus",
+    "category_slug": "android-iphone",
+    "subcategory_slug": "settings-customization",
+    "category_name": "Android & iPhone",
+    "subcategory_name": "Settings & Customization",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime art of a scholar's serene desk in a garden gazebo, an unadorned smartphone lying peacefully beside a ceramic teacup, no notifications, lush green bamboo swaying in the breeze --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a quiet student writing in a leather journal at dawn, a clean minimalist smartphone on the timber desk showing a simple grayscale clock face, tranquil morning mist --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a sunlit study room with blooming cherry blossoms outside, a smartphone resting silently on an open book, gentle breeze rustling parchment notes --ar 16:9",
+        "Studio Ghibli anime art, close-up concept illustration of a smartphone screen displaying elegant, minimalist typography on a matte dark background, resting on a polished oak table beside a small potted succulent, warm cozy lighting --ar 16:9"
+    ]
+}

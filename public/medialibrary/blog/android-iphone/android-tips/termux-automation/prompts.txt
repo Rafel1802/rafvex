@@ -1,0 +1,16 @@
+ARTICLE #21: Scheduled Article Automation Test: Termux and Tasker Pipelines for Field Data
+SHORT SLUG: termux-automation
+CATEGORY: android-iphone > android-tips
+
+IMAGE 1:
+Studio Ghibli style, cinematic anime illustration of an automated radio communication station inside a timber cabin, an Android phone resting in a wooden docking cradle connected to green glowing data cables, night sky filled with stars through the skylight --ar 16:9
+
+IMAGE 2:
+Studio Ghibli aesthetic, anime concept art of a field scientist's tent interior, an autonomous data transmission running on a screen showing completed green verification bars, lantern glow, boots drying by the stove --ar 16:9
+
+IMAGE 3:
+Studio Ghibli style, detailed anime watercolor of an intricate clockwork and wire mechanism syncing a modern smartphone to a brass transmitter on a cedar workbench, golden afternoon sunlight --ar 16:9
+
+IMAGE 4:
+Studio Ghibli anime art, close-up concept art of a smartphone displaying a Linux terminal script automatically finishing an SFTP upload, sitting on an expedition map alongside a brass pocket compass, cozy atmosphere --ar 16:9
+

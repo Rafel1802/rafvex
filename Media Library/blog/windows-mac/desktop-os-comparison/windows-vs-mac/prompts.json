@@ -1,0 +1,15 @@
+{
+    "article_id": 6,
+    "title": "Essential Guide to Windows & Mac - Part 1: Windows 11 vs macOS Sequoia for Data Science",
+    "short_slug": "windows-vs-mac",
+    "category_slug": "windows-mac",
+    "subcategory_slug": "desktop-os-comparison",
+    "category_name": "Windows & Mac",
+    "subcategory_name": "Desktop OS Comparison",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime art of a dual-monitor computational research desk, on one side an elegant aluminum laptop displaying complex python data plots, on the other an open desktop rig softly glowing green, cozy workshop interior, soft afternoon light --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a data scientist's wooden library workspace, chalkboard filled with mathematical equations and matrix formulas, open laptops running terminal benchmarks, warm amber glow --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a sunlit university attic studio, vintage books mingled with modern computing screens rendering 3D scientific models, trailing ivy, tranquil scholarly atmosphere --ar 16:9",
+        "Studio Ghibli anime style, cinematic view of a quiet computer laboratory at midnight, screen luminescence reflecting off polished wooden tables, notebooks with handwritten research observations, soft rain against the windows --ar 16:9"
+    ]
+}

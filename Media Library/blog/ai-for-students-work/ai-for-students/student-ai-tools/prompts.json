@@ -1,0 +1,15 @@
+{
+    "article_id": 2,
+    "title": "Best AI Tools for Students in 2026: Academic Synthesis Without Plagiarism Traps",
+    "short_slug": "student-ai-tools",
+    "category_slug": "ai-for-students-work",
+    "subcategory_slug": "ai-for-students",
+    "category_name": "AI for Students & Work",
+    "subcategory_name": "AI for Students",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime art of a cozy sun-drenched university library alcove, an open textbook alongside a glowing futuristic tablet showing academic graph networks, stacks of leatherbound encyclopedias, drifting dust motes, warm wood textures --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a determined graduate student studying late at night by brass lamp light, surrounded by research papers, an open laptop displaying scientific citations, rain gently tapping the window pane, painterly warm atmosphere --ar 16:9",
+        "Studio Ghibli style, detailed anime illustration of an old antique study room with stained-glass windows, a modern ultrabook resting on a large mahogany desk, glowing holographic data charts softly floating above parchment notebooks --ar 16:9",
+        "Studio Ghibli aesthetic, panoramic view of a university research greenhouse study bench, plants climbing timber pillars, a tablet showing biological data charts next to open botanical folios, golden hour lighting, cinematic anime lighting --ar 16:9"
+    ]
+}

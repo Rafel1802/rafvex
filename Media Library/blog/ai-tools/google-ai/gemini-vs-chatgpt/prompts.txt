@@ -1,0 +1,16 @@
+ARTICLE #29: Gemini vs ChatGPT: Comparing Everyday Features, Search, and Workspace Integration
+SHORT SLUG: gemini-vs-chatgpt
+CATEGORY: ai-tools > google-ai
+
+IMAGE 1:
+Studio Ghibli style, cinematic anime illustration of an analytical debate studio, two glowing crystal monitors facing each other across an antique mahogany table, one glowing amber with Google data streams, the other glowing jade green with OpenAI python code, soft afternoon sunlight --ar 16:9
+
+IMAGE 2:
+Studio Ghibli aesthetic, anime concept art of a grand archive with towering bookshelves, a digital terminal scanning an enormous leather-bound monograph with a beam of soft golden light, dust motes floating gracefully --ar 16:9
+
+IMAGE 3:
+Studio Ghibli style, detailed anime watercolor of a data scientist's study bench, an open laptop rendering clean statistical scatter plots, open statistical textbooks and mechanical calculators alongside, warm cozy ambiance --ar 16:9
+
+IMAGE 4:
+Studio Ghibli anime art, close-up concept of two glowing digital scrolls on a cedar desk, one showing an endless mathematical manuscript, the other executing live code loops, warm painterly textures --ar 16:9
+

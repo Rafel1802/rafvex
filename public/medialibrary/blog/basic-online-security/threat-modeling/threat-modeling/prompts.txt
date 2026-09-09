@@ -1,0 +1,16 @@
+ARTICLE #17: Essential Guide to Basic Online Security - Part 3: Systematic Threat Modeling for Researchers
+SHORT SLUG: threat-modeling
+CATEGORY: basic-online-security > threat-modeling
+
+IMAGE 1:
+Studio Ghibli style, cinematic anime illustration of an analytical war room in a tranquil mountain tower, detailed chalkboard displaying flowcharts and threat vectors, an open laptop casting a soft blue glow, warm sunlight breaking through stone battlements --ar 16:9
+
+IMAGE 2:
+Studio Ghibli aesthetic, anime concept art of a quiet scholar contemplating chess pieces on an old wooden board next to open notebooks and modern encrypted tablets, warm amber lighting from a green desk lamp --ar 16:9
+
+IMAGE 3:
+Studio Ghibli style, detailed anime watercolor of an investigator's desk at midnight, dossiers tied with red ribbon, a hardened laptop running terminal diagnostics, a steaming cup of tea, calming rainy atmosphere outside --ar 16:9
+
+IMAGE 4:
+Studio Ghibli anime art, whimsical concept of an invisible protective bubble shimmering gently over a rustic wooden study desk, shielding books and electronics from raindrops outside, soft painterly style --ar 16:9
+

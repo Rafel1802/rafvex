@@ -1,0 +1,15 @@
+{
+    "article_id": 20,
+    "title": "Essential Guide to AI for Students & Work - Part 3: Grant Proposal Stress-Testing with AI",
+    "short_slug": "grant-stress-test",
+    "category_slug": "ai-for-students-work",
+    "subcategory_slug": "academic-funding",
+    "category_name": "AI for Students & Work",
+    "subcategory_name": "Academic Funding",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime illustration of an architect-scholar's expansive drafting office, sprawling structural blueprints and mathematical calculations pinned to corkboards, an open laptop casting warm light across brass scales and parchment proposals --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of three academic scholars gathered around a circular oak conference table at evening, examining illuminated technical documents, warm incandescent chandeliers, thoughtful focused expressions --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a sun-filled study desk covered in red-penciled research drafts, a modern laptop displaying structured grant matrices, open books, steaming porcelain cup of tea --ar 16:9",
+        "Studio Ghibli anime art, close-up of hands stamping an official gold wax seal onto an academic research document on a polished cherry wood desk, laptop softly glowing in the background, cinematic lighting --ar 16:9"
+    ]
+}

@@ -1,0 +1,92 @@
+# Rafvex
+
+> Technology, AI, Guides & Knowledge. Comprehensive technical masterclasses, hardware reviews, operating system optimizations, and research workflows.
+
+Website: https://rafvex.com
+Sitemap: https://rafvex.com/sitemap.xml
+RSS Feed: https://rafvex.com/feed
+
+## Core Topic Categories
+- [Artificial Intelligence & Tools](https://rafvex.com/category/ai-tools): Generative models, local LLMs, prompt engineering, and research tools.
+- [Computing: Windows & Mac](https://rafvex.com/category/windows-mac): OS performance tuning, terminal productivity, and developer environments.
+- [Mobile: Android & iPhone](https://rafvex.com/category/android-iphone): Mobile hardware security, storage troubleshooting, and cross-platform workflows.
+- [Security & Privacy](https://rafvex.com/category/basic-online-security): Hardware security keys, travel OpSec, authentication, and threat modeling.
+- [Hardware Reviews](https://rafvex.com/category/reviews): Empirical evaluations of mice, laptops, headphones, and peripherals.
+- [How-To & Troubleshooting](https://rafvex.com/category/troubleshooting): Step-by-step diagnostics for Bluetooth, Wi-Fi, battery, and system failures.
+- [Websites & Software Apps](https://rafvex.com/category/websites-apps): Knowledge vaults (Obsidian/Notion), reference management, and open-source tools.
+- [English Reading Stories](https://rafvex.com/category/english-reading-stories): Literary narratives, linguistic study editions, and vocabulary mastery.
+- [Technology News Dispatches](https://rafvex.com/news): Real-time analysis of cybersecurity advisories and frontier AI releases.
+
+## Master Technical Articles & Guides
+### Android & iPhone
+- [How to Fix Android Storage Problems Without Data Loss: The Complete Engineering Guide](https://rafvex.com/article/how-to-fix-android-storage-problems): Resolve Android storage limits safely without data loss. Master partition diagnostics, ADB telemetry auditing, precision cache purging, and encrypted USB-OTG workflows.
+- [Essential Guide to Android & iPhone - Part 1: Encrypted Cross-Platform File Sharing](https://rafvex.com/article/essential-guide-to-android-iphone-part-1): Transfer confidential field research data between Android and iOS without third-party cloud servers. Master LocalSend, PairDrop, and air-gapped P2P protocols.
+- [Essential Guide to Android & iPhone - Part 2: Mobile Hardware Security Architectures](https://rafvex.com/article/essential-guide-to-android-iphone-part-2): Examine mobile cryptographic hardware: Apple Secure Enclave vs Google Titan M2 and Samsung Knox. Master file-based encryption and physical tamper resistance.
+- [Essential Guide to Android & iPhone - Part 3: Offline Field Research Telemetry](https://rafvex.com/article/essential-guide-to-android-iphone-part-3): Master multi-day offline field research operations. Configure OsmAnd, optimize dual-band GNSS accuracy, preserve battery power, and ensure zero data loss.
+- [Scheduled Article Automation Test: Termux and Tasker Pipelines for Field Data](https://rafvex.com/article/scheduled-article-automation-test): Turn your Android phone into an autonomous scientific Linux server. Deploy Termux, Tasker, and SQLite pipelines for remote offline field research.
+- [Essential iPhone Settings You Should Review for Better Battery and Privacy](https://rafvex.com/article/essential-iphone-settings-battery-privacy): Transform your iPhone battery endurance and operational privacy. Audit background app refresh, neutralize location telemetry, and optimize charging chemistry.
+- [Top Lightweight Android Utilities to Clean Up and Organize Your Device](https://rafvex.com/article/top-lightweight-android-utilities-clean-organize): Clean and optimize your Android phone without commercial bloatware. Deploy FOSS tools: SD Maid SE, Shizuku, App Manager, and RethinkDNS for peak performance.
+- [How to Customize Your Smartphone Home Screen for Maximum Focus](https://rafvex.com/article/customize-smartphone-home-screen-maximum-focus): Defeat mobile addiction and cognitive fragmentation. Transform your iPhone or Android into a minimalist focus tool using typographic launchers and grayscale filters.
+
+### AI for Students & Work
+- [Best AI Tools for Students in 2026: Academic Synthesis Without Plagiarism Traps](https://rafvex.com/article/best-ai-tools-for-students-2026): Master academic AI tools for students in 2026. Deploy Elicit, Consensus, and SciSpace for verified literature synthesis while ensuring strict institutional integrity.
+- [Essential Guide to AI for Students & Work - Part 1: Academic Integrity & AI Policies](https://rafvex.com/article/essential-guide-to-ai-for-students-work-part-1): Navigate generative AI in higher education. Design resilient syllabi, understand AI detector failure modes, and build authentic process-based assessments.
+- [Essential Guide to AI for Students & Work - Part 2: Automated Preprint Tracking via RSS & LLMs](https://rafvex.com/article/essential-guide-to-ai-for-students-work-part-2): Never miss a breakthrough paper. Build an automated research daemon that ingests arXiv preprints, filters by vector similarity, and generates structured briefings.
+- [Essential Guide to AI for Students & Work - Part 3: Grant Proposal Stress-Testing with AI](https://rafvex.com/article/essential-guide-to-ai-for-students-work-part-3): Maximize research grant funding percentiles. Deploy adversarial LLM prompts to simulate hostile peer review panels, audit statistical flaws, and harden proposals.
+- [How Students Can Use AI as a Personal Tutor to Master Difficult Subjects](https://rafvex.com/article/how-students-use-ai-personal-tutor-study): Transform AI into an uncompromising Socratic tutor. Deploy the Feynman Technique, simulate oral thesis defenses, and master complex academic topics.
+- [The Best AI Flashcard and Summary Generators for Efficient Revision](https://rafvex.com/article/best-ai-flashcard-summary-generators-revision): Automate high-yield spaced repetition. Convert complex academic papers and lecture notes into cloze-deletion Anki decks using local AI workflows.
+- [Practical AI Workflows for Bloggers and Researchers to Accelerate Publishing](https://rafvex.com/article/practical-ai-workflows-bloggers-researchers): Build an end-to-end publishing pipeline with AI. Automate structured abstract drafting, preprint metadata audits, and citation consistency checks.
+
+### Windows & Mac
+- [Essential Guide to Windows & Mac - Part 1: Windows 11 vs macOS Sequoia for Data Science](https://rafvex.com/article/essential-guide-to-windows-mac-part-1): Compare Windows 11 and macOS Sequoia for scientific computing. Benchmark NVIDIA CUDA against Apple Silicon Unified Memory for large-scale data workflows.
+- [Essential Guide to Windows & Mac - Part 2: Terminal Automation for Researchers](https://rafvex.com/article/essential-guide-to-windows-mac-part-2): Automate data cleaning, regex batch file renaming, and PDF text extraction using cross-platform Bash and PowerShell terminal workflows for researchers.
+- [Essential Guide to Windows & Mac - Part 3: Zero-Trust Backups and Air-Gapped Data Retention](https://rafvex.com/article/essential-guide-to-windows-mac-part-3): Architect a zero-trust backup pipeline. Master ZFS self-healing, encrypted Restic repositories, M-DISC cold storage, and air-gapped data retention.
+- [Complete Windows 11 Speed Optimization Guide: Free Up RAM and Stop Lag](https://rafvex.com/article/complete-windows-11-speed-optimization-guide): Transform Windows 11 into an ultra-low-latency workstation. Free up 3+ GB of RAM, purge consumer bloatware via PowerShell, and neutralize background telemetry.
+- [12 Essential macOS Keyboard Shortcuts and Finder Tricks to Work Faster](https://rafvex.com/article/12-essential-macos-keyboard-shortcuts-finder-tricks): Master the hidden keyboard architecture of macOS. Learn universal Cocoa Emacs primitives, traverse Finder column views, and supercharge Quick Look.
+- [The Best Free and Open Source Software Replacements for Everyday Work](https://rafvex.com/article/best-free-open-source-software-replacements): Escape SaaS subscription rent-seeking. Replace Adobe, Office, and Outlook with elite open-source tools: LibreOffice, Krita, Inkscape, Kdenlive, and Thunderbird.
+
+### AI Tools
+- [Essential Guide to AI Tools - Part 1: Running Local LLMs Privately with Ollama & LM Studio](https://rafvex.com/article/essential-guide-to-ai-tools-part-1): Run open-weights LLMs locally with complete privacy. Master Ollama, LM Studio, GGUF quantization, vLLM serving, and unified memory hardware optimization.
+- [Essential Guide to AI Tools - Part 2: Visualizing Academic Literature Networks](https://rafvex.com/article/essential-guide-to-ai-tools-part-2): Map citation networks visually using Connected Papers, Litmaps, and ResearchRabbit. Discover foundational papers, derivative works, and academic clusters.
+- [Essential Guide to AI Tools - Part 3: Deterministic Prompt Engineering for Research](https://rafvex.com/article/essential-guide-to-ai-tools-part-3): Master deterministic prompt engineering for academic meta-analyses. Enforce JSON schema outputs, eliminate hallucinations, and automate variable extraction.
+- [The Practical Guide to Writing Clear and High-Impact AI Prompts](https://rafvex.com/article/practical-guide-writing-clear-ai-prompts): Stop getting generic AI answers. Master professional prompt engineering: deploy the RTCC framework, chain-of-thought reasoning, and XML delimited schemas.
+- [Gemini vs ChatGPT: Comparing Everyday Features, Search, and Workspace Integration](https://rafvex.com/article/gemini-vs-chatgpt-everyday-features-comparison): An architectural comparison of Gemini and ChatGPT. Compare 2M token context windows, real-time Google search grounding, and Python data science sandboxes.
+- [How to Use AI Writing Assistants Without Losing Your Authentic Human Voice](https://rafvex.com/article/use-ai-writing-assistants-without-losing-voice): Stop sounding like a generic corporate bot. Master the Socratic co-writing method to leverage AI speed while preserving your authentic, idiosyncratic human voice.
+- [Top Completely Free AI Tools for Students, Researchers, and Creators](https://rafvex.com/article/top-free-ai-tools-students-researchers-creators): Stop paying $20/month for ChatGPT. Access frontier AI completely free: Google AI Studio 2M context, local Whisper.cpp transcription, and Hugging Face Chat.
+
+### Websites & Apps
+- [Essential Guide to Websites & Apps - Part 1: Hardening Web Browsers Against Fingerprinting](https://rafvex.com/article/essential-guide-to-websites-apps-part-1): Harden web browsers against advanced digital fingerprinting, canvas tracking, and telemetry during OSINT investigations and sensitive academic research.
+- [Essential Guide to Websites & Apps - Part 2: Reference Management Architectures](https://rafvex.com/article/essential-guide-to-websites-apps-part-2): Compare Zotero 7, Mendeley, and Paperpile for academic research. Configure local BibTeX sync, automated PDF annotations, and self-hosted WebDAV.
+- [Essential Guide to Websites & Apps - Part 3: Building an Academic Knowledge Vault](https://rafvex.com/article/essential-guide-to-websites-apps-part-3): Build an academic knowledge vault using plain-text Markdown and Zettelkasten. Connect literature notes to synthesis ideas using Obsidian and local graphs.
+- [Notion vs Obsidian vs Apple Notes: Which Note System Fits Your Brain?](https://rafvex.com/article/notion-vs-obsidian-vs-apple-notes-comparison): An architectural comparison of Notion, Obsidian, and Apple Notes. Compare cloud block databases, local-first Markdown graphs, and native capture systems.
+- [How to Back Up Your Cloud Storage to Prevent Accidental Data Loss](https://rafvex.com/article/how-to-backup-cloud-storage-prevent-data-loss): Cloud sync is not a backup. Protect your files from accidental deletion, ransomware, and account bans using automated Rclone multi-cloud immutable backups.
+- [15 Incredibly Useful Free Websites You Wish You Discovered Sooner](https://rafvex.com/article/15-incredibly-useful-free-websites-knowledge-hub): Bypass commercial paywalls and SEO spam. Discover 15 elite, free web utilities: CyberChef, Archive.today, PDF24, OpenAlex, Draw.io, and WolframAlpha.
+
+### Basic Online Security
+- [Essential Guide to Basic Online Security - Part 1: Travel OpSec and Border Crossing Protocols](https://rafvex.com/article/essential-guide-to-basic-online-security-part-1): Defend confidential field research at international borders. Deploy clean burner hardware, understand border search laws, and protect participant identities.
+- [Essential Guide to Basic Online Security - Part 2: Hardware Security Key Deployment](https://rafvex.com/article/essential-guide-to-basic-online-security-part-2): Eliminate phishing permanently with hardware security keys. Deploy YubiKeys, configure FIDO2/WebAuthn origin binding, and master passkey management.
+- [Essential Guide to Basic Online Security - Part 3: Systematic Threat Modeling for Researchers](https://rafvex.com/article/essential-guide-to-basic-online-security-part-3): Master systematic threat modeling for research laboratories. Deconstruct attack surfaces using STRIDE, build attack trees, and score risks with mathematical precision.
+- [Why You Must Stop Reusing Passwords and How to Switch to a Password Manager](https://rafvex.com/article/stop-reusing-passwords-switch-password-manager): Stop reusing passwords. Understand credential stuffing economics, master zero-knowledge Argon2id encryption, and execute a seamless password manager migration.
+- [Authenticator Apps vs SMS Verification: How to Properly Secure Your Accounts](https://rafvex.com/article/authenticator-apps-vs-sms-verification-security): SMS verification leaves you vulnerable to SIM swapping. Upgrade to open-source TOTP authenticators (Aegis, 2FAS) and hardware FIDO2 security keys.
+- [How to Spot Fake Emails and Suspicious Links Before Clicking](https://rafvex.com/article/how-to-spot-fake-emails-suspicious-links): Detect sophisticated academic spear-phishing, predatory conference scams, and spoofed review requests. Inspect email headers and defeat credential harvesting.
+
+### English Reading Stories
+- [The Lantern Maker: An Inspiring English Reading Story About Patience and Craft](https://rafvex.com/article/the-lantern-maker-inspiring-english-reading-story): Read 'The Lantern Maker', an inspiring English story exploring craftsmanship, patience, and purpose. Includes advanced vocabulary definitions and comprehension.
+- [10 Beautiful English Words to Describe Feelings You Experience Every Day](https://rafvex.com/article/10-beautiful-english-words-everyday-feelings): Expand your descriptive precision. Explore 10 evocative English words—including Sonder, Petrichor, and Chrysalism—with etymologies and contextual prose.
+- [The Mountain and the Seed: A Lesson on Small Daily Habits and Compounding Consistency](https://rafvex.com/article/the-mountain-and-the-seed-lesson-daily-habits): An inspiring allegorical reading story about how tiny, consistent daily actions fracture immovable mountains through the non-linear math of compounding.
+- [The Lantern Maker: An Inspiring English Reading Story (Annotated Study Edition)](https://rafvex.com/article/the-lantern-maker-inspiring-english-story): The complete annotated study edition of The Lantern Maker. Includes full literary narrative text, lexical etymologies, rhetorical foils, and comprehension inquiries.
+- [The Mountain and the Seed: A Lesson on Small Daily Habits (Hermeneutic Study Edition)](https://rafvex.com/article/the-mountain-and-the-seed-daily-habits): The definitive hermeneutic study edition of The Mountain and the Seed. Features the complete text, lexical etymologies, cognitive habit loops, and seminar inquiries.
+
+### Reviews
+- [M3 MacBook Air Review: One Year Later – Why It Remains the Ultimate Daily Laptop](https://rafvex.com/article/m3-macbook-air-review-daily-laptop): A comprehensive long-term review of the M3 MacBook Air. Evaluate 3nm silicon, fanless thermal throttling, 100GB/s unified memory, and 18-hour real-world battery life.
+- [Claude 3.5 Sonnet vs ChatGPT Plus: Hands-On Review for Writers and Researchers](https://rafvex.com/article/claude-35-sonnet-vs-chatgpt-plus-review): A comprehensive hands-on comparison of Claude 3.5 Sonnet and ChatGPT Plus for writers, researchers, and coders. Compare prose cadence, Artifacts, and Python sandboxes.
+- [Sony WH-1000XM5 Long-Term Review: The Benchmark for Noise Canceling Headphones](https://rafvex.com/article/sony-wh-1000xm5-long-term-review): An exhaustive long-term review of the Sony WH-1000XM5 noise canceling headphones. Evaluate QN1 and V1 dual-chip ANC, LDAC audio, 30-hour battery, and deep-work ergonomics.
+- [Logitech MX Master 3S Review: Why It Is the Undisputed King of Productivity Mice](https://rafvex.com/article/logitech-mx-master-3s-review): An exhaustive review of the Logitech MX Master 3S productivity mouse. Evaluate MagSpeed scrolling, 8,000 DPI glass tracking, silent switches, and ergonomic comfort.
+
+### Troubleshooting & How-To
+- [How to Fix Unstable Wi-Fi Connections and DNS Dropouts on Windows 11 and Mac](https://rafvex.com/article/fix-unstable-wifi-dns-disconnections): A comprehensive engineering guide to fixing unstable Wi-Fi connections and DNS dropouts on Windows 11 and macOS. Flush DNS, tune roaming, and resolve RF interference.
+- [Step-by-Step Guide to Fixing Sudden Smartphone Battery Drain After Updates](https://rafvex.com/article/fix-smartphone-battery-drain-after-updates): A comprehensive engineering guide to diagnosing and fixing sudden smartphone battery drain after OS updates. Master ART compilation, Spotlight indexing, and fuel-gauge calibration.
+- [How to Fix Bluetooth Audio Delay and Pairing Failures on Laptops and Phones](https://rafvex.com/article/fix-bluetooth-audio-delay-pairing-failures): A comprehensive engineering guide to fixing Bluetooth audio delay, lip-sync lag, and pairing failures across Windows 11, Mac, and mobile. Master codecs, buffers, and RF interference.
+
+### Technology
+- [The Future of On-Device AI: How Neural Engines Are Changing Everyday Computing](https://rafvex.com/article/future-of-on-device-ai-neural-engines): A comprehensive architectural guide to on-device AI and NPUs. Deconstruct systolic tensor arrays, INT4 quantization, unified memory, and local privacy.

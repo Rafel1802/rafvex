@@ -1,0 +1,15 @@
+{
+    "article_id": 11,
+    "title": "Essential Guide to AI Tools - Part 3: Deterministic Prompt Engineering for Research",
+    "short_slug": "prompt-engineering",
+    "category_slug": "ai-tools",
+    "subcategory_slug": "advanced-prompting",
+    "category_name": "AI Tools",
+    "subcategory_name": "Advanced Prompting",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime illustration of a mathematician's wooden writing desk, an illuminated glass terminal displaying intricate glowing data schemas in gold and jade green, crystal prism scattering rainbow light over manuscripts --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of an inventor's study room, a brass clockwork typewriter seamlessly interfaced with a modern digital monitor, paper scrolls unrolling with structured JSON code, warm atmospheric lighting --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of an academic researcher's studio at sunrise, meticulously organized stacks of labeled folders, a laptop displaying clean data tables, steaming mug of black tea, serene atmosphere --ar 16:9",
+        "Studio Ghibli anime art, whimsical concept of an organized mechanical sorting machine gently filtering glowing particles into small labeled glass apothecary jars on an antique walnut desk, painterly style --ar 16:9"
+    ]
+}

@@ -1,0 +1,1115 @@
+[
+  {
+    "id": 1,
+    "title": "How to Fix Android Storage Problems Without Data Loss: The Field Researcher's Guide",
+    "slug": "how-to-fix-android-storage-problems",
+    "category": "Android & iPhone",
+    "subcategory": "Android Tips",
+    "primary_keyword": "how to fix android storage problems",
+    "secondary_keywords": [
+      "clear android cache without data loss",
+      "android storage full research data",
+      "usb otg field backup android",
+      "gdpr mobile data offloading"
+    ],
+    "meta_description": "Resolve Android storage limits safely. Purge system caches, offload telemetry data under GDPR, and deploy air-gapped USB-OTG backups in the field.",
+    "image_prompts": [
+      "Studio Ghibli aesthetic, anime concept art, a quiet wooden field research desk in a mountain cabin with a weathered Android smartphone hooked to an external brass SSD drive, warm morning sunbeams, botanical notes, parchment maps, cinematic watercolor lighting, highly detailed --ar 16:9",
+      "Studio Ghibli style, detailed anime interior of a university laboratory workbench, an open laptop displaying terminal data diagnostics next to a vintage smartphone with glowing green status indicators, potted plants, tea mug, soft evening glow --ar 16:9",
+      "Studio Ghibli anime style, cinematic landscape of an environmental research tent during golden hour, an investigator checking an Android tablet connected to a solar battery generator, lush foliage, dust motes in sunbeams, whimsical nature aesthetic --ar 16:9",
+      "Studio Ghibli aesthetic, close-up concept art of hands inserting a sleek USB-OTG drive into a ruggedized mobile device on a rustic cedar wood table, hand-drawn schematics, brass calipers, soft painterly textures, warm cozy atmosphere --ar 16:9"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Best AI Tools for Students in 2026: Academic Synthesis Without Plagiarism Traps",
+    "slug": "best-ai-tools-for-students-2026",
+    "category": "AI for Students & Work",
+    "subcategory": "AI for Students",
+    "primary_keyword": "best ai tools for students 2026",
+    "secondary_keywords": [
+      "academic ai synthesis tools",
+      "elicit vs consensus scispace",
+      "avoiding ai plagiarism university",
+      "ai literature review tools"
+    ],
+    "meta_description": "Explore the best academic AI tools for students in 2026. Master Elicit, Consensus, and SciSpace for literature synthesis while ensuring strict institutional integrity.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime art of a cozy sun-drenched university library alcove, an open textbook alongside a glowing futuristic tablet showing academic graph networks, stacks of leatherbound encyclopedias, drifting dust motes, warm wood textures --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a determined graduate student studying late at night by brass lamp light, surrounded by research papers, an open laptop displaying scientific citations, rain gently tapping the window pane, painterly warm atmosphere --ar 16:9",
+      "Studio Ghibli style, detailed anime illustration of an old antique study room with stained-glass windows, a modern ultrabook resting on a large mahogany desk, glowing holographic data charts softly floating above parchment notebooks --ar 16:9",
+      "Studio Ghibli aesthetic, panoramic view of a university research greenhouse study bench, plants climbing timber pillars, a tablet showing biological data charts next to open botanical folios, golden hour lighting, cinematic anime lighting --ar 16:9"
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Essential Guide to Android & iPhone - Part 1: Encrypted Cross-Platform File Sharing",
+    "slug": "essential-guide-to-android-iphone-part-1",
+    "category": "Android & iPhone",
+    "subcategory": "Cross-Platform Utilities",
+    "primary_keyword": "encrypted cross platform file sharing android iphone",
+    "secondary_keywords": [
+      "localsend android ios setup",
+      "pairdrop secure wireless transfer",
+      "air-gapped mobile file sync",
+      "p2p mobile file sharing research"
+    ],
+    "meta_description": "Seamlessly transfer confidential field research data between Android and iOS without third-party cloud servers using LocalSend and PairDrop.",
+    "image_prompts": [
+      "Studio Ghibli style, concept anime art of two distinct mobile devices resting on a wide oak drafting table, an Android phone and an iPhone with softly glowing blue data arcs pulsing between them, field maps and compass nearby, warm golden workshop lighting --ar 16:9",
+      "Studio Ghibli aesthetic, anime interior of a remote biological research station, an investigator reviewing tablet files by a rain-streaked window, antique botanical illustrations hung on the wood walls, cozy and intricate --ar 16:9",
+      "Studio Ghibli style, cinematic watercolor art of a field engineer's desk at twilight, modern phones connected via braided cables to a rugged portable router, soft lantern glow illuminating parchment notebooks and mechanical pencils --ar 16:9",
+      "Studio Ghibli anime art, close-up perspective of two smartphones transferring encrypted files wirelessly, a stylized translucent signal ripple over hand-drawn botanical sketches on a cedar desk, warm ambient lighting --ar 16:9"
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Essential Guide to Android & iPhone - Part 2: Mobile Hardware Security Architectures",
+    "slug": "essential-guide-to-android-iphone-part-2",
+    "category": "Android & iPhone",
+    "subcategory": "Mobile Security",
+    "primary_keyword": "apple secure enclave vs google titan m2 samsung knox",
+    "secondary_keywords": [
+      "mobile hardware encryption standards",
+      "secure enclave research data security",
+      "titan m2 cryptographic coprocessor",
+      "fips 140-3 mobile security"
+    ],
+    "meta_description": "Compare mobile cryptographic hardware: Apple Secure Enclave vs Google Titan M2 and Samsung Knox. Protect sensitive research data at rest and in transit.",
+    "image_prompts": [
+      "Studio Ghibli style, detailed anime artwork of a cybernetics workshop bench, a disassembled smartphone displaying an intricately drawn microscopic silicon chip glowing golden, magnifying glass, antique screwdrivers, warm ambient sunlight --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a mechanical engineering laboratory, a glowing vault mechanism juxtaposed with modern circuit schematics on parchment paper, rich wood grain, brass instruments, cinematic lighting --ar 16:9",
+      "Studio Ghibli anime style, a quiet university electronics archive at dusk, an engineer examining hardware blueprints under a green banker's lamp, warm copper tones, shelves of historical instrumentation --ar 16:9",
+      "Studio Ghibli style, whimsical watercolor concept of a tiny glowing fortress representing a silicon security enclave, built inside the heart of an open smartphone motherboard, intricate painterly details, warm whimsical atmosphere --ar 16:9"
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Essential Guide to Android & iPhone - Part 3: Offline Field Research Telemetry",
+    "slug": "essential-guide-to-android-iphone-part-3",
+    "category": "Android & iPhone",
+    "subcategory": "Field Operations",
+    "primary_keyword": "offline field research mobile gps telemetry",
+    "secondary_keywords": [
+      "osmand offline mapping field work",
+      "gaia gps multi-day battery research",
+      "zero-connectivity survey android ios",
+      "field telemetry data retention"
+    ],
+    "meta_description": "Master multi-day offline field research operations. Configure OsmAnd and Gaia GPS, preserve battery power, and ensure zero data loss without cell coverage.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of a field expedition tent pitched on a misty alpine ridge at dawn, a rugged smartphone displaying an offline topographic vector map propped against a brass water canteen, watercolor skies --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a researcher sitting on a mossy log deep inside an ancient forest, checking coordinates on a handheld GPS device, dappled sunbeams breaking through tall ancient cedar trees --ar 16:9",
+      "Studio Ghibli style, detailed interior of an expedition base camp wooden hut, charging solar panels connected to mobile field devices, hand-drawn topographic maps pinned to timber walls, steaming tea kettle on a wood stove --ar 16:9",
+      "Studio Ghibli anime art, golden hour landscape of an open grassland survey, a researcher holding a ruggedized tablet charting botanical waypoints, wildflowers swaying in the breeze, vibrant painterly clouds --ar 16:9"
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Essential Guide to Windows & Mac - Part 1: Windows 11 vs macOS Sequoia for Data Science",
+    "slug": "essential-guide-to-windows-mac-part-1",
+    "category": "Windows & Mac",
+    "subcategory": "Desktop OS Comparison",
+    "primary_keyword": "windows 11 vs macos sequoia data science compute",
+    "secondary_keywords": [
+      "apple silicon unified memory vs nvidia cuda",
+      "macos sequoia data analysis benchmark",
+      "windows wsl2 scientific computing",
+      "local llm data science workstation"
+    ],
+    "meta_description": "Compare Windows 11 and macOS Sequoia for scientific computing. Benchmark NVIDIA CUDA against Apple Silicon Unified Memory for large-scale data workflows.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime art of a dual-monitor computational research desk, on one side an elegant aluminum laptop displaying complex python data plots, on the other an open desktop rig softly glowing green, cozy workshop interior, soft afternoon light --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a data scientist's wooden library workspace, chalkboard filled with mathematical equations and matrix formulas, open laptops running terminal benchmarks, warm amber glow --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a sunlit university attic studio, vintage books mingled with modern computing screens rendering 3D scientific models, trailing ivy, tranquil scholarly atmosphere --ar 16:9",
+      "Studio Ghibli anime style, cinematic view of a quiet computer laboratory at midnight, screen luminescence reflecting off polished wooden tables, notebooks with handwritten research observations, soft rain against the windows --ar 16:9"
+    ]
+  },
+  {
+    "id": 7,
+    "title": "Essential Guide to Windows & Mac - Part 2: Terminal Automation for Researchers",
+    "slug": "essential-guide-to-windows-mac-part-2",
+    "category": "Windows & Mac",
+    "subcategory": "Terminal & Automation",
+    "primary_keyword": "terminal automation scripts researchers bash powershell",
+    "secondary_keywords": [
+      "batch clean csv terminal bash",
+      "regex file renaming macos windows",
+      "pdf text extraction pdftotext cli",
+      "research data preprocessing terminal"
+    ],
+    "meta_description": "Automate data cleaning, regex batch file renaming, and PDF text extraction using cross-platform Bash and PowerShell terminal workflows.",
+    "image_prompts": [
+      "Studio Ghibli style, anime concept art of a researcher's workbench illuminated by green terminal code cascading across a monitor, vintage mechanical keyboard, open notebooks, steam rising from a porcelain tea cup --ar 16:9",
+      "Studio Ghibli aesthetic, anime illustration of an old wooden archival study room, scrolls and books stacked on desks, a modern laptop displaying data automation scripts in progress, sunbeams through dusty windows --ar 16:9",
+      "Studio Ghibli anime style, cinematic watercolor art of a tranquil evening office, terminal window running automated file batch jobs, potted ferns beside the desk, glowing street lamps outside in the rain --ar 16:9",
+      "Studio Ghibli style, close-up concept art of fingers typing on a vintage tactile keyboard, handwritten regex formulas on index cards laid out across a polished walnut desk, warm cozy lighting --ar 16:9"
+    ]
+  },
+  {
+    "id": 8,
+    "title": "Essential Guide to Windows & Mac - Part 3: Zero-Trust Backups and Air-Gapped Data Retention",
+    "slug": "essential-guide-to-windows-mac-part-3",
+    "category": "Windows & Mac",
+    "subcategory": "Data Integrity",
+    "primary_keyword": "zero-trust local backups windows mac air-gapped",
+    "secondary_keywords": [
+      "filevault vs bitlocker research data",
+      "time machine encrypted apfs backup",
+      "air-gapped 3-2-1 backup strategy",
+      "borg backup restic local encryption"
+    ],
+    "meta_description": "Implement zero-trust air-gapped backup protocols for Windows and macOS. Secure longitudinal research datasets with FileVault, BitLocker, and Borg.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime art of a meticulous scholar's study room at night, an array of heavy aluminum external hard drives neatly stacked beside an antique brass strongbox, glowing soft blue LEDs, cozy fire crackling in a stone hearth --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a mechanical bank vault filled with wooden library shelves, glowing digital cryptographic keys floating above velvet pillows, atmospheric dust motes, rich painterly textures --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a researcher locking an encrypted external drive into a sturdy timber desk drawer with a heavy iron key, warm amber lighting from a stained-glass lamp --ar 16:9",
+      "Studio Ghibli anime art, peaceful afternoon scene in an academic archive, sunlight filtering through tall arched windows over rows of magnetic tape reels and modern rugged storage cases, quiet and contemplative --ar 16:9"
+    ]
+  },
+  {
+    "id": 9,
+    "title": "Essential Guide to AI Tools - Part 1: Running Local LLMs Privately with Ollama & LM Studio",
+    "slug": "essential-guide-to-ai-tools-part-1",
+    "category": "AI Tools",
+    "subcategory": "Local AI Models",
+    "primary_keyword": "run local llm privately ollama lm studio research",
+    "secondary_keywords": [
+      "confidential interview transcription local ai",
+      "llama 3 qwen 2.5 local inference",
+      "hipaa gdpr compliant local llm",
+      "air-gapped ai model analysis"
+    ],
+    "meta_description": "Deploy local LLMs privately using Ollama and LM Studio. Analyze confidential participant interviews and proprietary records with zero cloud exposure.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime artwork of an AI researcher's workshop bench at twilight, a sleek computer screen displaying neural network weights and terminal streams, an antique mechanical astrolabe on the desk, golden lantern glow --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a quiet underground research vault, rows of glowing servers enclosed in dark walnut wooden cases, a solitary desk with an open laptop running local machine intelligence code, vines hanging from stone arches --ar 16:9",
+      "Studio Ghibli style, detailed anime illustration of a sunlit conservatory study, a student examining localized machine learning outputs on an ultraportable laptop, botanical sketches and specimen jars arranged on the wooden workbench --ar 16:9",
+      "Studio Ghibli anime art, close-up concept art of hands annotating printed scientific papers, next to a monitor displaying a local terminal prompt responding with structured data, warm tea steam, soft painterly aesthetic --ar 16:9"
+    ]
+  },
+  {
+    "id": 10,
+    "title": "Essential Guide to AI Tools - Part 2: Visualizing Academic Literature Networks",
+    "slug": "essential-guide-to-ai-tools-part-2",
+    "category": "AI Tools",
+    "subcategory": "Literature Discovery",
+    "primary_keyword": "visualize academic citation networks connected papers researchrabbit",
+    "secondary_keywords": [
+      "mapping scientific literature visually",
+      "litmaps vs connected papers",
+      "graph citation network discovery",
+      "systematic literature review mapping"
+    ],
+    "meta_description": "Map citation networks visually using Connected Papers, Litmaps, and ResearchRabbit. Discover foundational papers, derivative works, and academic clusters.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an astronomy observatory study, a researcher gazing at an illuminated constellation map where stars are replaced by glowing academic papers connected by luminous threads, magical atmosphere --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of an expansive wooden archival library with spiral staircases, floating translucent network diagrams connecting leather-bound books, soft morning light pouring through stained glass --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a scholar tracing lines across an elaborate parchment network chart spread out on a large drafting table, brass compass, open notebooks, tranquil cozy studio --ar 16:9",
+      "Studio Ghibli anime art, whimsical study bench overlooking a rolling green valley at sunset, an open ultrabook displaying an intricate 3D node graph of scientific literature, warm golden hour glow --ar 16:9"
+    ]
+  },
+  {
+    "id": 11,
+    "title": "Essential Guide to AI Tools - Part 3: Deterministic Prompt Engineering for Research",
+    "slug": "essential-guide-to-ai-tools-part-3",
+    "category": "AI Tools",
+    "subcategory": "Advanced Prompting",
+    "primary_keyword": "deterministic prompt engineering research structured json",
+    "secondary_keywords": [
+      "few shot prompting systematic extraction",
+      "json schema prompt validation llm",
+      "reducing llm hallucination academic",
+      "meta analysis data extraction prompt"
+    ],
+    "meta_description": "Master deterministic prompt engineering for academic meta-analyses. Enforce JSON schema outputs, eliminate hallucinations, and automate variable extraction.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of a mathematician's wooden writing desk, an illuminated glass terminal displaying intricate glowing data schemas in gold and jade green, crystal prism scattering rainbow light over manuscripts --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of an inventor's study room, a brass clockwork typewriter seamlessly interfaced with a modern digital monitor, paper scrolls unrolling with structured JSON code, warm atmospheric lighting --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of an academic researcher's studio at sunrise, meticulously organized stacks of labeled folders, a laptop displaying clean data tables, steaming mug of black tea, serene atmosphere --ar 16:9",
+      "Studio Ghibli anime art, whimsical concept of an organized mechanical sorting machine gently filtering glowing particles into small labeled glass apothecary jars on an antique walnut desk, painterly style --ar 16:9"
+    ]
+  },
+  {
+    "id": 12,
+    "title": "Essential Guide to Websites & Apps - Part 1: Hardening Web Browsers Against Fingerprinting",
+    "slug": "essential-guide-to-websites-apps-part-1",
+    "category": "Websites & Apps",
+    "subcategory": "Browser Security",
+    "primary_keyword": "hardening web browsers digital fingerprinting tracking",
+    "secondary_keywords": [
+      "canvas fingerprinting defense osint",
+      "firefox about config privacy hardening",
+      "mullvad browser vs brave research",
+      "webrtc ip leak mitigation"
+    ],
+    "meta_description": "Harden web browsers against advanced digital fingerprinting, canvas tracking, and telemetry during OSINT investigations and sensitive academic research.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime art of a mysterious library desk hidden behind sheer curtains, an open laptop displaying network code and shield emblems, an antique brass magnifying glass, quiet rain falling outside the French doors --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a detective's workshop filled with maps, magnifying lenses, and an open computer terminal masking identity strings into stylized digital shadows, warm amber lamp light --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a secluded writer's attic desk, a laptop surrounded by closed leather notebooks, tea steam drifting across the wooden window sill, peaceful and secure --ar 16:9",
+      "Studio Ghibli anime art, close-up concept illustration of a stylized digital padlock glowing softly on a darkened laptop screen, sitting on a polished cherry wood table beside a blooming orchid --ar 16:9"
+    ]
+  },
+  {
+    "id": 13,
+    "title": "Essential Guide to Websites & Apps - Part 2: Reference Management Architectures",
+    "slug": "essential-guide-to-websites-apps-part-2",
+    "category": "Websites & Apps",
+    "subcategory": "Reference Management",
+    "primary_keyword": "zotero 7 vs mendeley reference management academic",
+    "secondary_keywords": [
+      "local bibtex integration zotero",
+      "pdf annotation workflow research",
+      "open source reference manager",
+      "zotero webdav cloud sync"
+    ],
+    "meta_description": "Compare Zotero 7, Mendeley, and Paperpile for academic research. Configure local BibTeX sync, automated PDF annotations, and self-hosted WebDAV.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime art of a sun-drenched professor's office lined with mahogany bookshelves reaching the ceiling, an open laptop displaying an organized bibliography manager, stacks of marked academic manuscripts, warm golden afternoon light --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a quiet student reading in a university archive, highlighter in hand, a tablet open to an annotated scientific PDF, rain gently pattering against tall leaded windows, tranquil atmosphere --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of an antique wooden card catalog cabinet with its drawers open, transforming seamlessly into a glowing digital interface of indexed research cards, painterly warm lighting --ar 16:9",
+      "Studio Ghibli anime art, whimsical study nook overlooking an old European town square, laptop open to academic citation graphs, potted geraniums on the stone windowsill, cozy and intellectual --ar 16:9"
+    ]
+  },
+  {
+    "id": 14,
+    "title": "Essential Guide to Websites & Apps - Part 3: Building an Academic Knowledge Vault",
+    "slug": "essential-guide-to-websites-apps-part-3",
+    "category": "Websites & Apps",
+    "subcategory": "Personal Knowledge Management",
+    "primary_keyword": "academic knowledge vault markdown zettelkasten obsidian",
+    "secondary_keywords": [
+      "building a second brain academia",
+      "obsidian zotero integration workflow",
+      "plain text knowledge graph research",
+      "zettelkasten literature notes dissertation"
+    ],
+    "meta_description": "Build an academic knowledge vault using plain-text Markdown and Zettelkasten. Connect literature notes to synthesis ideas using Obsidian and local graphs.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime art of a scholar's cozy attic sanctuary, wooden walls covered in interconnected note cards pinned with red yarn, an open laptop displaying a glowing network graph of connected ideas, soft lamplight, sleepy cat on the rug --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of an endless library labyrinth, floating illuminated parchment pages drifting gently between antique bookshelves, connecting with glowing golden links, magical intellectual atmosphere --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a writer's desk overlooking a quiet forest at twilight, an open leatherbound journal beside a sleek laptop running a markdown editor, warm tea mug, calming atmosphere --ar 16:9",
+      "Studio Ghibli anime art, close-up of a student carefully writing index cards with a fountain pen, modern ultrabook open next to them showing structured markdown outlines, warm golden lighting --ar 16:9"
+    ]
+  },
+  {
+    "id": 15,
+    "title": "Essential Guide to Basic Online Security - Part 1: Travel OpSec and Border Crossing Protocols",
+    "slug": "essential-guide-to-basic-online-security-part-1",
+    "category": "Basic Online Security",
+    "subcategory": "Travel OpSec",
+    "primary_keyword": "travel operational security researchers border crossing",
+    "secondary_keywords": [
+      "burner laptop configuration research",
+      "customs border search device encryption",
+      "travel opsec human rights investigator",
+      "temporary travel device hygiene"
+    ],
+    "meta_description": "Defend confidential field research at international borders. Deploy clean burner hardware, understand border search laws, and protect participant identities.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime art of a solitary researcher waiting in an international airport lounge at sunrise, a sleek lightweight laptop in a canvas satchel beside a trench coat, steam rising from a paper coffee cup, giant rain-streaked windows showing planes outside --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a quiet traveler's hotel desk in a foreign capital, a minimalist laptop connected to an ethernet cable, a single brass passport case and train tickets on polished mahogany, cozy and atmospheric --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a minimalist tech pouch on a wooden bench, containing an encrypted flash drive, a hardware key on a braided lanyard, and an unbranded notebook, soft natural lighting --ar 16:9",
+      "Studio Ghibli anime art, whimsical concept of an investigator walking through a misty train station archway at dawn, holding a clean leather briefcase, lantern light casting long gentle shadows across wet cobblestones --ar 16:9"
+    ]
+  },
+  {
+    "id": 16,
+    "title": "Essential Guide to Basic Online Security - Part 2: Hardware Security Key Deployment",
+    "slug": "essential-guide-to-basic-online-security-part-2",
+    "category": "Basic Online Security",
+    "subcategory": "Multi-Factor Authentication",
+    "primary_keyword": "hardware security keys yubikey fido2 webauthn setup",
+    "secondary_keywords": [
+      "phishing resistant mfa university portal",
+      "yubikey 5 series enterprise research",
+      "passkeys vs totp authenticator",
+      "securing cloud infrastructure hardware key"
+    ],
+    "meta_description": "Deploy hardware security keys (YubiKey, FIDO2/WebAuthn) across institutional portals, GitHub, and cloud servers. Defeat real-time phishing and SIM swaps.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an engineer's workbench, a sleek matte-black hardware key inserted into the side of an aluminum laptop, glowing with a soft golden ring indicator, warm sunlight cutting through morning mist --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a mechanical cryptographic vault, intricate miniature brass gears enclosing a tiny glowing microchip, blueprints unrolled on a solid oak table, cinematic painterly lighting --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a scholar touching the golden contact of a YubiKey on a laptop, surrounded by open research dossiers and botanical sketches, quiet evening atmosphere --ar 16:9",
+      "Studio Ghibli anime art, close-up concept art of a small key tray beside a computer monitor, two hardware keys resting neatly on polished walnut wood, warm ambient lamp light, delicate shadows --ar 16:9"
+    ]
+  },
+  {
+    "id": 17,
+    "title": "Essential Guide to Basic Online Security - Part 3: Systematic Threat Modeling for Researchers",
+    "slug": "essential-guide-to-basic-online-security-part-3",
+    "category": "Basic Online Security",
+    "subcategory": "Threat Modeling",
+    "primary_keyword": "systematic digital threat modeling independent researchers",
+    "secondary_keywords": [
+      "protecting sensitive human sources research",
+      "evaluating threat actors opsec",
+      "surveillance self defense academic",
+      "risk assessment research field data"
+    ],
+    "meta_description": "Implement systematic threat modeling to protect human research participants and whistleblowers. Identify threat actors, attack vectors, and countermeasures.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an analytical war room in a tranquil mountain tower, detailed chalkboard displaying flowcharts and threat vectors, an open laptop casting a soft blue glow, warm sunlight breaking through stone battlements --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a quiet scholar contemplating chess pieces on an old wooden board next to open notebooks and modern encrypted tablets, warm amber lighting from a green desk lamp --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of an investigator's desk at midnight, dossiers tied with red ribbon, a hardened laptop running terminal diagnostics, a steaming cup of tea, calming rainy atmosphere outside --ar 16:9",
+      "Studio Ghibli anime art, whimsical concept of an invisible protective bubble shimmering gently over a rustic wooden study desk, shielding books and electronics from raindrops outside, soft painterly style --ar 16:9"
+    ]
+  },
+  {
+    "id": 18,
+    "title": "Essential Guide to AI for Students & Work - Part 1: Academic Integrity & AI Policies",
+    "slug": "essential-guide-to-ai-for-students-work-part-1",
+    "category": "AI for Students & Work",
+    "subcategory": "Academic Integrity",
+    "primary_keyword": "academic integrity generative ai policies higher education",
+    "secondary_keywords": [
+      "transparent ai disclosure framework university",
+      "apa mla ai citation standards",
+      "ai detection false positive defense",
+      "responsible ai use postgraduate research"
+    ],
+    "meta_description": "Navigate generative AI policies in US and EU universities. Master transparent disclosure frameworks, APA/MLA AI citation standards, and defense against false positives.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime art of a historic university examination hall, sunlight streaming through tall stained-glass windows onto rows of wooden desks, a student writing with a fountain pen next to an open laptop displaying transparent citation notes --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a professor's office lined with ancient encyclopedias, an hourglass on the desk next to a digital screen showing transparent research disclosure forms, warm academic ambiance --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a graduate student reviewing their thesis in a cozy botanical study corner, binder clips, sticky notes, and a laptop displaying structured git commit histories --ar 16:9",
+      "Studio Ghibli anime art, close-up of a student signing a thesis pledge certificate with an ink pen on a heavy oak desk, glowing computer screen in the soft background, warm golden hour light --ar 16:9"
+    ]
+  },
+  {
+    "id": 19,
+    "title": "Essential Guide to AI for Students & Work - Part 2: Automated Preprint Tracking via RSS & LLMs",
+    "slug": "essential-guide-to-ai-for-students-work-part-2",
+    "category": "AI for Students & Work",
+    "subcategory": "Workflow Automation",
+    "primary_keyword": "automated preprint tracking rss ai filters arxiv pubmed",
+    "secondary_keywords": [
+      "automate literature monitoring python llm",
+      "arxiv biorxiv preprint rss alerts",
+      "ai paper summarization workflow",
+      "github actions academic literature bot"
+    ],
+    "meta_description": "Build an automated research radar. Combine RSS feeds from arXiv, bioRxiv, and PubMed with local LLM summarizers to monitor new breakthroughs effortlessly.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime art of a celestial radio observatory tower perched atop a grassy hill, large brass antenna listening to the sky, interior warm light showing automated telegraph tape rolling onto a wooden table, morning clouds --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a mechanical bird delivering scroll letters through an open attic window to a student working on a laptop, morning sunbeams, cozy rustic wood textures --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a computerized workstation running automated data streams, surrounded by potted herbs, botanical charts, and open encyclopedias, peaceful intellectual ambiance --ar 16:9",
+      "Studio Ghibli anime art, close-up of an espresso cup and an ultrabook displaying automated preprint research feeds organized by color-coded priority badges, warm morning sunlight, tranquil aesthetic --ar 16:9"
+    ]
+  },
+  {
+    "id": 20,
+    "title": "Essential Guide to AI for Students & Work - Part 3: Grant Proposal Stress-Testing with AI",
+    "slug": "essential-guide-to-ai-for-students-work-part-3",
+    "category": "AI for Students & Work",
+    "subcategory": "Academic Funding",
+    "primary_keyword": "grant proposal preparation ai stress test research design",
+    "secondary_keywords": [
+      "nsf horizon europe proposal ai review",
+      "evaluating grant solicitation guidelines ai",
+      "adversarial peer review simulation llm",
+      "research methodology stress testing"
+    ],
+    "meta_description": "Use advanced AI models to stress-test academic grant proposals. Simulate adversarial reviewer critiques, verify solicitation compliance, and secure funding.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an architect-scholar's expansive drafting office, sprawling structural blueprints and mathematical calculations pinned to corkboards, an open laptop casting warm light across brass scales and parchment proposals --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of three academic scholars gathered around a circular oak conference table at evening, examining illuminated technical documents, warm incandescent chandeliers, thoughtful focused expressions --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a sun-filled study desk covered in red-penciled research drafts, a modern laptop displaying structured grant matrices, open books, steaming porcelain cup of tea --ar 16:9",
+      "Studio Ghibli anime art, close-up of hands stamping an official gold wax seal onto an academic research document on a polished cherry wood desk, laptop softly glowing in the background, cinematic lighting --ar 16:9"
+    ]
+  },
+  {
+    "id": 21,
+    "title": "Scheduled Article Automation Test: Termux and Tasker Pipelines for Field Data",
+    "slug": "scheduled-article-automation-test",
+    "category": "Android & iPhone",
+    "subcategory": "Android Tips",
+    "primary_keyword": "android automation tasker termux field data pipeline",
+    "secondary_keywords": [
+      "automated sftp mobile field upload",
+      "termux gpg data encryption android",
+      "tasker geofenced backup script",
+      "offline mobile telemetry automation"
+    ],
+    "meta_description": "Build automated field data pipelines on Android using Tasker and Termux. Automatically compress, encrypt with GPG, and upload data via SFTP.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an automated radio communication station inside a timber cabin, an Android phone resting in a wooden docking cradle connected to green glowing data cables, night sky filled with stars through the skylight --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a field scientist's tent interior, an autonomous data transmission running on a screen showing completed green verification bars, lantern glow, boots drying by the stove --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of an intricate clockwork and wire mechanism syncing a modern smartphone to a brass transmitter on a cedar workbench, golden afternoon sunlight --ar 16:9",
+      "Studio Ghibli anime art, close-up concept art of a smartphone displaying a Linux terminal script automatically finishing an SFTP upload, sitting on an expedition map alongside a brass pocket compass, cozy atmosphere --ar 16:9"
+    ]
+  },
+  {
+    "id": 22,
+    "title": "Essential iPhone Settings You Should Review for Better Battery and Privacy",
+    "slug": "essential-iphone-settings-battery-privacy",
+    "category": "Android & iPhone",
+    "subcategory": "iPhone Tips",
+    "primary_keyword": "essential iphone settings battery and privacy",
+    "secondary_keywords": [
+      "ios background app refresh privacy",
+      "apple lockdown mode researcher security",
+      "iphone location permissions audit",
+      "disable diagnostic telemetry iphone"
+    ],
+    "meta_description": "Maximize iPhone battery life and harden privacy. Audit background app telemetry, adjust location services, and configure Apple Lockdown Mode.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an iPhone resting on a polished maple workbench beside an open notebook and an antique pocket watch, soft glowing green battery status on screen, golden morning light through a cottage window --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a quiet studio desk at night, an iPhone displaying shield security settings beside a cup of chamomile tea, rain droplets glistening on the window panes, warm relaxing mood --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a traveler sitting on a wooden bench at an old train depot, adjusting settings on an iPhone, canvas rucksack and binoculars beside them, painterly clouds in the sky --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of hands carefully configuring a smartphone on a rustic table, soft sunbeams illuminating dust motes, calm aesthetic, soft pastel colors --ar 16:9"
+    ]
+  },
+  {
+    "id": 23,
+    "title": "Top Lightweight Android Utilities to Clean Up and Organize Your Device",
+    "slug": "top-lightweight-android-utilities-clean-organize",
+    "category": "Android & iPhone",
+    "subcategory": "Android Apps",
+    "primary_keyword": "lightweight android utilities clean organize f-droid",
+    "secondary_keywords": [
+      "open source android apps productivity",
+      "telemetry free document scanner android",
+      "material files foss android",
+      "lossless audio recorder research android"
+    ],
+    "meta_description": "Discover open-source, telemetry-free Android utilities from F-Droid. Clean storage, record lossless field audio, and scan documents without bloatware.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an organized watchmaker's workshop, tiny precision brass tools laid out neatly on green felt beside an Android smartphone with a clean, minimal interface, warm morning sunbeams --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a quiet student desk in an old timber attic, an Android tablet showing an open-source document scanning app, surrounded by dried botanical pressings, soft painterly lighting --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of an environmental investigator's field desk, clean smartphones connected to miniature recording microphones, fresh mountain air blowing light linen curtains --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of an Android smartphone screen displaying a clean file folder structure, resting on an oak desk next to an open sketchbook and colored drawing pencils, cozy atmosphere --ar 16:9"
+    ]
+  },
+  {
+    "id": 24,
+    "title": "How to Customize Your Smartphone Home Screen for Maximum Focus",
+    "slug": "customize-smartphone-home-screen-maximum-focus",
+    "category": "Android & iPhone",
+    "subcategory": "Settings & Customization",
+    "primary_keyword": "customize smartphone home screen maximum focus digital minimalism",
+    "secondary_keywords": [
+      "minimalist android launcher deep work",
+      "grayscale display focus smartphone",
+      "notification batching knowledge workers",
+      "cognitive load management phone setup"
+    ],
+    "meta_description": "Transform your smartphone into an intentional productivity tool. Implement minimalist launchers, grayscale displays, and notification batching for deep work.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime art of a scholar's serene desk in a garden gazebo, an unadorned smartphone lying peacefully beside a ceramic teacup, no notifications, lush green bamboo swaying in the breeze --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a quiet student writing in a leather journal at dawn, a clean minimalist smartphone on the timber desk showing a simple grayscale clock face, tranquil morning mist --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a sunlit study room with blooming cherry blossoms outside, a smartphone resting silently on an open book, gentle breeze rustling parchment notes --ar 16:9",
+      "Studio Ghibli anime art, close-up concept illustration of a smartphone screen displaying elegant, minimalist typography on a matte dark background, resting on a polished oak table beside a small potted succulent, warm cozy lighting --ar 16:9"
+    ]
+  },
+  {
+    "id": 25,
+    "title": "Complete Windows 11 Speed Optimization Guide: Free Up RAM and Stop Lag",
+    "slug": "complete-windows-11-speed-optimization-guide",
+    "category": "Windows & Mac",
+    "subcategory": "Windows 11",
+    "primary_keyword": "complete windows 11 speed optimization guide free ram",
+    "secondary_keywords": [
+      "debloat windows 11 research workstation",
+      "disable diagnostic telemetry windows 11",
+      "optimize pagefile virtual memory windows",
+      "windows 11 background services cleanup"
+    ],
+    "meta_description": "Debloat Windows 11 for compute-heavy research. Disable telemetry, tune virtual memory pagefiles, and reclaim gigabytes of RAM for statistical models.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime art of a computer laboratory technician fine-tuning an open desktop workstation, glowing blue and amber cooling fluid pipes, tools arranged on a sturdy oak table, warm afternoon light --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a mechanical watchmaker's atelier, gears and clockwork springs harmonizing with an open laptop showing clean system performance monitors, rich painterly textures --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a student's bedroom study desk, modern PC showing sleek task manager charts with zero latency, potted geraniums on the window ledge, calm evening breeze --ar 16:9",
+      "Studio Ghibli anime art, close-up concept illustration of a high-tech cooling fan gently spinning on a customized PC chassis, warm golden lighting reflecting off polished copper heat pipes, peaceful mood --ar 16:9"
+    ]
+  },
+  {
+    "id": 26,
+    "title": "12 Essential macOS Keyboard Shortcuts and Finder Tricks to Work Faster",
+    "slug": "12-essential-macos-keyboard-shortcuts-finder-tricks",
+    "category": "Windows & Mac",
+    "subcategory": "macOS Tips",
+    "primary_keyword": "macos keyboard shortcuts finder tricks power user",
+    "secondary_keywords": [
+      "quick look plugins macos data research",
+      "batch regex renaming finder macos",
+      "spotlight calculations macos shortcuts",
+      "jump words lines text shortcuts mac"
+    ],
+    "meta_description": "Master 12 essential macOS keyboard shortcuts and Finder tricks. Preview CSVs with Quick Look, rename files with regex, and accelerate research workflows.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of a sunlit writer's desk, hands poised gracefully above a sleek aluminum keyboard, an open laptop displaying organized files, a warm cup of coffee and an apple nearby, tranquil garden outside --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a mathematician's study in the evening, fingers gliding across a modern keyboard, glowing shortcut charts written in calligraphy pinned to the wooden shelf, warm lamplight --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a bustling university computer lab, students quietly focused on their laptops, soft golden sunlight filtering through high arches, painterly architectural details --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of a sleek Mac laptop on a polished walnut table, surrounded by open research journals, fountain pen, and a small potted fern, cozy and intellectually stimulating --ar 16:9"
+    ]
+  },
+  {
+    "id": 27,
+    "title": "The Best Free and Open Source Software Replacements for Everyday Work",
+    "slug": "best-free-open-source-software-replacements",
+    "category": "Windows & Mac",
+    "subcategory": "Software",
+    "primary_keyword": "best free open source software replacements everyday work",
+    "secondary_keywords": [
+      "jasp jamovi spss open source replacement",
+      "inkscape adobe illustrator academic figures",
+      "libreoffice vs microsoft 365 research",
+      "foss productivity software research"
+    ],
+    "meta_description": "Replace expensive proprietary software with trusted FOSS alternatives. Master JASP for statistics, Inkscape for vector figures, and LibreOffice.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of a welcoming community computer workshop, diverse scholars collaborating around wooden tables, laptops running vibrant open-source creative software, potted plants, sunlight streaming through tall brick windows --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of an artist's sunny attic studio, an open laptop displaying detailed vector illustrations of scientific diagrams, paintbrushes in ceramic pots, architectural sketches pinned to timber beams --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a tranquil university library reading room, students working on laptops using open software, rain softly falling against the glass, warm amber lighting --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of hands assembling a multi-panel scientific figure on a monitor using open-source tools, wooden desktop, brass calipers, steaming mug of tea, warm painterly textures --ar 16:9"
+    ]
+  },
+  {
+    "id": 28,
+    "title": "The Practical Guide to Writing Clear and High-Impact AI Prompts",
+    "slug": "practical-guide-writing-clear-ai-prompts",
+    "category": "AI Tools",
+    "subcategory": "ChatGPT",
+    "primary_keyword": "practical guide writing clear high impact ai prompts",
+    "secondary_keywords": [
+      "systematic prompt engineering chatgpt",
+      "persona negative constraints few shot prompting",
+      "structured json output prompt engineering",
+      "avoiding ai hallucinations prompt template"
+    ],
+    "meta_description": "Master systematic prompt engineering. Learn persona conditioning, negative constraints, few-shot exemplars, and structured JSON outputs for reliable AI results.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an architect's wooden study bench, an open laptop displaying structured code prompts and flowcharts, an intricate brass compass resting on parchment drafts, golden morning sunlight --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a writer's library at dusk, glowing green terminal text softly reflecting in the glass of an open window overlooking a misty river valley, warm cozy lighting --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a scholar refining prompt formulas on index cards spread across a cedar table, steaming cup of tea, tranquil intellectual ambiance --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of hands typing clean markdown code on a sleek mechanical keyboard, framed by soft painterly plant foliage and warm amber desk lamp light --ar 16:9"
+    ]
+  },
+  {
+    "id": 29,
+    "title": "Gemini vs ChatGPT: Comparing Everyday Features, Search, and Workspace Integration",
+    "slug": "gemini-vs-chatgpt-everyday-features-comparison",
+    "category": "AI Tools",
+    "subcategory": "Google AI",
+    "primary_keyword": "gemini vs chatgpt everyday features comparison research",
+    "secondary_keywords": [
+      "gemini 1m context window academic monograph",
+      "chatgpt advanced data analysis python sandbox",
+      "google workspace gemini integration",
+      "multimodal ai benchmark research"
+    ],
+    "meta_description": "Compare Google Gemini and OpenAI ChatGPT for research. Benchmark Gemini's 1M+ token context window against ChatGPT's Python Advanced Data Analysis sandbox.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an analytical debate studio, two glowing crystal monitors facing each other across an antique mahogany table, one glowing amber with Google data streams, the other glowing jade green with OpenAI python code, soft afternoon sunlight --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a grand archive with towering bookshelves, a digital terminal scanning an enormous leather-bound monograph with a beam of soft golden light, dust motes floating gracefully --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a data scientist's study bench, an open laptop rendering clean statistical scatter plots, open statistical textbooks and mechanical calculators alongside, warm cozy ambiance --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of two glowing digital scrolls on a cedar desk, one showing an endless mathematical manuscript, the other executing live code loops, warm painterly textures --ar 16:9"
+    ]
+  },
+  {
+    "id": 30,
+    "title": "How to Use AI Writing Assistants Without Losing Your Authentic Human Voice",
+    "slug": "use-ai-writing-assistants-without-losing-voice",
+    "category": "AI Tools",
+    "subcategory": "AI Writing Tools",
+    "primary_keyword": "use ai writing assistants without losing authentic human voice",
+    "secondary_keywords": [
+      "eliminating ai prose cliches academic writing",
+      "ai structural editor workflow research",
+      "preserving analytical edge ai cowriting",
+      "anti ai detection writing style"
+    ],
+    "meta_description": "Master ethical AI co-writing protocols. Eliminate predictable AI prose clich\u00e9s, preserve your unique analytical edge, and use LLMs as structural editors.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an author's cozy wooden writing garret at twilight, an open laptop displaying handwritten margin notes in digital ink, fountain pens in brass holders, warm amber lantern glow, rain outside --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a scholar deeply absorbed in editing a printed manuscript with a red ink brush, an open tablet softly illuminating the page, quiet peaceful library atmosphere --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a sunlit writer's desk overflowing with paper drafts, drafts marked with thoughtful annotations, steam rising from a ceramic coffee mug, tranquil garden outside --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of a hand holding a vintage fountain pen suspended thoughtfully above a written parchment, an ultrabook screen glowing softly beside it, cinematic warm lighting --ar 16:9"
+    ]
+  },
+  {
+    "id": 31,
+    "title": "Top Completely Free AI Tools for Students, Researchers, and Creators",
+    "slug": "top-free-ai-tools-students-researchers-creators",
+    "category": "AI Tools",
+    "subcategory": "Free AI Tools",
+    "primary_keyword": "top completely free ai tools students researchers creators",
+    "secondary_keywords": [
+      "hugging face spaces free ai research",
+      "local whisper transcription zero cost",
+      "openalex semantic citation indexing",
+      "free academic ai tools no subscription"
+    ],
+    "meta_description": "Discover high-performance, zero-cost AI tools. Leverage Hugging Face Spaces, local Whisper transcription, and OpenAlex without paid subscriptions.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an open community university workshop, diverse students gathered around shared wooden tables with laptops, chalkboard filled with open-source code schematics, warm sunlight through broad greenhouse glass --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a quiet student room with a laptop connected to open scientific databases, stacks of library books, soft morning mist visible outside the wooden casement window, peaceful atmosphere --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a community bulletin board with hand-drawn notices pinned beside a digital screen displaying open-source software downloads, painterly warm lighting --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of hands navigating an open-source scientific repository on an ultrabook, a ceramic tea mug steaming nearby, polished wooden table, cozy and inspiring ambiance --ar 16:9"
+    ]
+  },
+  {
+    "id": 32,
+    "title": "Notion vs Obsidian vs Apple Notes: Which Note System Fits Your Brain?",
+    "slug": "notion-vs-obsidian-vs-apple-notes-comparison",
+    "category": "Websites & Apps",
+    "subcategory": "Productivity Apps",
+    "primary_keyword": "notion vs obsidian vs apple notes comparison research",
+    "secondary_keywords": [
+      "relational cloud databases vs local plain text markdown",
+      "obsidian linked graph personal knowledge management",
+      "apple notes instant capture friction",
+      "best note taking app academic dissertation"
+    ],
+    "meta_description": "Compare Notion, Obsidian, and Apple Notes for research and productivity. Evaluate cloud relational databases vs local plain-text linked graphs.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of three distinct scholars' workstations in a shared conservatory: one with complex visual database boards, one surrounded by interconnected parchment scrolls, and one with a simple paper sketchpad, warm sunlight filtering through vines --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a quiet student using a tablet in a wooden library loft, glowing network diagrams softly bridging digital screens and physical books, cozy evening lighting --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a writer's oak desk, a laptop displaying an intricate node graph beside an open leather notebook, warm cup of tea, peaceful rainy day ambiance --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of hands organizing index cards into an antique wooden filing cabinet next to an ultrabook running a markdown editor, warm painterly textures --ar 16:9"
+    ]
+  },
+  {
+    "id": 33,
+    "title": "How to Back Up Your Cloud Storage to Prevent Accidental Data Loss",
+    "slug": "how-to-backup-cloud-storage-prevent-data-loss",
+    "category": "Websites & Apps",
+    "subcategory": "Cloud Storage",
+    "primary_keyword": "how to back up cloud storage prevent accidental data loss",
+    "secondary_keywords": [
+      "3-2-1 backup strategy cloud storage",
+      "prevent cloud sync ransomware mirroring",
+      "rclone automated cloud backup script",
+      "immutable cloud versioning research data"
+    ],
+    "meta_description": "Cloud sync is not a backup. Implement the 3-2-1 strategy to protect Google Drive, OneDrive, and Dropbox from ransomware mirroring and account revocation.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an archivist's mountain retreat, an array of external solid-state drives resting in a cedar rack connected to a quiet desktop terminal, panoramic bay windows showing distant cumulus clouds over green hills --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a mechanical waterwheel powering an antique printing press and modern data storage drives, glowing golden data pipes, tranquil countryside setting --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a scholar unplugging an external hard drive and placing it into a heavy brass lockbox on an oak desk, warm evening lamplight, cozy atmosphere --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of an external SSD connected via a braided cable to a laptop, terminal displaying finished checksum verification in bright green text, steaming coffee mug, soft painterly textures --ar 16:9"
+    ]
+  },
+  {
+    "id": 34,
+    "title": "15 Incredibly Useful Free Websites You Wish You Discovered Sooner",
+    "slug": "15-incredibly-useful-free-websites-knowledge-hub",
+    "category": "Websites & Apps",
+    "subcategory": "Online Tools",
+    "primary_keyword": "incredibly useful free websites research data utilities",
+    "secondary_keywords": [
+      "extract pdf tables free online tools",
+      "regex101 interactive regular expressions",
+      "wayback machine web archiving research",
+      "single purpose web utilities academic"
+    ],
+    "meta_description": "Explore 15 indispensable, single-purpose web utilities for data extraction, PDF table parsing, regex testing, and permanent web archiving without paywalls.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of a vibrant curiosity shop in a seaside town, shelves filled with magical measuring tools, brass microscopes, pocket watches, and glowing digital maps, warm afternoon sunbeams --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a quiet student workshop, a laptop displaying clean data converter tools, surrounded by drafting paper, compasses, and wooden rulers, cozy and inspiring --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a library study room with a bulletin board pinned with helpful diagrams and website shortcuts, an open laptop casting a soft amber glow --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of hands typing a regex pattern into an open browser tool on a laptop, warm lamplight, botanical sketch on the desk, peaceful nighttime ambiance --ar 16:9"
+    ]
+  },
+  {
+    "id": 35,
+    "title": "Why You Must Stop Reusing Passwords and How to Switch to a Password Manager",
+    "slug": "stop-reusing-passwords-switch-password-manager",
+    "category": "Basic Online Security",
+    "subcategory": "Passwords",
+    "primary_keyword": "stop reusing passwords switch to password manager",
+    "secondary_keywords": [
+      "credential stuffing attack defense",
+      "bitwarden open source password manager",
+      "zero knowledge encryption vault security",
+      "transition from passwords to passkeys"
+    ],
+    "meta_description": "Stop password reuse and defeat credential stuffing. Deploy Bitwarden's zero-knowledge vault, audit compromised logins, and transition to passkeys.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an old locksmith's workshop, a heavy oak table covered in brass keys of all shapes and sizes, an open laptop displaying a sleek password vault interface glowing in soft emerald green, warm fireplace glow --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a quiet student sitting at a solid timber study desk, an open notebook beside a laptop, an antique brass lock and key resting peacefully on a stack of encyclopedias, warm afternoon sunlight --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a scholar's library desk at twilight, a small glowing digital talisman resting beside a laptop keyboard, illuminating intricate wood grain and parchment notes, calming atmosphere --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of hands carefully turning an intricate brass dial on a miniature vault box resting on a modern desk beside a glowing computer monitor, warm cozy ambiance --ar 16:9"
+    ]
+  },
+  {
+    "id": 36,
+    "title": "Authenticator Apps vs SMS Verification: How to Properly Secure Your Accounts",
+    "slug": "authenticator-apps-vs-sms-verification-security",
+    "category": "Basic Online Security",
+    "subcategory": "Two-Factor Authentication",
+    "primary_keyword": "authenticator apps vs sms verification security",
+    "secondary_keywords": [
+      "sim swap vulnerability mobile carriers",
+      "totp authenticator open source aegis 2fas",
+      "hardware security key vs authenticator app",
+      "migrating from sms 2fa to totp"
+    ],
+    "meta_description": "SMS verification leaves you vulnerable to SIM swapping. Upgrade to open-source TOTP authenticators (Aegis, 2FAS) and hardware FIDO2 security keys.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an apprentice watchmaker's bench at sunrise, an antique brass clockwork gear spinning next to an open smartphone displaying a green glowing 6-digit TOTP authenticator timer, warm morning light --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a secure study loft, an open laptop displaying cybersecurity shield graphics beside a small smartphone in an oak cradle, rain softly falling against the skylight --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a scholar comparing an antique mechanical compass with a modern smartphone displaying a rotating cryptographic security token, warm library lighting --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of hands holding a smartphone with an authenticator app, a glowing digital key floating gently above the glass screen on an oak desk, painterly lighting --ar 16:9"
+    ]
+  },
+  {
+    "id": 37,
+    "title": "How to Spot Fake Emails and Suspicious Links Before Clicking",
+    "slug": "how-to-spot-fake-emails-suspicious-links",
+    "category": "Basic Online Security",
+    "subcategory": "Phishing Awareness",
+    "primary_keyword": "how to spot fake emails and suspicious links phishing",
+    "secondary_keywords": [
+      "academic spear phishing defense research",
+      "predatory conference scam email detection",
+      "inspect email headers dkim spf dmarc",
+      "spoofed journal review request phishing"
+    ],
+    "meta_description": "Detect sophisticated academic spear-phishing, predatory conference scams, and spoofed review requests. Inspect email headers and defeat credential harvesting.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an analytical detective's desk in a sunlit university tower, examining an envelope with a brass magnifying glass, an open laptop displaying email header diagnostics in glowing green code, soft warm lighting --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a quiet student reading an email on a laptop by a cozy hearth, a small stylized digital shield glowing softly over the screen, tea mug resting on a stack of research journals --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a library study desk, sunlight streaming across open postal letters and modern digital screens, highlighting dust motes, peaceful academic atmosphere --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of hands carefully reviewing an academic invitation letter on heavy cream parchment, an ultrabook open beside it revealing a fake web address, cinematic warm lighting --ar 16:9"
+    ]
+  },
+  {
+    "id": 38,
+    "title": "How Students Can Use AI as a Personal Tutor to Master Difficult Subjects",
+    "slug": "how-students-use-ai-personal-tutor-study",
+    "category": "AI for Students & Work",
+    "subcategory": "AI for Students",
+    "primary_keyword": "how students can use ai as personal tutor study socratic",
+    "secondary_keywords": [
+      "socratic ai prompt engineering dissertation",
+      "ai adversarial debate partner study",
+      "feynman technique ai tutoring prompt",
+      "active recall conversational ai study"
+    ],
+    "meta_description": "Transform AI into an uncompromising Socratic tutor. Deploy the Feynman Technique, simulate oral thesis defenses, and master complex academic topics.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an ancient sun-drenched university courtyard under towering oak trees, a student sitting on a stone bench studying with an open laptop and notebook, gentle breeze fluttering paper pages, warm golden light --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a cozy library alcove at sunset, a student engaged in thoughtful discussion with a glowing holographic digital mentor figure hovering softly over an open textbook, magical atmosphere --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a scholar's wooden study desk overflowing with diagrams, chalkboard covered in physics equations in the background, warm lamplight illuminating a steaming cup of tea --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of hands writing mathematical formulas in a leather notebook with a mechanical pencil, an open ultrabook screen displaying encouraging Socratic questions, cozy painterly textures --ar 16:9"
+    ]
+  },
+  {
+    "id": 39,
+    "title": "The Best AI Flashcard and Summary Generators for Efficient Revision",
+    "slug": "best-ai-flashcard-summary-generators-revision",
+    "category": "AI for Students & Work",
+    "subcategory": "AI Study Tools",
+    "primary_keyword": "best ai flashcard and summary generators revision anki",
+    "secondary_keywords": [
+      "spaced repetition automation academic research",
+      "cloze deletion anki cards python llm",
+      "converting medical literature to flashcards",
+      "feynman technique revision flashcards"
+    ],
+    "meta_description": "Automate high-yield spaced repetition. Convert complex academic papers and lecture notes into cloze-deletion Anki decks using local AI workflows.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of a student's wooden desk surrounded by neatly stacked wooden card boxes, colorful index cards with diagrams resting beside an open laptop displaying the Anki interface, warm afternoon light through leafy trees --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of an old clockmaker's study, an intricate brass calendar mechanism tracking study days on a wooden wall, notebooks open to biological diagrams, warm cozy atmosphere --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a quiet medical student reviewing flashcards on a tablet while sitting on a train, scenic countryside rolling by through the train window, soft golden hour glow --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of hands sorting through handwritten index cards with botanical pressings pinned to them, sitting on a sturdy oak table next to a glowing laptop screen, peaceful and inspiring --ar 16:9"
+    ]
+  },
+  {
+    "id": 40,
+    "title": "Practical AI Workflows for Bloggers and Researchers to Accelerate Publishing",
+    "slug": "practical-ai-workflows-bloggers-researchers",
+    "category": "AI for Students & Work",
+    "subcategory": "AI for Writers",
+    "primary_keyword": "practical ai workflows bloggers researchers accelerate publishing",
+    "secondary_keywords": [
+      "structured abstract drafting ai research",
+      "preprint metadata validation workflow",
+      "reference consistency audit academic publishing",
+      "scientific blog content pipeline ai"
+    ],
+    "meta_description": "Build an end-to-end publishing pipeline with AI. Automate structured abstract drafting, preprint metadata audits, and citation consistency checks.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an old-world printing press and editorial workshop, sheets of freshly printed scientific journals hanging from wooden rafters to dry, a modern laptop on an oak desk showing publication proofs, warm amber sunlight --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a writer's sunlit study overlooking a bustling university square, coffee cup steaming on a stack of manuscript proofs, an open laptop displaying clean publication layouts, peaceful atmosphere --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a scholar binding an academic thesis by hand with needle and bookbinding thread, a glowing computer screen beside them displaying finished digital chapters, warm cozy interior --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of hands carefully reviewing printed journal galleys with a red pencil on a polished walnut table, glowing laptop showing a clean markdown document nearby, painterly textures --ar 16:9"
+    ]
+  },
+  {
+    "id": 41,
+    "title": "The Lantern Maker: An Inspiring English Reading Story About Patience and Craft",
+    "slug": "the-lantern-maker-inspiring-english-reading-story",
+    "category": "English Reading Stories",
+    "subcategory": "Short Stories",
+    "primary_keyword": "the lantern maker inspiring english reading story patience craft",
+    "secondary_keywords": [
+      "english reading comprehension short story",
+      "advanced english vocabulary in context story",
+      "parable on patience and mastery",
+      "literature study english reading story"
+    ],
+    "meta_description": "Read 'The Lantern Maker', an inspiring English story exploring craftsmanship, patience, and purpose. Includes advanced vocabulary definitions and comprehension.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an old traditional lantern maker's wooden workshop nestled beside a rushing mountain stream, dozens of glowing handmade paper lanterns hanging from timber rafters casting warm amber light, rain pattering outside --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of an elderly craftsman showing a young apprentice how to carve delicate bamboo strips on a low cedar workbench, shavings curling like ribbons, soft morning mist --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a solitary glowing lantern hanging from a wooden post at a misty river ferry dock at midnight, warm golden beam cutting through rain and churning river mist, serene and hopeful --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of skilled hands carefully pasting translucent oiled paper onto a delicate wooden hexagonal lantern frame, warm candlelight illuminating intricate wood grain, cozy and contemplative --ar 16:9"
+    ]
+  },
+  {
+    "id": 42,
+    "title": "10 Beautiful English Words to Describe Feelings You Experience Every Day",
+    "slug": "10-beautiful-english-words-everyday-feelings",
+    "category": "English Reading Stories",
+    "subcategory": "Vocabulary & Life",
+    "primary_keyword": "10 beautiful english words everyday feelings vocabulary",
+    "secondary_keywords": [
+      "sonder petrichor chrysalism meaning",
+      "descriptive precision in writing vocabulary",
+      "etymology rare english emotional words",
+      "advanced english vocabulary everyday emotions"
+    ],
+    "meta_description": "Expand your descriptive precision. Explore 10 evocative English words\u2014including Sonder, Petrichor, and Chrysalism\u2014with etymologies and contextual prose.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of a sun-drenched antique antiquarian bookstore smelling of old paper, sunbeams pouring through arched windows illuminating floating dust motes and velvet armchairs, peaceful atmosphere --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a cozy cottage interior during a torrential thunderstorm, rain lashing against the glass while someone reads by a crackling fireplace wrapped in a woolen blanket, tranquil chrysalism --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a train passenger looking out the window at a bustling rainy evening street market below, thoughtful introspective expression of sonder, warm street lantern reflections in puddles --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of a single winter flower emerging through fresh snow, bathed in the golden warmth of winter sunlight, soft painterly textures, hopeful inspiring ambiance --ar 16:9"
+    ]
+  },
+  {
+    "id": 43,
+    "title": "The Mountain and the Seed: A Lesson on Small Daily Habits and Compounding Consistency",
+    "slug": "the-mountain-and-the-seed-lesson-daily-habits",
+    "category": "English Reading Stories",
+    "subcategory": "Inspirational Stories",
+    "primary_keyword": "the mountain and the seed small daily habits compounding consistency",
+    "secondary_keywords": [
+      "allegorical story habit formation research",
+      "cognitive persistence daily compounding writing",
+      "english inspirational reading story",
+      "james clear atomic habits literary allegory"
+    ],
+    "meta_description": "Read 'The Mountain and the Seed', an inspirational allegory on compounding consistency. Includes analytical commentary on cognitive habits and persistence.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an ancient twisted bristlecone pine tree growing out of a cleft in a colossal sheer granite mountain cliff, dawn sunlight washing the stone in warm rose-gold hues, misty valley below --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a quiet scholar's balcony garden high on a mountain pass, tiny seedlings sprouting in terracotta pots along an old stone balustrade, peaceful morning clouds drifting by --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a solitary green seedling pushing through cracked stone, droplets of dew sparkling in a shaft of golden morning sunlight, delicate painterly textures, inspiring atmosphere --ar 16:9",
+      "Studio Ghibli anime art, panoramic view of a lush green alpine valley filled with wildflowers at sunset, fed by a crystal mountain stream flowing through an ancient split rock, whimsical anime clouds --ar 16:9"
+    ]
+  },
+  {
+    "id": 44,
+    "title": "M3 MacBook Air Review: One Year Later \u2013 Why It Remains the Ultimate Daily Laptop",
+    "slug": "m3-macbook-air-review-daily-laptop",
+    "category": "Reviews",
+    "subcategory": "Tech Reviews",
+    "primary_keyword": "m3 macbook air review one year later academic laptop",
+    "secondary_keywords": [
+      "fanless macbook air thermal performance research",
+      "macbook air 16gb unified memory data science",
+      "m3 macbook air battery life real world",
+      "best portable laptop graduate students"
+    ],
+    "meta_description": "A comprehensive 1-year long-term review of the M3 MacBook Air. Real-world battery endurance, fanless thermals, and memory requirements for researchers.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an M3 MacBook Air resting open on a rustic wooden balcony table overlooking a picturesque coastal town at sunrise, steaming mug of black coffee, notebooks with fountain pen, soft warm morning breeze --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a quiet student library in autumn, an aluminum laptop open on an oak desk surrounded by colorful fallen maple leaves outside the arched leaded glass windows, warm amber lighting --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a traveler using a sleek laptop inside a quiet mountain railway car, panoramic windows displaying green pine forests and rolling mist, tranquil and focused --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of hands typing effortlessly on a modern backlit laptop keyboard, an open journal and a steaming ceramic mug nearby, soft golden lamplight, cozy atmosphere --ar 16:9"
+    ]
+  },
+  {
+    "id": 45,
+    "title": "Claude 3.5 Sonnet vs ChatGPT Plus: Hands-On Review for Writers and Researchers",
+    "slug": "claude-35-sonnet-vs-chatgpt-plus-review",
+    "category": "Reviews",
+    "subcategory": "AI Software Reviews",
+    "primary_keyword": "claude 3.5 sonnet vs chatgpt plus review writers researchers",
+    "secondary_keywords": [
+      "anthropic claude artifacts workspace research",
+      "natural academic prose synthesis claude",
+      "chatgpt python advanced data analysis benchmark",
+      "llm nuance handling qualitative research"
+    ],
+    "meta_description": "We tested Anthropic's Claude 3.5 Sonnet and OpenAI's ChatGPT Plus across academic synthesis, prose nuance, code debugging, and artifact workspaces.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an analytical research room, two glowing antique writing consoles side-by-side, one rendered in terracotta warm tones representing Claude, the other in deep jade green representing ChatGPT, stacks of marked manuscripts and warm lamplight --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a scholar comparing two distinct glowing holographic scrolls floating above a sturdy cedar workbench, warm afternoon light filtering through trailing vines, peaceful intellectual mood --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a programmer's studio at dusk, dual monitors displaying clean side-by-side code execution and elegant prose, rain gently trickling down leaded window panes, cozy atmosphere --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of hands highlighting text in an academic paper, an ultrabook display open to an interactive code workspace, tea steam drifting in soft sunbeams, painterly textures --ar 16:9"
+    ]
+  },
+  {
+    "id": 46,
+    "title": "Sony WH-1000XM5 Long-Term Review: The Benchmark for Noise Canceling Headphones",
+    "slug": "sony-wh-1000xm5-long-term-review",
+    "category": "Reviews",
+    "subcategory": "Hardware & Gadgets",
+    "primary_keyword": "sony wh 1000xm5 long term review noise canceling headphones",
+    "secondary_keywords": [
+      "active noise cancellation deep work research",
+      "sony xm5 flight comfort battery life",
+      "best anc headphones study university library",
+      "microphone voice clarity sony xm5"
+    ],
+    "meta_description": "A long-term review of the Sony WH-1000XM5. Evaluate active noise cancellation, library chatter isolation, flight comfort, and long-session ergonomics.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of a student wearing sleek matte-black over-ear headphones, deeply absorbed in reading inside a bustling, sun-filled historic cafe, a soft translucent bubble of quietude drawn around the wooden table, warm golden hour tones --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of an investigator working in an international airport lounge at dusk, headphones on, typing on a laptop, rain washing against giant terminal windows with glowing runway lights in the distance --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a scholar's library desk, the Sony headphones resting beside an open book, fountain pen, and a warm ceramic tea mug, gentle afternoon sunlight through leaded glass --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of headphones resting on an open academic notebook with botanical sketches, soft ambient lighting reflecting off polished brass desk instruments, cozy and peaceful --ar 16:9"
+    ]
+  },
+  {
+    "id": 47,
+    "title": "Logitech MX Master 3S Review: Why It Is the Undisputed King of Productivity Mice",
+    "slug": "logitech-mx-master-3s-review",
+    "category": "Reviews",
+    "subcategory": "Hardware & Gadgets",
+    "primary_keyword": "logitech mx master 3s review productivity mouse",
+    "secondary_keywords": [
+      "magspeed electromagnetic scroll wheel data science",
+      "silent click switches ergonomic mouse research",
+      "logi options plus gesture customization",
+      "best mouse data analysis excel spreadsheets"
+    ],
+    "meta_description": "A long-term review of the Logitech MX Master 3S. Ergonomic analysis of MagSpeed scrolling, 90% quieter switches, and multi-device gesture workflows.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an engineer's high-tech wooden workstation, the sculpted dark gray Logitech mouse resting on a natural leather desk mat beside a mechanical keyboard, warm golden morning sunbeams --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a quiet data scientist's study in the evening, fingers resting gracefully on a sculpted mouse while reviewing mathematical curves on a wide curved display, cozy lamplight --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of an architect's desk with rolled parchment blueprints, a modern mouse with a gleaming brass thumb wheel resting beside open drafting tools, calm artistic atmosphere --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of a hand effortlessly navigating a spreadsheet with an ergonomic mouse on a solid oak table, soft warm lighting, tea steam rising in the background, painterly textures --ar 16:9"
+    ]
+  },
+  {
+    "id": 48,
+    "title": "How to Fix Unstable Wi-Fi Connections and DNS Dropouts on Windows 11 and Mac",
+    "slug": "fix-unstable-wifi-dns-disconnections",
+    "category": "Troubleshooting & How-To",
+    "subcategory": "Network Engineering",
+    "primary_keyword": "how to fix unstable wifi connections and dns dropouts",
+    "secondary_keywords": [
+      "flush dns cache terminal macos windows",
+      "configure privacy dns quad9 cloudflare",
+      "wifi adapter roaming aggressiveness tuning",
+      "resolve network dropouts large data transfer"
+    ],
+    "meta_description": "Resolve dropped Wi-Fi connections and DNS timeouts during data transfers. Flush local DNS caches, configure privacy resolvers, and tune wireless adapters.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an old weather observatory perched on a seaside cliff, an open laptop on a wooden desk displaying clean wireless network diagnostics, antennas outside humming quietly in the sea breeze --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of an electrician's workshop, intricate diagrams of wireless waves and radio frequencies drawn on parchment beside an open laptop running network tools, warm cozy lamplight --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a student working peacefully in an airy botanical sunroom, laptop showing stable high-speed data transfer bars, bright morning sunlight pouring through glass panes --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of hands configuring network settings on a laptop keyboard, a miniature glowing router antenna softly casting amber light on an oak workbench, quiet atmosphere --ar 16:9"
+    ]
+  },
+  {
+    "id": 49,
+    "title": "Step-by-Step Guide to Fixing Sudden Smartphone Battery Drain After Updates",
+    "slug": "fix-smartphone-battery-drain-after-updates",
+    "category": "Troubleshooting & How-To",
+    "subcategory": "Mobile Diagnostics",
+    "primary_keyword": "step by step guide fixing sudden smartphone battery drain updates",
+    "secondary_keywords": [
+      "post update battery drainage android ios",
+      "local machine learning re-indexing battery drain",
+      "runaway background process mobile diagnostics",
+      "calibrate smartphone battery after os update"
+    ],
+    "meta_description": "Stop sudden smartphone battery drain after iOS and Android updates. Understand background neural re-indexing, identify runaway processes, and calibrate your battery.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of a vintage electronics repair atelier, an open smartphone connected to a glowing diagnostic voltmeter displaying clean battery charge curves, brass screwdrivers and magnifying lenses on a cedar bench, soft morning light --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a quiet student charging their phone by a window in an old wooden cottage, soft green battery icon glowing calmly on the screen, morning mist rising over pine trees outside --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a traveler checking battery diagnostics on a handheld device while resting beside a stone trail marker in an alpine meadow, wildflowers glowing in the afternoon sun --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of a smartphone plugged into an elegant wooden charging stand on a polished oak desk, soft amber charging indicator light, steaming mug of tea nearby, cozy and calm --ar 16:9"
+    ]
+  },
+  {
+    "id": 50,
+    "title": "How to Fix Bluetooth Audio Delay and Pairing Failures on Laptops and Phones",
+    "slug": "fix-bluetooth-audio-delay-pairing-failures",
+    "category": "Troubleshooting & How-To",
+    "subcategory": "Hardware Troubleshooting",
+    "primary_keyword": "how to fix bluetooth audio delay and pairing failures",
+    "secondary_keywords": [
+      "bluetooth codec selection ldac aptx aac",
+      "fix audio latency video editing wireless",
+      "usb 3.0 rf interference bluetooth 2.4ghz",
+      "reset coreaudio daemon bluetooth macos"
+    ],
+    "meta_description": "Eliminate Bluetooth audio lag and frequent pairing drops. Select low-latency codecs (LDAC, aptX), mitigate USB 3.0 RF interference, and reset audio daemons.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of a sound engineer's cozy studio at evening, delicate radio wave diagrams glowing softly in the air between a pair of dark headphones and an open laptop on a cedar desk, warm lamplight --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of an antique radio telegraph workshop, copper tuning coils and glass vacuum tubes harmonizing with modern wireless electronics, soft morning sunlight --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a video editor wearing headphones in a tranquil library alcove, laptop displaying synced audio waveforms, rain falling softly on garden foliage outside --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of hands pairing a modern wireless headphone case on a solid oak table beside an open notebook, soft golden glow reflecting off polished wood, painterly textures --ar 16:9"
+    ]
+  },
+  {
+    "id": 51,
+    "title": "The Future of On-Device AI: How Neural Engines Are Changing Everyday Computing",
+    "slug": "future-of-on-device-ai-neural-engines",
+    "category": "Technology",
+    "subcategory": "Future Tech",
+    "primary_keyword": "future of on device ai neural engines npu computing",
+    "secondary_keywords": [
+      "npu vs gpu energy efficiency local ai",
+      "confidential research privacy on-device ml",
+      "apple neural engine vs snapdragon npu",
+      "local small language models slm inference"
+    ],
+    "meta_description": "Explore the revolution of on-device AI. Discover how Neural Processing Units (NPUs) deliver confidential research privacy, zero-latency inference, and battery efficiency.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of a futuristic greenhouse laboratory, a small transparent microchip glowing with delicate golden neural circuits resting on a cedar workbench beside blooming jasmine vines, warm afternoon sunlight --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a quiet student scholar on a hill overlooking a futuristic sustainable city, holding an ultraportable laptop running on-device intelligence without wires, soft whimsical clouds --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of an intricate silicon microprocessor drawing on parchment, displaying interconnected neural nodes styled like ancient constellation maps, warm lamplight --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of a sleek laptop resting on an oak desk in a peaceful forest cabin, a soft green indicator light glowing gently beside the keyboard, serene intellectual atmosphere --ar 16:9"
+    ]
+  },
+  {
+    "id": 52,
+    "title": "The Lantern Maker: An Inspiring English Reading Story (Annotated Study Edition)",
+    "slug": "the-lantern-maker-inspiring-english-story",
+    "category": "English Reading Stories",
+    "subcategory": "Short Stories",
+    "primary_keyword": "the lantern maker inspiring english reading story annotated study",
+    "secondary_keywords": [
+      "advanced reading comprehension literary analysis",
+      "metaphor breakdown craftsmanship patience english",
+      "esl advanced vocabulary annotations literature",
+      "rhetorical analysis short story english"
+    ],
+    "meta_description": "An annotated scholarly study edition of 'The Lantern Maker'. Explore literary metaphors, advanced rhetorical devices, and stylistic vocabulary for learners.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an old wooden lantern atelier, annotated text scrolls unrolled across an antique walnut drafting table, magnifying glass focusing on intricate bamboo joinery, warm sunlight pouring through mullioned windows --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a scholar annotating an ancient Japanese manuscript with a calligraphy brush, glowing paper lanterns of various shapes illuminating the wooden workshop rafters, cozy and scholarly --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of the stormy river gorge at midnight, the single steadfast lantern shining like a golden star above churning dark waters, guiding a wooden boat safely to the dock, dramatic and inspiring --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of an open literary study notebook with handwritten annotations and structural diagrams of a lantern frame, resting on a polished timber desk beside an inkwell and candle, painterly textures --ar 16:9"
+    ]
+  },
+  {
+    "id": 53,
+    "title": "The Mountain and the Seed: A Lesson on Small Daily Habits (Hermeneutic Study Edition)",
+    "slug": "the-mountain-and-the-seed-daily-habits",
+    "category": "English Reading Stories",
+    "subcategory": "Inspirational Stories",
+    "primary_keyword": "the mountain and the seed daily habits hermeneutic study edition",
+    "secondary_keywords": [
+      "allegorical analysis daily habits literature",
+      "narrative theory consistency growth essay",
+      "cognitive compounding philosophical study edition",
+      "advanced english literary commentary habit formation"
+    ],
+    "meta_description": "An annotated hermeneutic study edition of 'The Mountain and the Seed'. Analytical commentary on narrative theory, allegorical symbols, and compounding persistence.",
+    "image_prompts": [
+      "Studio Ghibli style, cinematic anime illustration of an ancient philosopher's stone library high in the mountains, an open academic treatise with detailed botanical and geological cross-sections on a massive oak desk, morning sunlight illuminating floating dust motes --ar 16:9",
+      "Studio Ghibli aesthetic, anime concept art of a majestic mountain cliff parted in two by an ancient bonsai-like pine tree, a crystal waterfall tumbling down through the fracture into a blooming wildflower meadow below, painterly golden hour --ar 16:9",
+      "Studio Ghibli style, detailed anime watercolor of a scholar's desk with an open diary documenting decades of tree growth beside botanical calipers and ink sketches, cozy fireplace glow --ar 16:9",
+      "Studio Ghibli anime art, close-up concept of a green pine shoot emerging from a cracked granite rock, dew droplets glistening in early dawn light, soft painterly textures, deeply inspiring and philosophical --ar 16:9"
+    ]
+  }
+]

@@ -1,0 +1,15 @@
+{
+    "article_id": 12,
+    "title": "Essential Guide to Websites & Apps - Part 1: Hardening Web Browsers Against Fingerprinting",
+    "short_slug": "browser-hardening",
+    "category_slug": "websites-apps",
+    "subcategory_slug": "browser-security",
+    "category_name": "Websites & Apps",
+    "subcategory_name": "Browser Security",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime art of a mysterious library desk hidden behind sheer curtains, an open laptop displaying network code and shield emblems, an antique brass magnifying glass, quiet rain falling outside the French doors --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a detective's workshop filled with maps, magnifying lenses, and an open computer terminal masking identity strings into stylized digital shadows, warm amber lamp light --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a secluded writer's attic desk, a laptop surrounded by closed leather notebooks, tea steam drifting across the wooden window sill, peaceful and secure --ar 16:9",
+        "Studio Ghibli anime art, close-up concept illustration of a stylized digital padlock glowing softly on a darkened laptop screen, sitting on a polished cherry wood table beside a blooming orchid --ar 16:9"
+    ]
+}

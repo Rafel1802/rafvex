@@ -1,0 +1,16 @@
+ARTICLE #39: The Best AI Flashcard and Summary Generators for Efficient Revision
+SHORT SLUG: ai-flashcard-generators
+CATEGORY: ai-for-students-work > ai-study-tools
+
+IMAGE 1:
+Studio Ghibli style, cinematic anime illustration of a student's wooden desk surrounded by neatly stacked wooden card boxes, colorful index cards with diagrams resting beside an open laptop displaying the Anki interface, warm afternoon light through leafy trees --ar 16:9
+
+IMAGE 2:
+Studio Ghibli aesthetic, anime concept art of an old clockmaker's study, an intricate brass calendar mechanism tracking study days on a wooden wall, notebooks open to biological diagrams, warm cozy atmosphere --ar 16:9
+
+IMAGE 3:
+Studio Ghibli style, detailed anime watercolor of a quiet medical student reviewing flashcards on a tablet while sitting on a train, scenic countryside rolling by through the train window, soft golden hour glow --ar 16:9
+
+IMAGE 4:
+Studio Ghibli anime art, close-up concept of hands sorting through handwritten index cards with botanical pressings pinned to them, sitting on a sturdy oak table next to a glowing laptop screen, peaceful and inspiring --ar 16:9
+

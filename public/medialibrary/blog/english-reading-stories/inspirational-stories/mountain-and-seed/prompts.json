@@ -1,0 +1,15 @@
+{
+    "article_id": 43,
+    "title": "The Mountain and the Seed: A Lesson on Small Daily Habits and Compounding Consistency",
+    "short_slug": "mountain-and-seed",
+    "category_slug": "english-reading-stories",
+    "subcategory_slug": "inspirational-stories",
+    "category_name": "English Reading Stories",
+    "subcategory_name": "Inspirational Stories",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime illustration of an ancient twisted bristlecone pine tree growing out of a cleft in a colossal sheer granite mountain cliff, dawn sunlight washing the stone in warm rose-gold hues, misty valley below --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a quiet scholar's balcony garden high on a mountain pass, tiny seedlings sprouting in terracotta pots along an old stone balustrade, peaceful morning clouds drifting by --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a solitary green seedling pushing through cracked stone, droplets of dew sparkling in a shaft of golden morning sunlight, delicate painterly textures, inspiring atmosphere --ar 16:9",
+        "Studio Ghibli anime art, panoramic view of a lush green alpine valley filled with wildflowers at sunset, fed by a crystal mountain stream flowing through an ancient split rock, whimsical anime clouds --ar 16:9"
+    ]
+}

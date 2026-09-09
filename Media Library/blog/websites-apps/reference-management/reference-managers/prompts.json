@@ -1,0 +1,15 @@
+{
+    "article_id": 13,
+    "title": "Essential Guide to Websites & Apps - Part 2: Reference Management Architectures",
+    "short_slug": "reference-managers",
+    "category_slug": "websites-apps",
+    "subcategory_slug": "reference-management",
+    "category_name": "Websites & Apps",
+    "subcategory_name": "Reference Management",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime art of a sun-drenched professor's office lined with mahogany bookshelves reaching the ceiling, an open laptop displaying an organized bibliography manager, stacks of marked academic manuscripts, warm golden afternoon light --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a quiet student reading in a university archive, highlighter in hand, a tablet open to an annotated scientific PDF, rain gently pattering against tall leaded windows, tranquil atmosphere --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of an antique wooden card catalog cabinet with its drawers open, transforming seamlessly into a glowing digital interface of indexed research cards, painterly warm lighting --ar 16:9",
+        "Studio Ghibli anime art, whimsical study nook overlooking an old European town square, laptop open to academic citation graphs, potted geraniums on the stone windowsill, cozy and intellectual --ar 16:9"
+    ]
+}

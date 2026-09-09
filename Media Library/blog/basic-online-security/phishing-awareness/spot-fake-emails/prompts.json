@@ -1,0 +1,15 @@
+{
+    "article_id": 37,
+    "title": "How to Spot Fake Emails and Suspicious Links Before Clicking",
+    "short_slug": "spot-fake-emails",
+    "category_slug": "basic-online-security",
+    "subcategory_slug": "phishing-awareness",
+    "category_name": "Basic Online Security",
+    "subcategory_name": "Phishing Awareness",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime illustration of an analytical detective's desk in a sunlit university tower, examining an envelope with a brass magnifying glass, an open laptop displaying email header diagnostics in glowing green code, soft warm lighting --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a quiet student reading an email on a laptop by a cozy hearth, a small stylized digital shield glowing softly over the screen, tea mug resting on a stack of research journals --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a library study desk, sunlight streaming across open postal letters and modern digital screens, highlighting dust motes, peaceful academic atmosphere --ar 16:9",
+        "Studio Ghibli anime art, close-up concept of hands carefully reviewing an academic invitation letter on heavy cream parchment, an ultrabook open beside it revealing a fake web address, cinematic warm lighting --ar 16:9"
+    ]
+}

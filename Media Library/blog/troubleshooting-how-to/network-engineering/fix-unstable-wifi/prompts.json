@@ -1,0 +1,15 @@
+{
+    "article_id": 48,
+    "title": "How to Fix Unstable Wi-Fi Connections and DNS Dropouts on Windows 11 and Mac",
+    "short_slug": "fix-unstable-wifi",
+    "category_slug": "troubleshooting-how-to",
+    "subcategory_slug": "network-engineering",
+    "category_name": "Troubleshooting & How-To",
+    "subcategory_name": "Network Engineering",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime illustration of an old weather observatory perched on a seaside cliff, an open laptop on a wooden desk displaying clean wireless network diagnostics, antennas outside humming quietly in the sea breeze --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of an electrician's workshop, intricate diagrams of wireless waves and radio frequencies drawn on parchment beside an open laptop running network tools, warm cozy lamplight --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a student working peacefully in an airy botanical sunroom, laptop showing stable high-speed data transfer bars, bright morning sunlight pouring through glass panes --ar 16:9",
+        "Studio Ghibli anime art, close-up concept of hands configuring network settings on a laptop keyboard, a miniature glowing router antenna softly casting amber light on an oak workbench, quiet atmosphere --ar 16:9"
+    ]
+}

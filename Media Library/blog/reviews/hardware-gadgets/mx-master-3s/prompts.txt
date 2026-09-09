@@ -1,0 +1,16 @@
+ARTICLE #47: Logitech MX Master 3S Review: Why It Is the Undisputed King of Productivity Mice
+SHORT SLUG: mx-master-3s
+CATEGORY: reviews > hardware-gadgets
+
+IMAGE 1:
+Studio Ghibli style, cinematic anime illustration of an engineer's high-tech wooden workstation, the sculpted dark gray Logitech mouse resting on a natural leather desk mat beside a mechanical keyboard, warm golden morning sunbeams --ar 16:9
+
+IMAGE 2:
+Studio Ghibli aesthetic, anime concept art of a quiet data scientist's study in the evening, fingers resting gracefully on a sculpted mouse while reviewing mathematical curves on a wide curved display, cozy lamplight --ar 16:9
+
+IMAGE 3:
+Studio Ghibli style, detailed anime watercolor of an architect's desk with rolled parchment blueprints, a modern mouse with a gleaming brass thumb wheel resting beside open drafting tools, calm artistic atmosphere --ar 16:9
+
+IMAGE 4:
+Studio Ghibli anime art, close-up concept of a hand effortlessly navigating a spreadsheet with an ergonomic mouse on a solid oak table, soft warm lighting, tea steam rising in the background, painterly textures --ar 16:9
+

@@ -1,0 +1,101 @@
+# Standard Search Engine Crawlers (Google, Bing, Yahoo, DuckDuckGo)
+User-agent: *
+Allow: /
+Allow: /article/
+Allow: /category/
+Allow: /search
+Allow: /blog/
+Allow: /sitemap
+Disallow: /ourcms/
+Disallow: /ourcms
+Disallow: /api/
+
+# Google Search
+User-agent: Googlebot
+Allow: /
+Allow: /article/
+Allow: /category/
+Allow: /blog/
+Allow: /sitemap
+Allow: /favicon.ico
+Allow: /favicon*.png
+Allow: /favicon.svg
+Allow: /logo*.png
+Allow: /apple-touch-icon.png
+Allow: /android-chrome*.png
+Allow: /site.webmanifest
+Allow: /storage/
+Disallow: /ourcms/
+Disallow: /ourcms
+Disallow: /api/
+
+# Google Images & Favicon Crawler
+User-agent: Googlebot-Image
+Allow: /
+Allow: /favicon.ico
+Allow: /favicon*.png
+Allow: /favicon.svg
+Allow: /logo*.png
+Allow: /apple-touch-icon.png
+Allow: /android-chrome*.png
+Allow: /site.webmanifest
+Allow: /storage/
+
+# Google AdSense & Advertising Crawlers
+User-agent: Mediapartners-Google
+Allow: /
+
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: AdsBot-Google-Mobile
+Allow: /
+
+# Google AI & Gemini Crawlers
+User-agent: Google-Extended
+Allow: /
+
+# OpenAI / ChatGPT Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic / Claude Crawlers
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Perplexity AI Search
+User-agent: PerplexityBot
+Allow: /
+
+# Apple AI & Search
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Cohere AI
+User-agent: cohere-ai
+Allow: /
+
+# Meta AI & Llama Crawlers
+User-agent: Meta-ExternalAgent
+Allow: /
+
+# Common Crawl & Frontier AI Pre-training
+User-agent: CCBot
+Allow: /
+
+# ByteDance / TikTok Search
+User-agent: Bytespider
+Allow: /
+
+# Sitemap & RSS Feeds
+Sitemap: https://rafvex.com/sitemap.xml
+Sitemap: https://rafvex.com/feed

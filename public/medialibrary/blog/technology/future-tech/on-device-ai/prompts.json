@@ -1,0 +1,15 @@
+{
+    "article_id": 51,
+    "title": "The Future of On-Device AI: How Neural Engines Are Changing Everyday Computing",
+    "short_slug": "on-device-ai",
+    "category_slug": "technology",
+    "subcategory_slug": "future-tech",
+    "category_name": "Technology",
+    "subcategory_name": "Future Tech",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime illustration of a futuristic greenhouse laboratory, a small transparent microchip glowing with delicate golden neural circuits resting on a cedar workbench beside blooming jasmine vines, warm afternoon sunlight --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a quiet student scholar on a hill overlooking a futuristic sustainable city, holding an ultraportable laptop running on-device intelligence without wires, soft whimsical clouds --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of an intricate silicon microprocessor drawing on parchment, displaying interconnected neural nodes styled like ancient constellation maps, warm lamplight --ar 16:9",
+        "Studio Ghibli anime art, close-up concept of a sleek laptop resting on an oak desk in a peaceful forest cabin, a soft green indicator light glowing gently beside the keyboard, serene intellectual atmosphere --ar 16:9"
+    ]
+}

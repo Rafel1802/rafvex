@@ -1,0 +1,15 @@
+{
+    "article_id": 10,
+    "title": "Essential Guide to AI Tools - Part 2: Visualizing Academic Literature Networks",
+    "short_slug": "lit-networks-ai",
+    "category_slug": "ai-tools",
+    "subcategory_slug": "literature-discovery",
+    "category_name": "AI Tools",
+    "subcategory_name": "Literature Discovery",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime illustration of an astronomy observatory study, a researcher gazing at an illuminated constellation map where stars are replaced by glowing academic papers connected by luminous threads, magical atmosphere --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of an expansive wooden archival library with spiral staircases, floating translucent network diagrams connecting leather-bound books, soft morning light pouring through stained glass --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a scholar tracing lines across an elaborate parchment network chart spread out on a large drafting table, brass compass, open notebooks, tranquil cozy studio --ar 16:9",
+        "Studio Ghibli anime art, whimsical study bench overlooking a rolling green valley at sunset, an open ultrabook displaying an intricate 3D node graph of scientific literature, warm golden hour glow --ar 16:9"
+    ]
+}

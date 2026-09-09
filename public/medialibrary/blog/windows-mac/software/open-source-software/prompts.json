@@ -1,0 +1,15 @@
+{
+    "article_id": 27,
+    "title": "The Best Free and Open Source Software Replacements for Everyday Work",
+    "short_slug": "open-source-software",
+    "category_slug": "windows-mac",
+    "subcategory_slug": "software",
+    "category_name": "Windows & Mac",
+    "subcategory_name": "Software",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime illustration of a welcoming community computer workshop, diverse scholars collaborating around wooden tables, laptops running vibrant open-source creative software, potted plants, sunlight streaming through tall brick windows --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of an artist's sunny attic studio, an open laptop displaying detailed vector illustrations of scientific diagrams, paintbrushes in ceramic pots, architectural sketches pinned to timber beams --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a tranquil university library reading room, students working on laptops using open software, rain softly falling against the glass, warm amber lighting --ar 16:9",
+        "Studio Ghibli anime art, close-up concept of hands assembling a multi-panel scientific figure on a monitor using open-source tools, wooden desktop, brass calipers, steaming mug of tea, warm painterly textures --ar 16:9"
+    ]
+}

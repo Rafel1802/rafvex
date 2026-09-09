@@ -1,0 +1,15 @@
+{
+    "article_id": 17,
+    "title": "Essential Guide to Basic Online Security - Part 3: Systematic Threat Modeling for Researchers",
+    "short_slug": "threat-modeling",
+    "category_slug": "basic-online-security",
+    "subcategory_slug": "threat-modeling",
+    "category_name": "Basic Online Security",
+    "subcategory_name": "Threat Modeling",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime illustration of an analytical war room in a tranquil mountain tower, detailed chalkboard displaying flowcharts and threat vectors, an open laptop casting a soft blue glow, warm sunlight breaking through stone battlements --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a quiet scholar contemplating chess pieces on an old wooden board next to open notebooks and modern encrypted tablets, warm amber lighting from a green desk lamp --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of an investigator's desk at midnight, dossiers tied with red ribbon, a hardened laptop running terminal diagnostics, a steaming cup of tea, calming rainy atmosphere outside --ar 16:9",
+        "Studio Ghibli anime art, whimsical concept of an invisible protective bubble shimmering gently over a rustic wooden study desk, shielding books and electronics from raindrops outside, soft painterly style --ar 16:9"
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "article_id": 3,
+    "title": "Essential Guide to Android & iPhone - Part 1: Encrypted Cross-Platform File Sharing",
+    "short_slug": "android-iphone-sync",
+    "category_slug": "android-iphone",
+    "subcategory_slug": "cross-platform-utilities",
+    "category_name": "Android & iPhone",
+    "subcategory_name": "Cross-Platform Utilities",
+    "prompts": [
+        "Studio Ghibli style, concept anime art of two distinct mobile devices resting on a wide oak drafting table, an Android phone and an iPhone with softly glowing blue data arcs pulsing between them, field maps and compass nearby, warm golden workshop lighting --ar 16:9",
+        "Studio Ghibli aesthetic, anime interior of a remote biological research station, an investigator reviewing tablet files by a rain-streaked window, antique botanical illustrations hung on the wood walls, cozy and intricate --ar 16:9",
+        "Studio Ghibli style, cinematic watercolor art of a field engineer's desk at twilight, modern phones connected via braided cables to a rugged portable router, soft lantern glow illuminating parchment notebooks and mechanical pencils --ar 16:9",
+        "Studio Ghibli anime art, close-up perspective of two smartphones transferring encrypted files wirelessly, a stylized translucent signal ripple over hand-drawn botanical sketches on a cedar desk, warm ambient lighting --ar 16:9"
+    ]
+}

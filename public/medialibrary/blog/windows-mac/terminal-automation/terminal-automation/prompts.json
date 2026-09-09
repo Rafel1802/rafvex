@@ -1,0 +1,15 @@
+{
+    "article_id": 7,
+    "title": "Essential Guide to Windows & Mac - Part 2: Terminal Automation for Researchers",
+    "short_slug": "terminal-automation",
+    "category_slug": "windows-mac",
+    "subcategory_slug": "terminal-automation",
+    "category_name": "Windows & Mac",
+    "subcategory_name": "Terminal & Automation",
+    "prompts": [
+        "Studio Ghibli style, anime concept art of a researcher's workbench illuminated by green terminal code cascading across a monitor, vintage mechanical keyboard, open notebooks, steam rising from a porcelain tea cup --ar 16:9",
+        "Studio Ghibli aesthetic, anime illustration of an old wooden archival study room, scrolls and books stacked on desks, a modern laptop displaying data automation scripts in progress, sunbeams through dusty windows --ar 16:9",
+        "Studio Ghibli anime style, cinematic watercolor art of a tranquil evening office, terminal window running automated file batch jobs, potted ferns beside the desk, glowing street lamps outside in the rain --ar 16:9",
+        "Studio Ghibli style, close-up concept art of fingers typing on a vintage tactile keyboard, handwritten regex formulas on index cards laid out across a polished walnut desk, warm cozy lighting --ar 16:9"
+    ]
+}

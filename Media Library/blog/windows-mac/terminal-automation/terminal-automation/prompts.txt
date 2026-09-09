@@ -1,0 +1,16 @@
+ARTICLE #7: Essential Guide to Windows & Mac - Part 2: Terminal Automation for Researchers
+SHORT SLUG: terminal-automation
+CATEGORY: windows-mac > terminal-automation
+
+IMAGE 1:
+Studio Ghibli style, anime concept art of a researcher's workbench illuminated by green terminal code cascading across a monitor, vintage mechanical keyboard, open notebooks, steam rising from a porcelain tea cup --ar 16:9
+
+IMAGE 2:
+Studio Ghibli aesthetic, anime illustration of an old wooden archival study room, scrolls and books stacked on desks, a modern laptop displaying data automation scripts in progress, sunbeams through dusty windows --ar 16:9
+
+IMAGE 3:
+Studio Ghibli anime style, cinematic watercolor art of a tranquil evening office, terminal window running automated file batch jobs, potted ferns beside the desk, glowing street lamps outside in the rain --ar 16:9
+
+IMAGE 4:
+Studio Ghibli style, close-up concept art of fingers typing on a vintage tactile keyboard, handwritten regex formulas on index cards laid out across a polished walnut desk, warm cozy lighting --ar 16:9
+

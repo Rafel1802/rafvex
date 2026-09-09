@@ -1,0 +1,16 @@
+ARTICLE #16: Essential Guide to Basic Online Security - Part 2: Hardware Security Key Deployment
+SHORT SLUG: hardware-security-keys
+CATEGORY: basic-online-security > multi-factor-authentication
+
+IMAGE 1:
+Studio Ghibli style, cinematic anime illustration of an engineer's workbench, a sleek matte-black hardware key inserted into the side of an aluminum laptop, glowing with a soft golden ring indicator, warm sunlight cutting through morning mist --ar 16:9
+
+IMAGE 2:
+Studio Ghibli aesthetic, anime concept art of a mechanical cryptographic vault, intricate miniature brass gears enclosing a tiny glowing microchip, blueprints unrolled on a solid oak table, cinematic painterly lighting --ar 16:9
+
+IMAGE 3:
+Studio Ghibli style, detailed anime watercolor of a scholar touching the golden contact of a YubiKey on a laptop, surrounded by open research dossiers and botanical sketches, quiet evening atmosphere --ar 16:9
+
+IMAGE 4:
+Studio Ghibli anime art, close-up concept art of a small key tray beside a computer monitor, two hardware keys resting neatly on polished walnut wood, warm ambient lamp light, delicate shadows --ar 16:9
+

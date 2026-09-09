@@ -1,0 +1,10 @@
+#!/usr/bin/expect -f
+set timeout 20
+spawn ssh -p 65002 -o StrictHostKeyChecking=no u881038410@145.79.25.215 "ls -la; echo 'DOMAINS:'; ls -la domains/"
+expect {
+    "password:" {
+        send "Mvm@168$\r"
+        exp_continue
+    }
+    eof
+}

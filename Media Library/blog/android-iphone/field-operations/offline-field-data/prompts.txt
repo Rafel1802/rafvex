@@ -1,0 +1,16 @@
+ARTICLE #5: Essential Guide to Android & iPhone - Part 3: Offline Field Research Telemetry
+SHORT SLUG: offline-field-data
+CATEGORY: android-iphone > field-operations
+
+IMAGE 1:
+Studio Ghibli style, cinematic anime illustration of a field expedition tent pitched on a misty alpine ridge at dawn, a rugged smartphone displaying an offline topographic vector map propped against a brass water canteen, watercolor skies --ar 16:9
+
+IMAGE 2:
+Studio Ghibli aesthetic, anime concept art of a researcher sitting on a mossy log deep inside an ancient forest, checking coordinates on a handheld GPS device, dappled sunbeams breaking through tall ancient cedar trees --ar 16:9
+
+IMAGE 3:
+Studio Ghibli style, detailed interior of an expedition base camp wooden hut, charging solar panels connected to mobile field devices, hand-drawn topographic maps pinned to timber walls, steaming tea kettle on a wood stove --ar 16:9
+
+IMAGE 4:
+Studio Ghibli anime art, golden hour landscape of an open grassland survey, a researcher holding a ruggedized tablet charting botanical waypoints, wildflowers swaying in the breeze, vibrant painterly clouds --ar 16:9
+

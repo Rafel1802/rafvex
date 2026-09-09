@@ -1,0 +1,15 @@
+{
+    "article_id": 18,
+    "title": "Essential Guide to AI for Students & Work - Part 1: Academic Integrity & AI Policies",
+    "short_slug": "ai-academic-integrity",
+    "category_slug": "ai-for-students-work",
+    "subcategory_slug": "academic-integrity",
+    "category_name": "AI for Students & Work",
+    "subcategory_name": "Academic Integrity",
+    "prompts": [
+        "Studio Ghibli style, cinematic anime art of a historic university examination hall, sunlight streaming through tall stained-glass windows onto rows of wooden desks, a student writing with a fountain pen next to an open laptop displaying transparent citation notes --ar 16:9",
+        "Studio Ghibli aesthetic, anime concept art of a professor's office lined with ancient encyclopedias, an hourglass on the desk next to a digital screen showing transparent research disclosure forms, warm academic ambiance --ar 16:9",
+        "Studio Ghibli style, detailed anime watercolor of a graduate student reviewing their thesis in a cozy botanical study corner, binder clips, sticky notes, and a laptop displaying structured git commit histories --ar 16:9",
+        "Studio Ghibli anime art, close-up of a student signing a thesis pledge certificate with an ink pen on a heavy oak desk, glowing computer screen in the soft background, warm golden hour light --ar 16:9"
+    ]
+}
