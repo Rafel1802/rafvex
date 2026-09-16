@@ -3,9 +3,16 @@ User-agent: *
 Allow: /
 Allow: /article/
 Allow: /category/
+Allow: /news/
+Allow: /podcasts
+Allow: /podcast/
+Allow: /popular
 Allow: /search
 Allow: /blog/
 Allow: /sitemap
+Allow: /feed
+Allow: /rss.xml
+Allow: /llms.txt
 Disallow: /ourcms/
 Disallow: /ourcms
 Disallow: /api/
@@ -15,6 +22,9 @@ User-agent: Googlebot
 Allow: /
 Allow: /article/
 Allow: /category/
+Allow: /news/
+Allow: /podcasts
+Allow: /podcast/
 Allow: /blog/
 Allow: /sitemap
 Allow: /favicon.ico

@@ -188,8 +188,91 @@ class HandleInertiaRequests extends Middleware
             $activePopupAd = \App\Models\PopupAd::active()->latest()->first();
         } catch (\Throwable $e) {}
 
+        // Fetch active breaking news & blogs (for sliding header ticker)
+        $breakingItems = [];
+        try {
+            $breakingItems = cache()->remember('active_breaking_items', 30, function () {
+                $items = collect();
+
+                // 1. Breaking News
+                try {
+                    $newsItems = \App\Models\News::query()
+                        ->where('status', 'published')
+                        ->where('is_breaking', true)
+                        ->where(function ($q) {
+                            try {
+                                if (\Illuminate\Support\Facades\Schema::hasColumn('news', 'breaking_until')) {
+                                    $q->whereNull('breaking_until')
+                                      ->orWhere('breaking_until', '>=', now());
+                                }
+                            } catch (\Throwable $e) {}
+                        })
+                        ->orderByRaw('COALESCE(published_at, created_at) DESC')
+                        ->take(5)
+                        ->get(['id', 'title', 'slug', 'summary', 'is_breaking', 'breaking_until', 'published_at', 'created_at']);
+
+                    foreach ($newsItems as $n) {
+                        if (!empty($n->title) && !empty($n->slug)) {
+                            $items->push([
+                                'id' => 'news_' . $n->id,
+                                'title' => (string) $n->title,
+                                'slug' => (string) $n->slug,
+                                'type' => 'news',
+                                'url' => '/news/' . $n->slug,
+                                'badge' => 'BREAKING',
+                                'published_at' => $n->published_at?->toISOString() ?? $n->created_at?->toISOString(),
+                            ]);
+                        }
+                    }
+                } catch (\Throwable $e) {}
+
+                // 2. Breaking Articles / Blogs
+                try {
+                    if (\Illuminate\Support\Facades\Schema::hasColumn('articles', 'is_breaking')) {
+                        $articleItems = \App\Models\Article::query()
+                            ->where('status', 'published')
+                            ->where('is_breaking', true)
+                            ->where(function ($q) {
+                                try {
+                                    if (\Illuminate\Support\Facades\Schema::hasColumn('articles', 'breaking_until')) {
+                                        $q->whereNull('breaking_until')
+                                          ->orWhere('breaking_until', '>=', now());
+                                    }
+                                } catch (\Throwable $e) {}
+                            })
+                            ->orderByRaw('COALESCE(published_at, created_at) DESC')
+                            ->take(5)
+                            ->get(['id', 'title', 'slug', 'excerpt', 'is_breaking', 'breaking_until', 'published_at', 'created_at']);
+
+                        foreach ($articleItems as $a) {
+                            if (!empty($a->title) && !empty($a->slug)) {
+                                $items->push([
+                                    'id' => 'article_' . $a->id,
+                                    'title' => (string) $a->title,
+                                    'slug' => (string) $a->slug,
+                                    'type' => 'article',
+                                    'url' => '/article/' . $a->slug,
+                                    'badge' => 'BREAKING',
+                                    'published_at' => $a->published_at?->toISOString() ?? $a->created_at?->toISOString(),
+                                ]);
+                            }
+                        }
+                    }
+                } catch (\Throwable $e) {}
+
+                // Plain PHP array guarantees ZERO Eloquent incomplete class serialization issue
+                return $items->values()->toArray();
+            });
+        } catch (\Throwable $e) {
+            $breakingItems = [];
+        }
+
+        $activeBreakingNews = !empty($breakingItems) ? $breakingItems[0] : null;
+
         return [
             ...parent::share($request),
+            'active_breaking_news' => $activeBreakingNews,
+            'breaking_items' => $breakingItems,
             'auth' => [
                 'user' => $request->user() ? [
                     'id'                         => $request->user()->id,

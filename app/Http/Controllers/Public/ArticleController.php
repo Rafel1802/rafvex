@@ -11,16 +11,16 @@ class ArticleController extends Controller
 {
     public function show($slug)
     {
-        $article = Article::with(['category', 'author.profile', 'tags', 'comments' => function ($q) {
-            $q->whereNull('parent_id')
-              ->where('status', 'approved')
-              ->with(['replies' => function ($q) {
-                  $q->where('status', 'approved')->orderBy('created_at', 'asc');
-              }])
-              ->orderBy('created_at', 'desc');
-        }])
+        $article = Article::published()
+            ->with(['category', 'author.profile', 'tags', 'playlist', 'comments' => function ($q) {
+                $q->whereNull('parent_id')
+                  ->where('status', 'approved')
+                  ->with(['replies' => function ($q) {
+                      $q->where('status', 'approved')->orderBy('created_at', 'asc');
+                  }])
+                  ->orderBy('created_at', 'desc');
+            }])
             ->where('slug', $slug)
-            ->where('status', 'published')
             ->firstOrFail();
 
         // Increment views with session deduplication to record genuine, real reader visits
@@ -30,57 +30,80 @@ class ArticleController extends Controller
             session()->put($sessionKey, now()->timestamp);
         }
 
-        // Related stories in same category
-        $related = Article::with(['category', 'author'])
-            ->where('category_id', $article->category_id)
+        // Contextual related articles based on category or tags
+        $related = Article::published()
+            ->with(['category', 'author'])
             ->where('id', '!=', $article->id)
-            ->where('status', 'published')
+            ->where('category_id', $article->category_id)
             ->latest('published_at')
-            ->take(4)
+            ->take(3)
             ->get();
 
-        if ($related->count() < 4) {
-            $extra = Article::with(['category', 'author'])
+        // Fallback: If not enough related articles in same category, grab latest from other categories
+        if ($related->count() < 3) {
+            $extra = Article::published()
+                ->with(['category', 'author'])
                 ->where('id', '!=', $article->id)
-                ->where('status', 'published')
                 ->whereNotIn('id', $related->pluck('id'))
                 ->latest('published_at')
-                ->take(4 - $related->count())
+                ->take(3 - $related->count())
                 ->get();
             $related = $related->concat($extra);
         }
 
-        // Trending stories across publication for sidebar ranking
-        $trending = Article::with(['category', 'author'])
-            ->where('id', '!=', $article->id)
-            ->where('status', 'published')
+        // Top 5 Popular Articles across publication (strictly matching /popular query logic)
+        $popularArticles = Article::published()
+            ->with(['category', 'author.profile'])
             ->orderBy('views_count', 'desc')
             ->latest('published_at')
             ->take(5)
             ->get();
 
-        // Topic Cluster Playlist (Pillar + companion sub-blogs in the same cluster/subcategory)
-        $clusterQuery = Article::select(['id', 'title', 'slug', 'category_id', 'reading_time', 'featured', 'published_at'])
-            ->where('status', 'published');
+        // Trending stories across publication for secondary sidebar usage
+        $trending = $popularArticles;
 
-        if ($article->category_id) {
-            $clusterQuery->where('category_id', $article->category_id);
-        }
+        // Custom Playlist / Series if assigned, else Topic Cluster Playlist
+        $playlistTitle = null;
+        $clusterPlaylist = collect();
 
-        $clusterPlaylist = $clusterQuery->orderBy('id', 'asc')->get();
-
-        if ($clusterPlaylist->count() < 3 && $article->category && $article->category->parent_id) {
-            $siblingCatIds = \App\Models\Category::where('parent_id', $article->category->parent_id)->pluck('id');
-            $clusterPlaylist = Article::select(['id', 'title', 'slug', 'category_id', 'reading_time', 'featured', 'published_at'])
-                ->where('status', 'published')
-                ->whereIn('category_id', $siblingCatIds)
+        if ($article->playlist_id) {
+            $clusterPlaylist = Article::published()
+                ->select(['id', 'title', 'slug', 'category_id', 'playlist_id', 'playlist_order', 'reading_time', 'featured', 'published_at'])
+                ->where('playlist_id', $article->playlist_id)
+                ->orderBy('playlist_order', 'asc')
                 ->orderBy('id', 'asc')
                 ->get();
+
+            if ($clusterPlaylist->isNotEmpty()) {
+                $playlistTitle = $article->playlist?->title ?: 'Series Playlist';
+            }
+        }
+
+        if ($clusterPlaylist->isEmpty()) {
+            $clusterQuery = Article::published()
+                ->select(['id', 'title', 'slug', 'category_id', 'reading_time', 'featured', 'published_at']);
+
+            if ($article->category_id) {
+                $clusterQuery->where('category_id', $article->category_id);
+            }
+
+            $clusterPlaylist = $clusterQuery->orderBy('id', 'asc')->get();
+
+            if ($clusterPlaylist->count() < 3 && $article->category && $article->category->parent_id) {
+                $siblingCatIds = \App\Models\Category::where('parent_id', $article->category->parent_id)->pluck('id');
+                $clusterPlaylist = Article::published()
+                    ->select(['id', 'title', 'slug', 'category_id', 'reading_time', 'featured', 'published_at'])
+                    ->whereIn('category_id', $siblingCatIds)
+                    ->orderBy('id', 'asc')
+                    ->get();
+            }
+
+            $playlistTitle = 'Cluster Playlist';
         }
 
         // Curated / Featured Categories for Left Sidebar
         $sidebarCategories = \App\Models\Category::whereNull('parent_id')
-            ->withCount(['articles' => fn($q) => $q->where('status', 'published')])
+            ->withCount(['articles' => fn($q) => $q->published()])
             ->where('status', 'active')
             ->orderBy('featured', 'desc')
             ->orderBy('sort_order', 'asc')
@@ -98,7 +121,9 @@ class ArticleController extends Controller
             'article' => $article,
             'related' => $related,
             'trending' => $trending,
+            'popularArticles' => $popularArticles,
             'clusterPlaylist' => $clusterPlaylist,
+            'playlistTitle' => $playlistTitle,
             'sidebarCategories' => $sidebarCategories,
             'popularTags' => $popularTags,
         ]);

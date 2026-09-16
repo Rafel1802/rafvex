@@ -133,16 +133,13 @@ export default function Maintenance({ title, message, end_time, progress, logo }
       <Head>
         <title>{`${displayTitle} — ${siteName}`}</title>
         <meta name="description" content="Rafvex is currently undergoing scheduled maintenance and system upgrades." />
-        <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
-        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
-        <link rel="icon" type="image/png" sizes="144x144" href="/favicon-144x144.png" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png?v=2" head-key="favicon-48" />
+        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png?v=2" head-key="favicon-96" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png?v=2" head-key="favicon-192" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png?v=2" head-key="favicon-512" />
+        <link rel="icon" href="/favicon.ico?v=2" sizes="48x48 32x32 16x16" head-key="favicon-ico" />
+        <link rel="shortcut icon" href="/favicon.ico?v=2" head-key="favicon-shortcut" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" head-key="apple-touch-icon" />
       </Head>
 
       {/* ── Soft Ambient Glow Background Orbs (Light Red Theme) ── */}

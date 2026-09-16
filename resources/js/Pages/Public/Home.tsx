@@ -294,6 +294,7 @@ export default function Home({
   storyStories: propStoryStories,
   troubleshootingStories: propTroubleshootingStories,
   latest, 
+  latestStories: propLatestStories,
   topCategories,
   homeSections,
   spotlightMain,
@@ -302,6 +303,11 @@ export default function Home({
 }: any) {
   const safeFeatured = Array.isArray(featured) ? featured : (featured && typeof featured === 'object' ? Object.values(featured) : []);
   const safeLatest = Array.isArray(latest) ? latest : (latest && typeof latest === 'object' ? Object.values(latest) : []);
+  const safeLatestStories = Array.isArray(propLatestStories) && propLatestStories.length > 0
+    ? propLatestStories
+    : (propLatestStories && typeof propLatestStories === 'object' && Object.values(propLatestStories).length > 0
+        ? Object.values(propLatestStories)
+        : safeLatest);
   const safeTopCategories = Array.isArray(topCategories) ? topCategories : (topCategories && typeof topCategories === 'object' ? Object.values(topCategories) : []);
 
   const leadStory = propLeadStory || safeFeatured[0] || safeLatest[0];
@@ -413,6 +419,7 @@ export default function Home({
   const isLatestEnabled = latestConfig.enabled ?? true;
   const latestTitle = latestConfig.title || 'Latest Published Stories';
   const latestSubtitle = latestConfig.subtitle || 'Fresh knowledge, breakdowns, and verified guides released by our editorial desk';
+  const latestLimit = Number(latestConfig.limit) > 0 ? Number(latestConfig.limit) : 10;
 
   const displaySpotlightMain = spotlightMain || aiArticles[0] || safeLatest[0];
   const candidateSpotlightSubs = [
@@ -496,8 +503,6 @@ export default function Home({
         <meta name="twitter:title" content={`${siteName} — ${siteTagline}`} />
         <meta name="twitter:description" content={siteDescription} />
         <meta name="twitter:image" content={siteLogo} />
-        <link rel="icon" type="image/png" href={siteLogo} />
-        <link rel="apple-touch-icon" href={siteLogo} />
         <link rel="image_src" href={siteLogo} />
       </Head>
 
@@ -880,43 +885,52 @@ export default function Home({
                 />
 
                 <div className="space-y-6">
-                  {safeLatest.slice(0, 10).map((art: any) => (
-                    <Link
-                      key={art.id}
-                      href={`/article/${art.slug}`}
-                      className="group flex flex-col sm:flex-row gap-5 pb-6 border-b border-slate-100 dark:border-slate-800 last:border-b-0 hover:bg-slate-50/50 dark:hover:bg-slate-900/60 p-2 rounded-xl transition-all"
-                    >
-                      <div className="w-full sm:w-48 h-40 sm:h-32 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
-                        <ArticleImage src={art.cover_image_url} alt={art.title} />
-                      </div>
-                      <div className="flex-1 min-w-0 flex flex-col justify-between">
-                        <div>
-                          {art.category && (
-                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-red-600 dark:text-red-400 mb-1 block">
-                              {art.category.name}
-                            </span>
-                          )}
-                          <h3
-                            style={{ fontFamily: "'Outfit', sans-serif" }}
-                            className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors line-clamp-2 leading-snug mb-2"
-                          >
-                            {art.title}
-                          </h3>
-                          {art.excerpt && (
-                            <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed mb-3">
-                              {art.excerpt}
-                            </p>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-3 text-xs text-slate-400 dark:text-slate-500">
-                          {art.published_at && (
-                            <span>{format(new Date(art.published_at), 'MMM d, yyyy')}</span>
-                          )}
-                          <ReadingTime minutes={art.reading_time} />
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
+                  {safeLatestStories.length === 0 ? (
+                    <div className="p-8 text-center rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm text-slate-500 dark:text-slate-400">
+                      No articles published yet. Check back soon!
+                    </div>
+                  ) : (
+                    safeLatestStories.slice(0, latestLimit).map((art: any) => {
+                      const displayDate = art.published_at || art.created_at;
+                      return (
+                        <Link
+                          key={art.id}
+                          href={`/article/${art.slug}`}
+                          className="group flex flex-col sm:flex-row gap-5 pb-6 border-b border-slate-100 dark:border-slate-800 last:border-b-0 hover:bg-slate-50/50 dark:hover:bg-slate-900/60 p-2 rounded-xl transition-all"
+                        >
+                          <div className="w-full sm:w-48 h-40 sm:h-32 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
+                            <ArticleImage src={art.cover_image_url} alt={art.title} />
+                          </div>
+                          <div className="flex-1 min-w-0 flex flex-col justify-between">
+                            <div>
+                              {art.category && (
+                                <span className="text-[10px] font-extrabold uppercase tracking-wider text-red-600 dark:text-red-400 mb-1 block">
+                                  {art.category.name}
+                                </span>
+                              )}
+                              <h3
+                                style={{ fontFamily: "'Outfit', sans-serif" }}
+                                className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors line-clamp-2 leading-snug mb-2"
+                              >
+                                {art.title}
+                              </h3>
+                              {art.excerpt && (
+                                <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed mb-3">
+                                  {art.excerpt}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-3 text-xs text-slate-400 dark:text-slate-500">
+                              {displayDate && (
+                                <span>{format(new Date(displayDate), 'MMM d, yyyy')}</span>
+                              )}
+                              <ReadingTime minutes={art.reading_time} />
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    })
+                  )}
                 </div>
               </div>
             )}

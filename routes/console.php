@@ -25,3 +25,5 @@ Artisan::command('stories:pin {--lead=} {--featured=} {--trending=} {--reset} {-
 
     passthru($cmd);
 })->purpose('Manage pinned Top Featured and Trending stories via CLI / SSH');
+
+\Illuminate\Support\Facades\Schedule::command('articles:publish-scheduled')->everyMinute();

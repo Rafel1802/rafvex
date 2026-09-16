@@ -3,14 +3,30 @@ import { Head, Link, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Button } from '@/Components/ui/Button';
 import { Input } from '@/Components/ui/Input';
-import TiptapEditor from '@/Components/Editor/TiptapEditor';
+import TiptapEditor, { uploadAllBase64ImagesInHtml } from '@/Components/Editor/TiptapEditor';
 import VideoEmbed from '@/Components/VideoEmbed';
-import { ArrowLeft, Save, Radio, Video, ExternalLink, Image as ImageIcon, Trash2, Globe, Clock, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Save, Radio, Video, ExternalLink, Image as ImageIcon, Trash2, Globe, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+
+function formatForDateTimeLocal(dateStr?: string | null): string {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return '';
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  } catch {
+    return '';
+  }
+}
 
 export default function Edit({ auth, news }: any) {
   const [imagePreview, setImagePreview] = useState(news?.cover_image_url || '');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isOptimizingMedia, setIsOptimizingMedia] = useState(false);
+  const [breakingMode, setBreakingMode] = useState<'forever' | 'until_date'>(
+    news?.breaking_until ? 'until_date' : 'forever'
+  );
 
   const handleDeleteNews = () => {
     setIsDeleting(true);
@@ -33,7 +49,7 @@ export default function Edit({ auth, news }: any) {
     return news?.content || news?.content_raw || '';
   }, [news?.content, news?.content_raw]);
 
-  const { data, setData, put, processing, errors } = useForm({
+  const { data, setData, put, processing, errors, transform } = useForm({
     title: news.title || '',
     slug: news.slug || '',
     summary: news.summary || '',
@@ -45,12 +61,43 @@ export default function Edit({ auth, news }: any) {
     source: news.source || 'Rafvex News Wire',
     source_url: news.source_url || '',
     is_breaking: Boolean(news.is_breaking),
+    breaking_until: news.breaking_until ? formatForDateTimeLocal(news.breaking_until) : '',
     status: news.status || 'published',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    put(`/ourcms/news/${news.id}`);
+
+    let contentToSubmit = data.content;
+    let contentRawToSubmit = data.content_raw;
+
+    if (contentToSubmit && contentToSubmit.includes('data:image/')) {
+      setIsOptimizingMedia(true);
+      try {
+        const result = await uploadAllBase64ImagesInHtml(contentToSubmit, contentRawToSubmit);
+        contentToSubmit = result.html;
+        contentRawToSubmit = result.rawJson || '';
+        setData((prev) => ({
+          ...prev,
+          content: result.html,
+          content_raw: result.rawJson || '',
+        }));
+      } catch (err) {
+        console.error('Image pre-save optimization error:', err);
+      } finally {
+        setIsOptimizingMedia(false);
+      }
+    }
+
+    transform((d) => ({
+      ...d,
+      content: contentToSubmit,
+      content_raw: contentRawToSubmit,
+    }));
+
+    put(`/ourcms/news/${news.id}`, {
+      onFinish: () => setIsOptimizingMedia(false),
+    });
   };
 
   return (
@@ -97,8 +144,9 @@ export default function Edit({ auth, news }: any) {
             >
               <ExternalLink size={14} /> Preview Live
             </a>
-            <Button type="submit" isLoading={processing}>
-              <Save size={14} className="mr-1.5" /> Save Changes
+            <Button type="submit" isLoading={processing || isOptimizingMedia} disabled={processing || isOptimizingMedia}>
+              <Save size={14} className="mr-1.5" />
+              {isOptimizingMedia ? 'Optimizing Media...' : processing ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
         </div>
@@ -184,8 +232,9 @@ export default function Edit({ auth, news }: any) {
               >
                 <ExternalLink size={14} /> Preview Live
               </a>
-              <Button type="submit" isLoading={processing} className="shadow-xs">
-                <Save size={14} className="mr-1.5" /> Save Changes
+              <Button type="submit" isLoading={processing || isOptimizingMedia} disabled={processing || isOptimizingMedia} className="shadow-xs">
+                <Save size={14} className="mr-1.5" />
+                {isOptimizingMedia ? 'Optimizing Media...' : processing ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
 
@@ -212,20 +261,26 @@ export default function Edit({ auth, news }: any) {
               </div>
             </div>
 
-            {/* 2. Breaking News Alert Toggle */}
-            <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            {/* 2. Breaking News Alert Toggle & Duration */}
+            <div className={`p-5 rounded-2xl border transition-all ${
+              data.is_breaking 
+                ? 'bg-red-50/40 dark:bg-red-950/20 border-red-200 dark:border-red-900/60 shadow-sm' 
+                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-xs'
+            }`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <span className="flex h-3 w-3 relative">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
+                    {data.is_breaking && (
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                    )}
+                    <span className={`relative inline-flex rounded-full h-3 w-3 ${data.is_breaking ? 'bg-red-600' : 'bg-slate-300 dark:bg-slate-600'}`}></span>
                   </span>
                   <div>
                     <span className="text-xs font-bold text-red-700 dark:text-red-400 block uppercase tracking-wider">
                       Breaking News Alert
                     </span>
                     <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                      Streams on the red wire banner
+                      Displays in top sub-header &amp; news ticker
                     </span>
                   </div>
                 </div>
@@ -233,12 +288,158 @@ export default function Edit({ auth, news }: any) {
                   <input
                     type="checkbox"
                     checked={data.is_breaking}
-                    onChange={(e) => setData('is_breaking', e.target.checked)}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setData((prev) => ({
+                        ...prev,
+                        is_breaking: checked,
+                        breaking_until: checked ? prev.breaking_until : '',
+                      }));
+                    }}
                     className="sr-only peer"
                   />
                   <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
                 </label>
               </div>
+
+              {/* Breaking Duration Selector (Forever vs. Specific Date) */}
+              {data.is_breaking && (
+                <div className="mt-4 pt-4 border-t border-red-100 dark:border-red-900/40 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                      Alert Duration
+                    </label>
+                    <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                      Choose when this alert ends
+                    </span>
+                  </div>
+
+                  {/* Mode Radios: Forever vs. Specific Date */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setBreakingMode('forever');
+                        setData('breaking_until', '');
+                      }}
+                      className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                        breakingMode === 'forever' || !data.breaking_until
+                          ? 'bg-white dark:bg-slate-800 border-red-500 ring-2 ring-red-500/20 shadow-xs'
+                          : 'bg-slate-50/70 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                      }`}
+                    >
+                      <div className={`w-4 h-4 rounded-full border mt-0.5 flex items-center justify-center shrink-0 ${
+                        breakingMode === 'forever' || !data.breaking_until
+                          ? 'border-red-600 bg-red-600 text-white'
+                          : 'border-slate-300 dark:border-slate-600'
+                      }`}>
+                        {(breakingMode === 'forever' || !data.breaking_until) && (
+                          <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                        )}
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-slate-900 dark:text-white">Forever</div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                          Active until manually toggled off
+                        </div>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setBreakingMode('until_date');
+                        if (!data.breaking_until) {
+                          const d = new Date(Date.now() + 24 * 3600 * 1000);
+                          const pad = (n: number) => String(n).padStart(2, '0');
+                          setData('breaking_until', `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`);
+                        }
+                      }}
+                      className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                        breakingMode === 'until_date' && Boolean(data.breaking_until)
+                          ? 'bg-white dark:bg-slate-800 border-red-500 ring-2 ring-red-500/20 shadow-xs'
+                          : 'bg-slate-50/70 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                      }`}
+                    >
+                      <div className={`w-4 h-4 rounded-full border mt-0.5 flex items-center justify-center shrink-0 ${
+                        breakingMode === 'until_date' && Boolean(data.breaking_until)
+                          ? 'border-red-600 bg-red-600 text-white'
+                          : 'border-slate-300 dark:border-slate-600'
+                      }`}>
+                        {breakingMode === 'until_date' && Boolean(data.breaking_until) && (
+                          <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                        )}
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-slate-900 dark:text-white">Until Date &amp; Time</div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                          Auto-expires on chosen schedule
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* Past expiration status notice */}
+                  {news?.breaking_until && new Date(news.breaking_until).getTime() < Date.now() && (
+                    <div className="text-[11px] text-amber-700 dark:text-amber-400 flex items-center gap-1.5 font-medium bg-amber-50 dark:bg-amber-950/40 p-2.5 rounded-xl border border-amber-200 dark:border-amber-900/50">
+                      <AlertCircle size={14} className="shrink-0" />
+                      <span>This alert previously expired on {new Date(news.breaking_until).toLocaleString()}. Choose a new future date or switch to Forever to reactivate.</span>
+                    </div>
+                  )}
+
+                  {/* Date Picker & Quick Presets (When until_date is selected) */}
+                  {(breakingMode === 'until_date' || Boolean(data.breaking_until)) && (
+                    <div className="space-y-2 pt-1">
+                      <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                        Expires At (Date &amp; Time)
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={data.breaking_until}
+                        onChange={(e) => {
+                          setData('breaking_until', e.target.value);
+                          if (e.target.value) {
+                            setBreakingMode('until_date');
+                          }
+                        }}
+                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white font-medium"
+                      />
+
+                      {/* Quick Duration Shortcuts */}
+                      <div className="pt-1">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
+                          Quick Presets:
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {[
+                            { label: '+2 Hours', hours: 2 },
+                            { label: '+6 Hours', hours: 6 },
+                            { label: '+12 Hours', hours: 12 },
+                            { label: '+24 Hours (1 Day)', hours: 24 },
+                            { label: '+3 Days', hours: 72 },
+                            { label: '+7 Days', hours: 168 },
+                          ].map((preset) => (
+                            <button
+                              key={preset.label}
+                              type="button"
+                              onClick={() => {
+                                const target = new Date(Date.now() + preset.hours * 3600 * 1000);
+                                const pad = (n: number) => String(n).padStart(2, '0');
+                                const val = `${target.getFullYear()}-${pad(target.getMonth() + 1)}-${pad(target.getDate())}T${pad(target.getHours())}:${pad(target.getMinutes())}`;
+                                setBreakingMode('until_date');
+                                setData('breaking_until', val);
+                              }}
+                              className="px-2 py-1 text-[11px] font-semibold rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-red-500 hover:text-red-600 dark:hover:text-red-400 text-slate-700 dark:text-slate-300 transition-colors shadow-2xs cursor-pointer"
+                            >
+                              {preset.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* 3. Featured Cover Photo */}

@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Head, Link, usePage, router } from '@inertiajs/react';
 import {
   LayoutDashboard, FileText, FolderOpen, Image as ImageIcon, Settings, LogOut,
   ChevronDown, ChevronRight, ChevronLeft, MessageSquare, Plus, Globe, Search, Bell,
   Menu, X, User, ExternalLink, ShieldCheck, Check, TriangleAlert,
   Sun, Moon, Users, Pin, UserCheck, Mail, Megaphone, Contact, Radio,
-  LayoutGrid, Sliders
+  LayoutGrid, Sliders, Headphones, ListMusic
 } from 'lucide-react';
 
 const CMS_NAV = [
@@ -15,12 +16,14 @@ const CMS_NAV = [
       { name: 'Dashboard', icon: LayoutDashboard, href: '/ourcms/dashboard' },
       { name: 'Articles', icon: FileText, href: '/ourcms/articles' },
       { name: 'New Article', icon: Plus, href: '/ourcms/articles/create' },
+      { name: 'Playlists', icon: ListMusic, href: '/ourcms/playlists' },
+      { name: 'Podcasts', icon: Headphones, href: '/ourcms/podcasts' },
+      { name: 'Podcast Categories', icon: FolderOpen, href: '/ourcms/podcast-categories' },
       { name: 'Newsroom', icon: Radio, href: '/ourcms/news' },
       { name: 'Post News', icon: Plus, href: '/ourcms/news/create' },
       { name: 'Categories', icon: FolderOpen, href: '/ourcms/categories' },
       { name: 'Media Library', icon: ImageIcon, href: '/ourcms/media' },
       { name: 'Authors', icon: UserCheck, href: '/ourcms/authors' },
-      { name: 'Pinned Stories', icon: Pin, href: '/ourcms/pinned' },
       { name: 'Home Sections', icon: Sliders, href: '/ourcms/home-sections' },
       { name: 'Home Ads', icon: LayoutGrid, href: '/ourcms/home-ads' },
       { name: 'Pop up ads', icon: Megaphone, href: '/ourcms/popup-ads' },
@@ -79,7 +82,12 @@ export default function AdminLayout({ children, auth }: AdminLayoutProps) {
 
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('rafvex_sidebar_collapsed') === 'true';
+    }
+    return false;
+  });
   const [hoveredNav, setHoveredNav] = useState<string | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ left: number; top: number; text: string } | null>(null);
   const [dismissedFlash, setDismissedFlash] = useState(false);
@@ -94,16 +102,17 @@ export default function AdminLayout({ children, auth }: AdminLayoutProps) {
     }
   }, [user?.id]);
 
-  const showTooltip = (e: React.MouseEvent, text: string) => {
-    if (isCollapsed) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      setTooltipPos({
-        left: rect.right + 12,
-        top: rect.top + rect.height / 2,
-        text,
-      });
-      setHoveredNav(text);
-    }
+  const showTooltip = (e: React.MouseEvent | React.FocusEvent, text: string) => {
+    if (!isCollapsed || typeof window === 'undefined') return;
+    const target = (e.currentTarget as HTMLElement) || (e.target as HTMLElement);
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    setTooltipPos({
+      left: rect.right + 10,
+      top: rect.top + rect.height / 2,
+      text,
+    });
+    setHoveredNav(text);
   };
 
   const hideTooltip = () => {
@@ -402,15 +411,13 @@ export default function AdminLayout({ children, auth }: AdminLayoutProps) {
       color: isDark ? '#f8fafc' : '#1e293b',
     }}>
       <Head>
-        <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
-        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
-        <link rel="icon" type="image/png" sizes="144x144" href="/favicon-144x144.png" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
-        <link rel="icon" type="image/png" sizes="576x576" href="/favicon.png" />
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png?v=2" head-key="favicon-48" />
+        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png?v=2" head-key="favicon-96" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png?v=2" head-key="favicon-192" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png?v=2" head-key="favicon-512" />
+        <link rel="icon" href="/favicon.ico?v=2" sizes="48x48 32x32 16x16" head-key="favicon-ico" />
+        <link rel="shortcut icon" href="/favicon.ico?v=2" head-key="favicon-shortcut" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" head-key="apple-touch-icon" />
       </Head>
       
       {/* ── Mobile Overlay ── */}
@@ -464,12 +471,14 @@ export default function AdminLayout({ children, auth }: AdminLayoutProps) {
           onMouseEnter={e => {
             e.currentTarget.style.borderColor = '#dc2626';
             e.currentTarget.style.transform = 'scale(1.1)';
+            showTooltip(e, isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar');
           }}
+          onMouseMove={e => showTooltip(e, isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar')}
           onMouseLeave={e => {
             e.currentTarget.style.borderColor = isDark ? '#334155' : '#e2e8f0';
             e.currentTarget.style.transform = 'scale(1)';
+            hideTooltip();
           }}
-          title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
         >
           {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
@@ -496,8 +505,8 @@ export default function AdminLayout({ children, auth }: AdminLayoutProps) {
               width: '100%',
               height: '100%',
             }}
-            title={isCollapsed ? 'Dashboard' : siteName}
             onMouseEnter={e => showTooltip(e, 'Dashboard')}
+            onMouseMove={e => showTooltip(e, 'Dashboard')}
             onMouseLeave={hideTooltip}
             onClick={hideTooltip}
           >
@@ -546,8 +555,8 @@ export default function AdminLayout({ children, auth }: AdminLayoutProps) {
           }}
           className="custom-admin-scroll"
           onScroll={(e) => {
-            hideTooltip();
             if (isRestoringSidebar) return;
+            hideTooltip();
             const top = e.currentTarget.scrollTop;
             memorySidebarScroll = top;
             try {
@@ -580,7 +589,6 @@ export default function AdminLayout({ children, auth }: AdminLayoutProps) {
                       <Link
                         href={item.href}
                         prefetch="hover"
-                        title={isCollapsed ? item.name : undefined}
                         onClick={() => {
                           hideTooltip();
                           saveSidebarScroll();
@@ -590,6 +598,7 @@ export default function AdminLayout({ children, auth }: AdminLayoutProps) {
                           }
                         }}
                         onMouseEnter={e => showTooltip(e, item.name)}
+                        onMouseMove={e => showTooltip(e, item.name)}
                         onMouseLeave={hideTooltip}
                         className={`cms-nav-item ${active ? 'is-active' : 'is-inactive'} ${isCollapsed ? 'is-collapsed' : ''}`}
                         style={{
@@ -642,8 +651,8 @@ export default function AdminLayout({ children, auth }: AdminLayoutProps) {
         }}>
           <Link
             href="/ourcms/users"
-            title={isCollapsed ? (user?.name || 'Account Settings') : undefined}
-            onMouseEnter={e => showTooltip(e, user?.name || 'Account Settings')}
+            onMouseEnter={e => showTooltip(e, user?.name ? `${user.name} (Account)` : 'Account & Profile')}
+            onMouseMove={e => showTooltip(e, user?.name ? `${user.name} (Account)` : 'Account & Profile')}
             onMouseLeave={hideTooltip}
             onClick={() => {
               hideTooltip();
@@ -695,9 +704,10 @@ export default function AdminLayout({ children, auth }: AdminLayoutProps) {
         </div>
       </aside>
 
-      {/* ── Fixed Tooltip Portal for Collapsed Sidebar (Escapes scroll overflow) ── */}
-      {isCollapsed && tooltipPos && (
+      {/* ── Fixed Tooltip Portal for Collapsed Sidebar (Rendered directly into document.body) ── */}
+      {typeof document !== 'undefined' && isCollapsed && tooltipPos && createPortal(
         <div
+          className="cms-sidebar-floating-tooltip"
           style={{
             position: 'fixed',
             left: tooltipPos.left,
@@ -705,20 +715,20 @@ export default function AdminLayout({ children, auth }: AdminLayoutProps) {
             transform: 'translateY(-50%)',
             background: isDark ? '#020617' : '#0f172a',
             color: '#ffffff',
-            fontSize: 12.5,
+            fontSize: 12,
             fontWeight: 600,
             padding: '6px 12px',
             borderRadius: 8,
-            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4)',
+            boxShadow: '0 10px 25px -4px rgba(0, 0, 0, 0.45), 0 4px 10px -2px rgba(0, 0, 0, 0.3)',
             whiteSpace: 'nowrap',
             pointerEvents: 'none',
-            zIndex: 999999,
+            zIndex: 9999999,
             display: 'flex',
             alignItems: 'center',
             gap: 6,
-            border: `1px solid ${isDark ? '#334155' : '#1e293b'}`,
-            letterSpacing: '0.01em',
-            animation: 'fadeIn 0.12s ease-out',
+            border: `1px solid ${isDark ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.12)'}`,
+            letterSpacing: '0.015em',
+            animation: 'cmsTooltipIn 0.12s cubic-bezier(0.16, 1, 0.3, 1) forwards',
           }}
         >
           <span>{tooltipPos.text}</span>
@@ -735,7 +745,8 @@ export default function AdminLayout({ children, auth }: AdminLayoutProps) {
               borderRight: `5px solid ${isDark ? '#020617' : '#0f172a'}`,
             }}
           />
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ── MAIN CONTENT WRAPPER ── */}

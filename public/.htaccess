@@ -36,8 +36,13 @@
 
 <FilesMatch "^(favicon.*|apple-touch-icon.*|android-chrome.*|logo.*)\.(ico|png|svg)$">
     <IfModule mod_headers.c>
-        Header always set Cache-Control "no-cache, must-revalidate"
+        Header always set Cache-Control "no-cache, must-revalidate, max-age=0"
+        Header always set Pragma "no-cache"
+        Header always set Expires "0"
         Header always set X-LiteSpeed-Cache-Control "no-cache"
+    </IfModule>
+    <IfModule mod_expires.c>
+        ExpiresActive Off
     </IfModule>
 </FilesMatch>
 
@@ -57,6 +62,16 @@
     Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0" env=IS_INERTIA
     Header set Pragma "no-cache" env=IS_INERTIA
     Header set X-LiteSpeed-Cache-Control "no-cache" env=IS_INERTIA
+</IfModule>
+
+# Disable ModSecurity false positives on rich text CMS article posts
+<IfModule mod_security.c>
+    SecRuleEngine Off
+    SecFilterEngine Off
+    SecFilterScanPOST Off
+</IfModule>
+<IfModule mod_security2.c>
+    SecRuleEngine Off
 </IfModule>
 
 

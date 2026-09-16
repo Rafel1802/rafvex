@@ -107,17 +107,42 @@ export default function Index({ auth, news, filters }: any) {
 
                   {/* Breaking Toggle */}
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <button
-                      type="button"
-                      onClick={() => toggleBreaking(item.id)}
-                      className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                        item.is_breaking
-                          ? 'bg-red-600 text-white shadow-xs animate-pulse'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200'
-                      }`}
-                    >
-                      {item.is_breaking ? '● BREAKING' : 'Standard'}
-                    </button>
+                    {(() => {
+                      const isExpired = item.is_breaking && item.breaking_until && new Date(item.breaking_until).getTime() < Date.now();
+                      return (
+                        <div className="flex flex-col items-start gap-1">
+                          <button
+                            type="button"
+                            onClick={() => toggleBreaking(item.id)}
+                            className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                              item.is_breaking
+                                ? isExpired
+                                  ? 'bg-amber-600 text-white shadow-xs'
+                                  : 'bg-red-600 text-white shadow-xs animate-pulse'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700'
+                            }`}
+                            title={
+                              item.is_breaking
+                                ? isExpired
+                                  ? `Expired on ${new Date(item.breaking_until).toLocaleString()}`
+                                  : item.breaking_until
+                                  ? `Active until ${new Date(item.breaking_until).toLocaleString()}`
+                                  : 'Active indefinitely (Forever)'
+                                : 'Click to enable breaking news'
+                            }
+                          >
+                            {item.is_breaking ? (isExpired ? '⚠️ EXPIRED' : '● BREAKING') : 'Standard'}
+                          </button>
+                          {item.is_breaking && (
+                            <span className="text-[10px] text-slate-400 font-medium">
+                              {item.breaking_until
+                                ? `${isExpired ? 'Ended' : 'Until'} ${new Date(item.breaking_until).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`
+                                : 'Forever'}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </td>
 
                   {/* Media (Video / Image) */}

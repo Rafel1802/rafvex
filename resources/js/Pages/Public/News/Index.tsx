@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import VideoEmbed from '@/Components/VideoEmbed';
-import { Radio, AlertCircle, Clock, ExternalLink, ChevronRight, Video } from 'lucide-react';
+import { Radio, AlertCircle, Clock, ExternalLink, ChevronRight, Video, Share2, Check, Link as LinkIcon } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 
 interface NewsIndexProps {
@@ -18,6 +18,21 @@ interface NewsIndexProps {
 
 export default function NewsIndex({ breakingNews = [], leadStory, wireNews }: NewsIndexProps) {
   const newsItems = wireNews?.data || [];
+  const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
+
+  const copyUrl = (slug: string) => {
+    const url = typeof window !== 'undefined' ? `${window.location.origin}/news/${slug}` : `/news/${slug}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiedSlug(slug);
+      setTimeout(() => setCopiedSlug(null), 2000);
+    });
+  };
+
+  const shareToTwitter = (title: string, slug: string) => {
+    const url = encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/news/${slug}` : `/news/${slug}`);
+    const text = encodeURIComponent(title);
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'noopener,noreferrer,width=640,height=560');
+  };
 
   return (
     <PublicLayout>
@@ -228,13 +243,39 @@ export default function NewsIndex({ breakingNews = [], leadStory, wireNews }: Ne
                   </div>
 
                   <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                    <span className="flex items-center gap-1">
+                    <span className="flex items-center gap-1 text-[11px]">
                       <Clock size={12} />
                       <span>{format(new Date(item.published_at || item.created_at), 'h:mm a')}</span>
                     </span>
-                    <Link href={`/news/${item.slug}`} className="text-red-600 dark:text-red-400 font-bold hover:underline">
-                      Read Story &rarr;
-                    </Link>
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => shareToTwitter(item.title, item.slug)}
+                        className="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
+                        title="Share on X"
+                      >
+                        <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                      </button>
+
+                      <button
+                        onClick={() => copyUrl(item.slug)}
+                        className={`px-1.5 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer ${
+                          copiedSlug === item.slug
+                            ? 'bg-emerald-600 text-white'
+                            : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
+                        }`}
+                        title="Copy article link"
+                      >
+                        {copiedSlug === item.slug ? <Check size={11} /> : <LinkIcon size={11} />}
+                        <span>{copiedSlug === item.slug ? 'Copied' : 'Copy'}</span>
+                      </button>
+
+                      <Link href={`/news/${item.slug}`} className="text-red-600 dark:text-red-400 font-bold hover:underline ml-1">
+                        Read &rarr;
+                      </Link>
+                    </div>
                   </div>
                 </article>
               ))}

@@ -41,6 +41,10 @@ class Article extends Model
         'allow_comments',
         'ai_assisted',
         'revision_count',
+        'playlist_id',
+        'playlist_order',
+        'is_breaking',
+        'breaking_until',
     ];
 
     protected $casts = [
@@ -51,6 +55,9 @@ class Article extends Model
         'featured' => 'boolean',
         'allow_comments' => 'boolean',
         'ai_assisted' => 'boolean',
+        'playlist_order' => 'integer',
+        'is_breaking' => 'boolean',
+        'breaking_until' => 'datetime',
     ];
 
     public function author(): BelongsTo
@@ -110,5 +117,65 @@ class Article extends Model
         return $this->belongsToMany(User::class, 'user_reading_history')
             ->withPivot('read_at', 'read_count')
             ->withTimestamps();
+    }
+
+    public function playlist(): BelongsTo
+    {
+        return $this->belongsTo(Playlist::class);
+    }
+
+    public function scopePublished($query)
+    {
+        // Auto-convert any due scheduled posts to published
+        static::autoPublishScheduled();
+
+        return $query->where(function ($q) {
+            $q->where('status', 'published')
+              ->orWhere(function ($sq) {
+                  $sq->where('status', 'scheduled')
+                     ->whereNotNull('scheduled_at')
+                     ->where('scheduled_at', '<=', now());
+              });
+        });
+    }
+
+    public static function autoPublishScheduled(): int
+    {
+        try {
+            return static::where('status', 'scheduled')
+                ->whereNotNull('scheduled_at')
+                ->where('scheduled_at', '<=', now())
+                ->update([
+                    'status' => 'published',
+                    'published_at' => \Illuminate\Support\Facades\DB::raw('COALESCE(published_at, scheduled_at, NOW())'),
+                ]);
+        } catch (\Throwable $e) {
+            return 0;
+        }
+    }
+
+    public function scopeBreaking($query)
+    {
+        return $query->where('is_breaking', true)
+            ->where(function ($q) {
+                try {
+                    if (\Illuminate\Support\Facades\Schema::hasColumn('articles', 'breaking_until')) {
+                        $q->whereNull('breaking_until')
+                          ->orWhere('breaking_until', '>=', now());
+                    }
+                } catch (\Throwable $e) {}
+            });
+    }
+
+    protected static function booted()
+    {
+        static::saved(function () {
+            cache()->forget('active_breaking_news');
+            cache()->forget('active_breaking_items');
+        });
+        static::deleted(function () {
+            cache()->forget('active_breaking_news');
+            cache()->forget('active_breaking_items');
+        });
     }
 }

@@ -18,91 +18,99 @@ class HomeController extends Controller
         // 0. Load Home Sections CMS Configuration
         $homeSections = HomeSectionsController::getActiveSections();
 
-        $pinnedSetting = Setting::where('key', 'pinned_stories')->value('value');
-        $pinned = $pinnedSetting ? json_decode($pinnedSetting, true) : [];
+        // 1. Resolve Hero Section (Lead Story + 2 Secondary Featured + 2 Sub-Featured)
+        $heroConfig = $homeSections['hero'] ?? [];
+        $heroMode = $heroConfig['mode'] ?? 'auto';
 
-        $leadId = !empty($homeSections['hero']['lead_id']) 
-            ? (int) $homeSections['hero']['lead_id'] 
-            : (!empty($pinned['lead_id']) ? (int) $pinned['lead_id'] : null);
-
-        $featuredIds = !empty($homeSections['hero']['featured_ids']) && is_array($homeSections['hero']['featured_ids'])
-            ? array_map('intval', array_slice($homeSections['hero']['featured_ids'], 0, 2))
-            : (!empty($pinned['featured_ids']) && is_array($pinned['featured_ids'])
-                ? array_map('intval', array_slice($pinned['featured_ids'], 0, 2))
-                : []);
-
-        $trendingIds = !empty($homeSections['trending']['article_ids']) && is_array($homeSections['trending']['article_ids']) && ($homeSections['trending']['mode'] ?? 'auto') === 'manual'
-            ? array_map('intval', array_slice($homeSections['trending']['article_ids'], 0, 4))
-            : (!empty($pinned['trending_ids']) && is_array($pinned['trending_ids'])
-                ? array_map('intval', array_slice($pinned['trending_ids'], 0, 4))
-                : []);
-
-        // 1. Resolve Lead Hero Story (Image 3)
         $leadStory = null;
-        if ($leadId) {
-            $leadStory = Article::with(['category', 'author'])
-                ->where('id', $leadId)
-                ->where('status', 'published')
-                ->first();
-        }
-
-        // 2. Resolve 2 Secondary Featured Stories
         $secondaryStories = collect();
-        if (!empty($featuredIds)) {
-            $fetched = Article::with(['category', 'author'])
-                ->whereIn('id', $featuredIds)
-                ->where('status', 'published')
-                ->get()
-                ->keyBy('id');
-            foreach ($featuredIds as $fid) {
-                if (isset($fetched[$fid])) {
-                    $secondaryStories->push($fetched[$fid]);
+        $subFeaturedStories = collect();
+        $usedIds = collect();
+
+        if ($heroMode === 'manual') {
+            $leadId = !empty($heroConfig['lead_id']) ? (int) $heroConfig['lead_id'] : null;
+            if ($leadId) {
+                $leadStory = Article::with(['category', 'author'])
+                    ->where('id', $leadId)
+                    ->where('status', 'published')
+                    ->first();
+                if ($leadStory) $usedIds->push($leadStory->id);
+            }
+
+            $featuredIds = !empty($heroConfig['featured_ids']) && is_array($heroConfig['featured_ids'])
+                ? array_map('intval', array_slice($heroConfig['featured_ids'], 0, 2))
+                : [];
+            if (!empty($featuredIds)) {
+                $fetched = Article::with(['category', 'author'])
+                    ->whereIn('id', $featuredIds)
+                    ->where('status', 'published')
+                    ->get()
+                    ->keyBy('id');
+                foreach ($featuredIds as $fid) {
+                    if (isset($fetched[$fid])) {
+                        $secondaryStories->push($fetched[$fid]);
+                        $usedIds->push($fid);
+                    }
+                }
+            }
+
+            $subIds = !empty($heroConfig['sub_featured_ids']) && is_array($heroConfig['sub_featured_ids'])
+                ? array_map('intval', array_slice($heroConfig['sub_featured_ids'], 0, 2))
+                : [];
+            if (!empty($subIds)) {
+                $fetchedSubs = Article::with(['category', 'author'])
+                    ->whereIn('id', $subIds)
+                    ->where('status', 'published')
+                    ->get()
+                    ->keyBy('id');
+                foreach ($subIds as $sId) {
+                    if (isset($fetchedSubs[$sId])) {
+                        $subFeaturedStories->push($fetchedSubs[$sId]);
+                        $usedIds->push($sId);
+                    }
                 }
             }
         }
 
-        // Track used IDs to avoid duplication
-        $usedIds = collect();
-        if ($leadStory) $usedIds->push($leadStory->id);
-        $usedIds = $usedIds->concat($secondaryStories->pluck('id'));
-
-        // Fallbacks for lead story if not pinned or not found
+        // Auto-detect or fallbacks for unfilled hero slots (pulls newest published articles)
         if (!$leadStory) {
             $leadStory = Article::with(['category', 'author'])
                 ->where('status', 'published')
-                ->where('featured', true)
                 ->whereNotIn('id', $usedIds)
-                ->latest('published_at')
-                ->first()
-                ?? Article::with(['category', 'author'])
-                    ->where('status', 'published')
-                    ->whereNotIn('id', $usedIds)
-                    ->latest('published_at')
-                    ->first();
+                ->orderByRaw('COALESCE(published_at, created_at) DESC')
+                ->first();
             if ($leadStory) $usedIds->push($leadStory->id);
         }
 
-        // Fallbacks for secondary featured stories if fewer than 2
         while ($secondaryStories->count() < 2) {
             $fallback = Article::with(['category', 'author'])
                 ->where('status', 'published')
-                ->where('featured', true)
                 ->whereNotIn('id', $usedIds)
-                ->latest('published_at')
-                ->first()
-                ?? Article::with(['category', 'author'])
-                    ->where('status', 'published')
-                    ->whereNotIn('id', $usedIds)
-                    ->latest('published_at')
-                    ->first();
+                ->orderByRaw('COALESCE(published_at, created_at) DESC')
+                ->first();
             if (!$fallback) break;
             $secondaryStories->push($fallback);
             $usedIds->push($fallback->id);
         }
 
-        // 3. Resolve 4 Trending Stories
+        while ($subFeaturedStories->count() < 2) {
+            $fallback = Article::with(['category', 'author'])
+                ->where('status', 'published')
+                ->whereNotIn('id', $usedIds)
+                ->orderByRaw('COALESCE(published_at, created_at) DESC')
+                ->first();
+            if (!$fallback) break;
+            $subFeaturedStories->push($fallback);
+            $usedIds->push($fallback->id);
+        }
+
+        // 2. Resolve 4 Trending Stories (Auto by views or Manual Pin)
+        $trendingConfig = $homeSections['trending'] ?? [];
+        $trendingMode = $trendingConfig['mode'] ?? 'auto';
         $trendingStories = collect();
-        if (!empty($trendingIds)) {
+
+        if ($trendingMode === 'manual' && !empty($trendingConfig['article_ids'])) {
+            $trendingIds = array_map('intval', array_slice($trendingConfig['article_ids'], 0, 4));
             $fetchedTrending = Article::with(['category', 'author'])
                 ->whereIn('id', $trendingIds)
                 ->where('status', 'published')
@@ -120,34 +128,19 @@ class HomeController extends Controller
                 ->where('status', 'published')
                 ->whereNotIn('id', $trendingStories->pluck('id'))
                 ->orderBy('views_count', 'desc')
-                ->latest('published_at')
-                ->first()
-                ?? Article::with(['category', 'author'])
-                    ->where('status', 'published')
-                    ->whereNotIn('id', $trendingStories->pluck('id'))
-                    ->latest('published_at')
-                    ->first();
+                ->orderByRaw('COALESCE(published_at, created_at) DESC')
+                ->first();
             if (!$fallbackTrending) break;
             $trendingStories->push($fallbackTrending);
         }
 
-        // 4. Resolve 2 Sub-Featured Spotlight Stories (under Lead Story in left column)
         $allExclude = $usedIds->concat($trendingStories->pluck('id'))->unique();
-
-        $subFeaturedStories = Article::with(['category', 'author'])
-            ->where('status', 'published')
-            ->whereNotIn('id', $allExclude)
-            ->latest('published_at')
-            ->take(2)
-            ->get();
-
-        $allExclude = $allExclude->concat($subFeaturedStories->pluck('id'))->unique();
 
         // 5. Latest Articles for Category Showcases and Chronological Stream
         $latest = Article::with(['category', 'author'])
             ->where('status', 'published')
             ->whereNotIn('id', $allExclude)
-            ->latest('published_at')
+            ->orderByRaw('COALESCE(published_at, created_at) DESC')
             ->take(30)
             ->get();
 
@@ -155,10 +148,22 @@ class HomeController extends Controller
             $latest = Article::with(['category', 'author'])
                 ->where('status', 'published')
                 ->where('id', '!=', $leadStory?->id)
-                ->latest('published_at')
+                ->orderByRaw('COALESCE(published_at, created_at) DESC')
                 ->take(30)
                 ->get();
         }
+
+        // 5b. Dedicated Chronological Stream for "Latest Published Stories" (true last 10 published posts)
+        $latestLimit = (int) ($homeSections['latest']['limit'] ?? 10);
+        if ($latestLimit <= 0) {
+            $latestLimit = 10;
+        }
+
+        $latestStories = Article::with(['category', 'author'])
+            ->where('status', 'published')
+            ->orderByRaw('COALESCE(published_at, created_at) DESC')
+            ->take($latestLimit)
+            ->get();
 
         // 6. Dedicated 4 English Reading Stories (guaranteed 4 latest blogs, customizable via CMS)
         $readingConfig = $homeSections['reading_stories'] ?? [];
@@ -194,7 +199,7 @@ class HomeController extends Controller
                       ->orWhere('title', 'like', '%reading%');
                 })
                 ->whereNotIn('id', $storyStories->pluck('id'))
-                ->latest('published_at')
+                ->orderByRaw('COALESCE(published_at, created_at) DESC')
                 ->take(4 - $storyStories->count())
                 ->get();
             $storyStories = $storyStories->concat($catStories);
@@ -204,7 +209,7 @@ class HomeController extends Controller
             $extraStories = Article::with(['category', 'author'])
                 ->where('status', 'published')
                 ->whereNotIn('id', $storyStories->pluck('id'))
-                ->latest('published_at')
+                ->orderByRaw('COALESCE(published_at, created_at) DESC')
                 ->take(4 - $storyStories->count())
                 ->get();
             $storyStories = $storyStories->concat($extraStories);
@@ -251,7 +256,7 @@ class HomeController extends Controller
                       ->orWhere('title', 'like', '%settings%');
                 })
                 ->whereNotIn('id', $troubleshootingStories->pluck('id'))
-                ->latest('published_at')
+                ->orderByRaw('COALESCE(published_at, created_at) DESC')
                 ->take(4 - $troubleshootingStories->count())
                 ->get();
             $troubleshootingStories = $troubleshootingStories->concat($catTb);
@@ -261,7 +266,7 @@ class HomeController extends Controller
             $extraTb = Article::with(['category', 'author'])
                 ->where('status', 'published')
                 ->whereNotIn('id', $troubleshootingStories->pluck('id'))
-                ->latest('published_at')
+                ->orderByRaw('COALESCE(published_at, created_at) DESC')
                 ->take(4 - $troubleshootingStories->count())
                 ->get();
             $troubleshootingStories = $troubleshootingStories->concat($extraTb);
@@ -319,7 +324,7 @@ class HomeController extends Controller
                            ->orWhere('slug', 'like', "%{$catSlug}%");
                     })->orWhere('title', 'like', "%{$catSlug}%");
                 })
-                ->latest('published_at')
+                ->orderByRaw('COALESCE(published_at, created_at) DESC')
                 ->take(10)
                 ->get();
 
@@ -328,7 +333,7 @@ class HomeController extends Controller
                 $extraCat = Article::with(['category', 'author'])
                     ->where('status', 'published')
                     ->whereNotIn('id', $catArticles->pluck('id'))
-                    ->latest('published_at')
+                    ->orderByRaw('COALESCE(published_at, created_at) DESC')
                     ->take(5 - $catArticles->count())
                     ->get();
                 $catArticles = $catArticles->concat($extraCat);
@@ -376,6 +381,7 @@ class HomeController extends Controller
             'storyStories' => $storyStories->values(),
             'troubleshootingStories' => $troubleshootingStories->values(),
             'latest' => $latest,
+            'latestStories' => $latestStories->values(),
             'topCategories' => $categories,
             'homeSections' => $homeSections,
             'spotlightMain' => $spotlightMain,

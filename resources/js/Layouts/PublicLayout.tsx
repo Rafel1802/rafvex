@@ -3,7 +3,8 @@ import { Link, usePage, Head, router } from '@inertiajs/react';
 import { 
   Search, X, ArrowRight, ExternalLink, Shield, Compass, BookOpen, 
   Sparkles, Loader2, FileText, Clock, User, LogOut, Bookmark, 
-  History, LayoutDashboard, ChevronDown, Bell, Sun, Moon
+  History, LayoutDashboard, ChevronDown, Bell, Sun, Moon, Headphones, Radio,
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
 import axios from 'axios';
 import SponsoredPopupModal from '@/Components/Public/SponsoredPopupModal';
@@ -35,8 +36,9 @@ const MAIN_NAV_LINKS = [
   { label: 'English', href: '/category/english-reading-stories', slug: 'english-reading-stories' },
 ];
 
-/* ── Editorial Sub-Header Bar (Popular & News Only) ── */
+/* ── Editorial Sub-Header Bar (Podcast, Popular & News) ── */
 const EDITORIAL_TICKER = [
+  { label: 'PODCAST', href: '/podcasts', icon: Headphones },
   { label: 'POPULAR', href: '/popular' },
   { label: 'NEWS', href: '/news' },
 ];
@@ -48,6 +50,33 @@ export default function PublicLayout({ children, auth }: any) {
   const siteLogo = site.logo ?? null;
   const megaMenuCategories = props.mega_menu_categories ?? [];
   const isHomePage = url === '/' || url === '' || url.startsWith('/?');
+  const activeBreakingNews = props.active_breaking_news ?? null;
+
+  // Normalize breaking items from props (news and blogs)
+  const rawBreakingItems: any[] = Array.isArray(props.breaking_items)
+    ? props.breaking_items
+    : props.active_breaking_news
+      ? (Array.isArray(props.active_breaking_news) ? props.active_breaking_news : [props.active_breaking_news])
+      : [];
+
+  // Filter only items with a valid non-empty title string
+  const breakingItems = rawBreakingItems.filter(
+    (item) => item && typeof item === 'object' && typeof item.title === 'string' && item.title.trim().length > 0
+  );
+
+  const [breakingIndex, setBreakingIndex] = useState(0);
+  const [isTickerPaused, setIsTickerPaused] = useState(false);
+
+  // Automatically slide through breaking stories every 4.5 seconds if multiple items exist
+  useEffect(() => {
+    if (breakingItems.length <= 1 || isTickerPaused) return;
+    const timer = setInterval(() => {
+      setBreakingIndex((prev) => (prev + 1) % breakingItems.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [breakingItems.length, isTickerPaused]);
+
+  const currentBreaking = breakingItems.length > 0 ? breakingItems[breakingIndex % breakingItems.length] : null;
 
   const [scrolled, setScrolled] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
@@ -414,16 +443,13 @@ export default function PublicLayout({ children, auth }: any) {
   return (
     <div className="min-h-screen flex flex-col bg-[#fdfcfb] dark:bg-[#0b1120] text-[#141414] dark:text-slate-100 transition-colors duration-200">
       <Head>
-        <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
-        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
-        <link rel="icon" type="image/png" sizes="144x144" href="/favicon-144x144.png" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png?v=2" head-key="favicon-48" />
+        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png?v=2" head-key="favicon-96" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png?v=2" head-key="favicon-192" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png?v=2" head-key="favicon-512" />
+        <link rel="icon" href="/favicon.ico?v=2" sizes="48x48 32x32 16x16" head-key="favicon-ico" />
+        <link rel="shortcut icon" href="/favicon.ico?v=2" head-key="favicon-shortcut" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" head-key="apple-touch-icon" />
       </Head>
       
       {/* ── STICKY HEADER ── */}
@@ -750,21 +776,99 @@ export default function PublicLayout({ children, auth }: any) {
           </div>
         </div>
 
-        {/* ── EDITORIAL SUB-HEADER (LATEST | TRENDING | AI | HOW-TO...) ── Only shown on home page */}
+        {/* ── EDITORIAL SUB-HEADER (PODCAST | POPULAR | NEWS | [SLIDING BREAKING TICKER]) ── ONLY ON HOME PAGE */}
         {isHomePage && (
-          <div className="border-t border-slate-200/70 dark:border-slate-800/70 bg-white/70 dark:bg-[#0b1120]/70 overflow-x-auto scrollbar-none">
+          <div className="border-t border-slate-200/70 dark:border-slate-800/70 bg-white/80 dark:bg-[#0b1120]/80 backdrop-blur-xs transition-colors">
             <div style={{ maxWidth: 1320, margin: '0 auto', padding: '0 20px' }}>
-              <div className="flex items-center gap-6 sm:gap-8 h-10 min-w-max">
-                {EDITORIAL_TICKER.map((item, idx) => (
-                  <Link
-                    key={idx}
-                    href={item.href}
-                    prefetch="hover"
-                    className="text-xs font-black tracking-wider text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 transition-colors uppercase relative py-2"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+              <div className="flex items-center justify-between gap-4 h-10 min-w-0">
+                <div className="flex items-center gap-5 sm:gap-7 min-w-0 flex-1 overflow-hidden">
+                  {/* PODCAST, POPULAR & NEWS */}
+                  <div className="flex items-center gap-5 sm:gap-7 shrink-0">
+                    {EDITORIAL_TICKER.map((item, idx) => {
+                      const IconComp = (item as any).icon;
+                      return (
+                        <Link
+                          key={idx}
+                          href={item.href}
+                          prefetch="hover"
+                          className="inline-flex items-center gap-1.5 text-xs font-black tracking-wider text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 transition-colors uppercase relative py-2 shrink-0"
+                        >
+                          {IconComp && <IconComp size={13} className="text-red-600 dark:text-red-400 shrink-0" />}
+                          <span>{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+
+                  {/* Sliding Breaking News/Blogs Ticker */}
+                  {currentBreaking && (
+                    <div 
+                      className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1 overflow-hidden"
+                      onMouseEnter={() => setIsTickerPaused(true)}
+                      onMouseLeave={() => setIsTickerPaused(false)}
+                    >
+                      {/* Vertical Divider */}
+                      <span className="h-3.5 w-px bg-slate-300 dark:bg-slate-700 shrink-0" aria-hidden="true" />
+
+                      {/* Clickable Sliding Breaking News/Blog Link */}
+                      <Link
+                        key={`${currentBreaking.type || 'news'}-${currentBreaking.id || currentBreaking.slug}-${breakingIndex % breakingItems.length}`}
+                        href={currentBreaking.url || (currentBreaking.type === 'article' ? `/article/${currentBreaking.slug}` : `/news/${currentBreaking.slug}`)}
+                        prefetch="hover"
+                        className="group flex items-center gap-2.5 min-w-0 py-1 overflow-hidden text-inherit no-underline animate-in fade-in slide-in-from-bottom-2 duration-300 transition-all"
+                        title={`${currentBreaking.badge || 'Breaking'}: ${currentBreaking.title}`}
+                      >
+                        {/* Red Pulsing Badge */}
+                        <span className="inline-flex items-center gap-1.5 shrink-0 px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-black tracking-wider uppercase shadow-xs select-none">
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-80" />
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white" />
+                          </span>
+                          {currentBreaking.badge || 'BREAKING'}
+                        </span>
+
+                        {/* Title with hover color transition and truncate */}
+                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-red-600 dark:group-hover:text-red-400 group-hover:underline underline-offset-2 transition-colors truncate">
+                          {currentBreaking.title}
+                        </span>
+
+                        {/* Interactive Arrow Indicator */}
+                        <ArrowRight size={12} className="shrink-0 text-red-500 opacity-80 group-hover:translate-x-0.5 transition-transform hidden sm:inline-block" />
+                      </Link>
+
+                      {/* Sliding controls / indicator if more than 1 item */}
+                      {breakingItems.length > 1 && (
+                        <div className="hidden md:flex items-center gap-1 shrink-0 text-[10px] font-bold text-slate-400 dark:text-slate-500 select-none">
+                          <span>{(breakingIndex % breakingItems.length) + 1}/{breakingItems.length}</span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setBreakingIndex((prev) => (prev - 1 + breakingItems.length) % breakingItems.length);
+                            }}
+                            className="p-0.5 hover:text-red-600 dark:hover:text-red-400 cursor-pointer transition-colors"
+                            aria-label="Previous breaking story"
+                          >
+                            <ChevronLeft size={12} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setBreakingIndex((prev) => (prev + 1) % breakingItems.length);
+                            }}
+                            className="p-0.5 hover:text-red-600 dark:hover:text-red-400 cursor-pointer transition-colors"
+                            aria-label="Next breaking story"
+                          >
+                            <ChevronRight size={12} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

@@ -48,7 +48,9 @@ export default function Show({
   article,
   related = [],
   trending = [],
+  popularArticles = [],
   clusterPlaylist = [],
+  playlistTitle = null,
   sidebarCategories = [],
   popularTags = [],
 }: any) {
@@ -713,16 +715,17 @@ export default function Show({
             )}
 
             {/* 3. Cluster Playlist / Series */}
+            {/* 3. Cluster Playlist / Series */}
             {clusterPlaylist.length > 0 && (
               <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-4 shadow-sm">
                 <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-100 dark:border-slate-800">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-red-600 animate-ping" />
-                    <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-slate-100">
-                      Cluster Playlist
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="w-2 h-2 rounded-full bg-red-600 animate-ping shrink-0" />
+                    <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-slate-100 truncate">
+                      {playlistTitle ? `Series: ${playlistTitle}` : (article.playlist?.title ? `Series: ${article.playlist.title}` : 'Cluster Playlist')}
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full shrink-0">
                     {clusterPlaylist.length} Chapters
                   </span>
                 </div>
@@ -759,25 +762,38 @@ export default function Show({
               </div>
             )}
 
-            {/* 4. Trending in Tech */}
+            {/* 4. Top 5 Popular Articles (Synchronized with /popular) */}
             <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
               <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex items-center gap-2">
                   <TrendingUp size={17} className="text-red-600 dark:text-red-400" />
-                  <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm tracking-tight">Trending in Tech</h3>
+                  <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm tracking-tight">Popular Articles</h3>
                 </div>
-                <span className="text-[10px] font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/60 px-2 py-0.5 rounded uppercase">Popular</span>
+                <Link
+                  href="/popular"
+                  className="text-[10px] font-bold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 bg-red-50 dark:bg-red-950/60 px-2 py-0.5 rounded uppercase flex items-center gap-0.5"
+                >
+                  View All &rarr;
+                </Link>
               </div>
 
               <div className="space-y-4">
-                {(trending ?? related ?? []).slice(0, 5).map((story: any, index: number) => (
+                {(popularArticles?.length > 0 ? popularArticles : (trending ?? related ?? [])).slice(0, 5).map((story: any, index: number) => (
                   <Link
                     key={story.id}
                     href={`/article/${story.slug}`}
                     className="group flex items-start gap-3.5 pb-4 border-b border-slate-100 dark:border-slate-800 last:border-0 last:pb-0"
                   >
                     {/* Ranked Number Badge */}
-                    <span className="font-extrabold text-lg text-slate-300 dark:text-slate-600 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors w-5 shrink-0 text-center">
+                    <span className={`font-extrabold text-xs w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${
+                      index === 0
+                        ? 'bg-amber-500 text-white shadow-xs'
+                        : index === 1
+                        ? 'bg-slate-700 text-white'
+                        : index === 2
+                        ? 'bg-amber-700 text-white'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 group-hover:bg-red-600 group-hover:text-white transition-colors'
+                    }`}>
                       0{index + 1}
                     </span>
 
@@ -791,7 +807,11 @@ export default function Show({
                         {story.title}
                       </h4>
                       <div className="flex items-center gap-2 mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">
-                        <span>{story.reading_time || 5}m read</span>
+                        {story.views_count !== undefined && (
+                          <span className="font-semibold text-slate-600 dark:text-slate-400">
+                            👁️ {(story.views_count || 0).toLocaleString()} views
+                          </span>
+                        )}
                         {story.published_at && (
                           <>
                             <span>•</span>

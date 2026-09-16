@@ -6,13 +6,13 @@
 
         <title>@yield('title')</title>
 
-        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}?v=rafvex_2026">
-        <link rel="icon" href="{{ asset('favicon.ico') }}?v=rafvex_2026" sizes="48x48 32x32 16x16">
-        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v=rafvex_2026">
-        <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon-48x48.png') }}?v=rafvex_2026">
-        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}?v=rafvex_2026">
-        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}?v=rafvex_2026">
-        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v=rafvex_2026">
+        <link rel="icon" type="image/png" sizes="48x48" href="{{ url('/favicon-48x48.png') }}?v=2">
+        <link rel="icon" type="image/png" sizes="96x96" href="{{ url('/favicon-96x96.png') }}?v=2">
+        <link rel="icon" type="image/png" sizes="192x192" href="{{ url('/android-chrome-192x192.png') }}?v=2">
+        <link rel="icon" type="image/png" sizes="512x512" href="{{ url('/android-chrome-512x512.png') }}?v=2">
+        <link rel="icon" href="{{ url('/favicon.ico') }}?v=2" sizes="48x48 32x32 16x16">
+        <link rel="shortcut icon" href="{{ url('/favicon.ico') }}?v=2">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v=2">
 
         <!-- Styles -->
         <style>

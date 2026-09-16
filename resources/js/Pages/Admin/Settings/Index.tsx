@@ -574,7 +574,7 @@ export default function SettingsIndex({ auth, settings, google_status }: any) {
               <p className="text-xs text-slate-500 dark:text-slate-400 pb-2 border-b border-slate-100 dark:border-slate-800">
                 Upload your favicon, logo, and OG image. These appear in the browser tab, site header, and social sharing previews.
               </p>
-              <FileUploader label="Favicon" fieldName="favicon" currentUrl={formData.favicon} accept="image/x-icon,image/png,image/svg+xml,image/gif" description="Browser tab icon. Use 32×32 or 64×64 ICO/PNG" />
+              <FileUploader label="Favicon" fieldName="favicon" currentUrl={formData.favicon} accept="image/x-icon,image/png,image/svg+xml,image/gif" description="Browser tab & Google Search icon. Multiple of 48px square (48×48, 96×96, 512×512) ICO or PNG" />
               <FileUploader label="Site Logo" fieldName="logo" currentUrl={formData.logo} description="Displayed in site header and CMS. Use SVG or PNG with transparent background" />
               <FileUploader label="CMS Login Cover Image" fieldName="login_bg_image" currentUrl={formData.login_bg_image || '/images/cms_login_bg.jpg'} description="Custom background image for CMS login screen. Recommended: 1280×1280 px" />
               <FileUploader label="Default OG Image" fieldName="og_default_image" currentUrl={formData.og_default_image} description="Used when an article has no cover image. Recommended: 1200×630" />

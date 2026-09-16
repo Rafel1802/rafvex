@@ -30,4 +30,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        $exceptions->respond(function ($response, \Throwable $e, Request $request) {
+            if ($response->getStatusCode() === 419) {
+                return back()->with([
+                    'error' => 'Your security session has expired. Please try submitting again.',
+                ]);
+            }
+            return $response;
+        });
     })->create();

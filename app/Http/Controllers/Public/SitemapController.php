@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\News;
+use App\Models\Podcast;
 use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
@@ -101,8 +102,9 @@ class SitemapController extends Controller
                 ->latest('published_at')
                 ->value('published_at');
 
-            // 6. Institutional / Compliance Static Pages
+            // 6. Institutional / Compliance & Core Static Pages
             $staticPages = [
+                ['name' => 'Podcasts & Audio Shows', 'slug' => 'podcasts', 'desc' => 'Listen to conversations on tech, AI, software engineering, and digital discovery.'],
                 ['name' => 'About Us & Editorial Charter', 'slug' => 'about', 'desc' => 'Our mission, peer-review editorial principles, and research methodology.'],
                 ['name' => 'Institutional Contact & Inquiries', 'slug' => 'contact', 'desc' => 'Direct lines for academic collaboration, licensing, and editorial feedback.'],
                 ['name' => 'Privacy Policy & Data Rights', 'slug' => 'privacy-policy', 'desc' => 'GDPR/CCPA compliance, telemetry policies, and cryptographic security standards.'],
@@ -132,33 +134,57 @@ class SitemapController extends Controller
     }
 
     /**
-     * XML Sitemap for Google Search Console (Standard sitemaps.org format)
+     * XML Sitemap for Google Search Console (Standard sitemaps.org & Google Image schema)
      */
     public function index(): Response
     {
         $articles = Article::where('status', 'published')
             ->where(fn($q) => $q->whereNull('noindex')->orWhere('noindex', false))
             ->latest('published_at')
-            ->get(['slug', 'updated_at', 'published_at']);
+            ->get(['slug', 'title', 'cover_image_url', 'updated_at', 'published_at']);
 
         $news = News::where('status', 'published')
             ->latest('published_at')
-            ->get(['slug', 'updated_at', 'published_at']);
+            ->get(['slug', 'title', 'cover_image_url', 'updated_at', 'published_at']);
+
+        $podcasts = collect();
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('podcasts')) {
+                $podcasts = Podcast::where('status', 'published')
+                    ->latest('published_at')
+                    ->get(['slug', 'title', 'cover_image_url', 'updated_at', 'published_at']);
+            }
+        } catch (\Throwable $e) {
+            $podcasts = collect();
+        }
 
         $categories = Category::get(['slug', 'updated_at']);
 
+        $latestArticle = $articles->first();
+        $latestNews = $news->first();
+        $latestPodcast = $podcasts->first();
+
+        $candidates = array_filter([
+            $latestArticle?->updated_at ?? $latestArticle?->published_at,
+            $latestNews?->updated_at ?? $latestNews?->published_at,
+            $latestPodcast?->updated_at ?? $latestPodcast?->published_at,
+        ]);
+        $latestTimestamp = !empty($candidates) ? max($candidates) : now();
+        $homeLastmod = Carbon::parse($latestTimestamp)->toAtomString();
+
         $staticPages = [
-            ['loc' => rtrim(url('/'), '/') . '/', 'priority' => '1.0', 'changefreq' => 'daily', 'lastmod' => now()->toAtomString()],
-            ['loc' => url('/sitemap'), 'priority' => '0.8', 'changefreq' => 'daily', 'lastmod' => now()->toAtomString()],
-            ['loc' => url('/popular'), 'priority' => '0.9', 'changefreq' => 'daily', 'lastmod' => now()->toAtomString()],
-            ['loc' => url('/news'), 'priority' => '0.9', 'changefreq' => 'hourly', 'lastmod' => now()->toAtomString()],
+            ['loc' => rtrim(url('/'), '/') . '/', 'priority' => '1.0', 'changefreq' => 'daily', 'lastmod' => $homeLastmod],
+            ['loc' => url('/sitemap'), 'priority' => '0.8', 'changefreq' => 'daily', 'lastmod' => $homeLastmod],
+            ['loc' => url('/popular'), 'priority' => '0.9', 'changefreq' => 'daily', 'lastmod' => $homeLastmod],
+            ['loc' => url('/news'), 'priority' => '0.9', 'changefreq' => 'hourly', 'lastmod' => $latestNews ? Carbon::parse($latestNews->updated_at ?? $latestNews->published_at)->toAtomString() : $homeLastmod],
+            ['loc' => url('/podcasts'), 'priority' => '0.9', 'changefreq' => 'daily', 'lastmod' => $latestPodcast ? Carbon::parse($latestPodcast->updated_at ?? $latestPodcast->published_at)->toAtomString() : $homeLastmod],
             ['loc' => url('/about'), 'priority' => '0.7', 'changefreq' => 'monthly', 'lastmod' => now()->subDays(7)->toAtomString()],
             ['loc' => url('/contact'), 'priority' => '0.7', 'changefreq' => 'monthly', 'lastmod' => now()->subDays(7)->toAtomString()],
             ['loc' => url('/privacy-policy'), 'priority' => '0.5', 'changefreq' => 'monthly', 'lastmod' => now()->subDays(30)->toAtomString()],
             ['loc' => url('/terms-of-service'), 'priority' => '0.5', 'changefreq' => 'monthly', 'lastmod' => now()->subDays(30)->toAtomString()],
         ];
 
-        $xml = view('sitemap', compact('articles', 'categories', 'news', 'staticPages'))->render();
+        $xml = view('sitemap', compact('articles', 'categories', 'news', 'podcasts', 'staticPages'))->render();
         return response($xml, 200, ['Content-Type' => 'application/xml; charset=utf-8']);
     }
 
@@ -209,6 +235,8 @@ class SitemapController extends Controller
             "Allow: /article/",
             "Allow: /category/",
             "Allow: /news/",
+            "Allow: /podcasts",
+            "Allow: /podcast/",
             "Allow: /popular",
             "Allow: /search",
             "Allow: /blog/",
@@ -223,13 +251,20 @@ class SitemapController extends Controller
             "# Google Search & Favicon Crawlers",
             "User-agent: Googlebot",
             "Allow: /",
+            "Allow: /article/",
+            "Allow: /category/",
+            "Allow: /news/",
+            "Allow: /podcasts",
+            "Allow: /podcast/",
+            "Allow: /popular",
+            "Allow: /blog/",
+            "Allow: /sitemap",
             "Allow: /favicon.ico",
             "Allow: /favicon*.png",
             "Allow: /apple-touch-icon.png",
             "Allow: /android-chrome*.png",
             "Allow: /site.webmanifest",
             "Allow: /storage/",
-            "Allow: /sitemap",
             "Allow: /feed",
             "Allow: /llms.txt",
             "Disallow: /ourcms/",

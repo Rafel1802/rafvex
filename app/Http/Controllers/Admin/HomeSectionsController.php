@@ -25,8 +25,10 @@ class HomeSectionsController extends Controller
                 'badge' => 'Knowledge, Technology & Digital Discovery',
                 'title' => 'Rafvex — Learn. Explore. Discover.',
                 'subtitle' => 'Your place for useful knowledge and digital discovery. Explore technology, AI, how-to guides, useful apps and websites, English reading stories, tutorials, and informative articles — created to help you learn something new every day.',
+                'mode' => 'auto', // 'auto' (pull latest published articles) or 'manual' (pinned slots)
                 'lead_id' => null,
                 'featured_ids' => [],
+                'sub_featured_ids' => [],
             ],
             'trending' => [
                 'enabled' => true,
@@ -139,6 +141,7 @@ class HomeSectionsController extends Controller
         $referencedIds = collect();
         if (!empty($sections['hero']['lead_id'])) $referencedIds->push($sections['hero']['lead_id']);
         if (!empty($sections['hero']['featured_ids'])) $referencedIds = $referencedIds->concat($sections['hero']['featured_ids']);
+        if (!empty($sections['hero']['sub_featured_ids'])) $referencedIds = $referencedIds->concat($sections['hero']['sub_featured_ids']);
         if (!empty($sections['trending']['article_ids'])) $referencedIds = $referencedIds->concat($sections['trending']['article_ids']);
         if (!empty($sections['spotlight']['main_id'])) $referencedIds->push($sections['spotlight']['main_id']);
         if (!empty($sections['spotlight']['sub_ids'])) $referencedIds = $referencedIds->concat($sections['spotlight']['sub_ids']);
@@ -161,9 +164,116 @@ class HomeSectionsController extends Controller
             if (Schema::hasTable('articles')) {
                 $recentArticles = Article::with('category')
                     ->where('status', 'published')
-                    ->orderBy('published_at', 'desc')
-                    ->take(30)
+                    ->orderByRaw('COALESCE(published_at, created_at) DESC')
+                    ->take(50)
                     ->get(['id', 'title', 'slug', 'category_id', 'cover_image_url', 'published_at']);
+            }
+        } catch (\Throwable $e) {}
+
+        // Auto-detected items for each section (so CMS always displays visual preview cards, never text-only)
+        $autoDetected = [
+            'hero_lead' => null,
+            'hero_featured' => [],
+            'hero_sub' => [],
+            'trending' => [],
+            'spotlight_main' => null,
+            'spotlight_sub' => [],
+            'troubleshooting' => [],
+            'reading_stories' => [],
+        ];
+
+        try {
+            if (Schema::hasTable('articles')) {
+                // 1. Hero Auto: newest published
+                $latestForHero = Article::with('category')
+                    ->where('status', 'published')
+                    ->orderByRaw('COALESCE(published_at, created_at) DESC')
+                    ->take(5)
+                    ->get(['id', 'title', 'slug', 'category_id', 'cover_image_url', 'published_at']);
+
+                $autoDetected['hero_lead'] = $latestForHero->first();
+                $autoDetected['hero_featured'] = $latestForHero->slice(1, 2)->values()->all();
+                $autoDetected['hero_sub'] = $latestForHero->slice(3, 2)->values()->all();
+
+                // 2. Trending Auto: top 4 by views_count
+                $autoDetected['trending'] = Article::with('category')
+                    ->where('status', 'published')
+                    ->orderByDesc('views_count')
+                    ->orderByRaw('COALESCE(published_at, created_at) DESC')
+                    ->take(4)
+                    ->get(['id', 'title', 'slug', 'category_id', 'cover_image_url', 'published_at'])
+                    ->all();
+
+                // 3. Spotlight Auto: by category_slug
+                $spotCatSlug = $sections['spotlight']['category_slug'] ?? 'ai-tools';
+                $spotArticles = Article::with('category')
+                    ->where('status', 'published')
+                    ->whereHas('category', function ($cq) use ($spotCatSlug) {
+                        $cq->where('slug', $spotCatSlug)
+                           ->orWhereHas('parent', fn($pq) => $pq->where('slug', $spotCatSlug));
+                    })
+                    ->orderByRaw('COALESCE(published_at, created_at) DESC')
+                    ->take(5)
+                    ->get(['id', 'title', 'slug', 'category_id', 'cover_image_url', 'published_at']);
+
+                if ($spotArticles->isEmpty()) {
+                    $spotArticles = $latestForHero;
+                }
+                $autoDetected['spotlight_main'] = $spotArticles->first();
+                $autoDetected['spotlight_sub'] = $spotArticles->slice(1, 4)->values()->all();
+
+                // 4. Troubleshooting Auto: by category_slug
+                $tbCatSlug = $sections['troubleshooting']['category_slug'] ?? 'troubleshooting';
+                $tbArticles = Article::with('category')
+                    ->where('status', 'published')
+                    ->whereHas('category', function ($cq) use ($tbCatSlug) {
+                        $cq->where('slug', $tbCatSlug)
+                           ->orWhereHas('parent', fn($pq) => $pq->where('slug', $tbCatSlug));
+                    })
+                    ->orderByRaw('COALESCE(published_at, created_at) DESC')
+                    ->take(4)
+                    ->get(['id', 'title', 'slug', 'category_id', 'cover_image_url', 'published_at']);
+
+                if ($tbArticles->isEmpty()) {
+                    $tbArticles = $latestForHero->take(4);
+                }
+                $autoDetected['troubleshooting'] = $tbArticles->values()->all();
+
+                // 5. Reading Stories Auto: by category_slug
+                $rsCatSlug = $sections['reading_stories']['category_slug'] ?? 'english-reading-stories';
+                $rsArticles = Article::with('category')
+                    ->where('status', 'published')
+                    ->whereHas('category', function ($cq) use ($rsCatSlug) {
+                        $cq->where('slug', $rsCatSlug)
+                           ->orWhereHas('parent', fn($pq) => $pq->where('slug', $rsCatSlug));
+                    })
+                    ->orderByRaw('COALESCE(published_at, created_at) DESC')
+                    ->take(4)
+                    ->get(['id', 'title', 'slug', 'category_id', 'cover_image_url', 'published_at']);
+
+                if ($rsArticles->isEmpty()) {
+                    $rsArticles = $latestForHero->take(4);
+                }
+                $autoDetected['reading_stories'] = $rsArticles->values()->all();
+
+                // Merge all auto-detected articles into hydratedArticles so frontend has instant access
+                foreach ([$autoDetected['hero_lead'], $autoDetected['spotlight_main']] as $singleArt) {
+                    if ($singleArt && !isset($hydratedArticles[$singleArt->id])) {
+                        $hydratedArticles[$singleArt->id] = $singleArt;
+                    }
+                }
+                foreach (array_merge(
+                    $autoDetected['hero_featured'] ?? [],
+                    $autoDetected['hero_sub'] ?? [],
+                    $autoDetected['trending'] ?? [],
+                    $autoDetected['spotlight_sub'] ?? [],
+                    $autoDetected['troubleshooting'] ?? [],
+                    $autoDetected['reading_stories'] ?? []
+                ) as $listArt) {
+                    if ($listArt && !isset($hydratedArticles[$listArt->id])) {
+                        $hydratedArticles[$listArt->id] = $listArt;
+                    }
+                }
             }
         } catch (\Throwable $e) {}
 
@@ -172,29 +282,54 @@ class HomeSectionsController extends Controller
             'categories' => $categories,
             'hydratedArticles' => $hydratedArticles,
             'recentArticles' => $recentArticles,
+            'autoDetected' => $autoDetected,
         ]);
     }
 
     /**
-     * AJAX search endpoint for articles.
+     * AJAX search and category filter endpoint for articles.
      */
     public function search(Request $request)
     {
         $q = trim($request->input('q', ''));
-        if (strlen($q) < 1) {
-            return response()->json(['results' => []]);
-        }
+        $categoryId = $request->input('category_id');
+        $categorySlug = $request->input('category_slug');
 
         try {
-            $articles = Article::with('category')
-                ->where('status', 'published')
-                ->where(function ($query) use ($q) {
-                    $query->where('title', 'like', "%{$q}%")
-                          ->orWhere('slug', 'like', "%{$q}%")
-                          ->orWhereHas('category', fn($cq) => $cq->where('name', 'like', "%{$q}%"));
-                })
-                ->orderBy('published_at', 'desc')
-                ->take(20)
+            $query = Article::with('category')
+                ->where('status', 'published');
+
+            // Category filtering (by slug or id, including child categories)
+            if (!empty($categorySlug) && $categorySlug !== 'all') {
+                $category = Category::where('slug', $categorySlug)->first();
+                if ($category) {
+                    $subIds = Category::where('parent_id', $category->id)->pluck('id');
+                    $allCatIds = $subIds->push($category->id);
+                    $query->whereIn('category_id', $allCatIds);
+                } else {
+                    $query->whereHas('category', fn($cq) => $cq->where('slug', $categorySlug));
+                }
+            } elseif (!empty($categoryId) && $categoryId !== 'all') {
+                $category = Category::find($categoryId);
+                if ($category) {
+                    $subIds = Category::where('parent_id', $category->id)->pluck('id');
+                    $allCatIds = $subIds->push($category->id);
+                    $query->whereIn('category_id', $allCatIds);
+                } else {
+                    $query->where('category_id', $categoryId);
+                }
+            }
+
+            if (!empty($q)) {
+                $query->where(function ($sq) use ($q) {
+                    $sq->where('title', 'like', "%{$q}%")
+                       ->orWhere('slug', 'like', "%{$q}%")
+                       ->orWhereHas('category', fn($cq) => $cq->where('name', 'like', "%{$q}%"));
+                });
+            }
+
+            $articles = $query->orderByRaw('COALESCE(published_at, created_at) DESC')
+                ->take(36)
                 ->get(['id', 'title', 'slug', 'category_id', 'cover_image_url', 'published_at']);
 
             return response()->json(['results' => $articles]);

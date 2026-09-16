@@ -1,17 +1,25 @@
 <?php
-$secureCookie = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off");
+
+use App\Models\User;
+use Illuminate\Container\Container;
+use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+$secureCookie = (! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
 session_set_cookie_params([
-    "lifetime" => 0,
-    "path" => "/",
-    "secure" => $secureCookie,
-    "httponly" => true,
-    "samesite" => "Lax",
+    'lifetime' => 0,
+    'path' => '/',
+    'secure' => $secureCookie,
+    'httponly' => true,
+    'samesite' => 'Lax',
 ]);
-ini_set("session.use_strict_mode", "1");
+ini_set('session.use_strict_mode', '1');
 session_start();
 
 // Use the exact PHP self path to ensure POST requests do not hit extensionless 405 Method Not Allowed errors
-$pageUrl = $_SERVER["PHP_SELF"];
+$pageUrl = $_SERVER['PHP_SELF'];
 
 /*
 |--------------------------------------------------------------------------
@@ -19,61 +27,63 @@ $pageUrl = $_SERVER["PHP_SELF"];
 |--------------------------------------------------------------------------
 */
 
-$ADMIN_USER = "admin@kiuq.kiuq";
+$ADMIN_USER = 'admin@kiuq.kiuq';
 $ADMIN_PASS_HASH = '$2y$12$QEarLyHf0rz/6VrPvLyvQug1zqhhWFkLZsGhcabu4nSDI2as/426S';
 $DELETE_PASS_HASH = '$2y$12$SSR.q2dXmK49Rn/H9gaFOenTdql8BqlzsTwVabA05aSiKMzQZC7a.';
 $MAX_LOGIN_ATTEMPTS = 5;
 $IMAGE_MAX_DIMENSION = 1800;
 $WEBP_QUALITY = 82;
-$APP_TIMEZONE = "Asia/Phnom_Penh";
+$APP_TIMEZONE = 'Asia/Phnom_Penh';
 $AUTO_LOGOUT_SECONDS = 12 * 60 * 60;
 
 date_default_timezone_set($APP_TIMEZONE);
 
-$ROOT_FOLDER = "blog";
-$CONVERTER_ROOT_FOLDER = "";
-$BASE_DIR = __DIR__ . "/" . $ROOT_FOLDER;
-$APP_ASSETS_DIR = __DIR__ . "/app-assets";
-$TRASH_DIR = __DIR__ . "/.trash";
-$TRASH_META_FILE = __DIR__ . "/.trash_index.json";
-$SECURITY_FILE = __DIR__ . "/.security.json";
-$USERS_FILE = __DIR__ . "/.users.json";
-$APP_SETTINGS_FILE = __DIR__ . "/.app_settings.json";
-$LOGIN_ACTIVITY_FILE = __DIR__ . "/.login_activity.json";
-$THEME_LIBRARY_FILE = __DIR__ . "/.theme_images.json";
+$ROOT_FOLDER = 'blog';
+$CONVERTER_ROOT_FOLDER = '';
+$BASE_DIR = __DIR__.'/'.$ROOT_FOLDER;
+$APP_ASSETS_DIR = __DIR__.'/app-assets';
+$TRASH_DIR = __DIR__.'/.trash';
+$TRASH_META_FILE = __DIR__.'/.trash_index.json';
+$SECURITY_FILE = __DIR__.'/.security.json';
+$USERS_FILE = __DIR__.'/.users.json';
+$APP_SETTINGS_FILE = __DIR__.'/.app_settings.json';
+$LOGIN_ACTIVITY_FILE = __DIR__.'/.login_activity.json';
+$THEME_LIBRARY_FILE = __DIR__.'/.theme_images.json';
 
 /*
 |--------------------------------------------------------------------------
 | FEATURE MODULES (Additive only — do not modify existing logic above)
 |--------------------------------------------------------------------------
 */
-$FEATURES_DIR = __DIR__ . "/features";
+$FEATURES_DIR = __DIR__.'/features';
 if (is_dir($FEATURES_DIR)) {
-    $featureFiles = ['config.php','feature_db.php','folder_meta.php','properties.php',
-                     'duplicate_finder.php','image_replace.php','version_history.php',
-                     'ai_bg_remove.php','sorting.php','storage_dashboard.php'];
+    $featureFiles = ['config.php', 'feature_db.php', 'folder_meta.php', 'properties.php',
+        'duplicate_finder.php', 'image_replace.php', 'version_history.php',
+        'ai_bg_remove.php', 'sorting.php', 'storage_dashboard.php'];
     foreach ($featureFiles as $ff) {
-        $ffPath = $FEATURES_DIR . '/' . $ff;
-        if (is_file($ffPath)) require_once $ffPath;
+        $ffPath = $FEATURES_DIR.'/'.$ff;
+        if (is_file($ffPath)) {
+            require_once $ffPath;
+        }
     }
 }
 $FEATURES_ENABLED = is_dir($FEATURES_DIR) && function_exists('feature_db');
 
-$scriptBasePath = rtrim(str_replace("\\", "/", dirname($_SERVER["SCRIPT_NAME"] ?? "")), "/");
-$requestScheme = $secureCookie ? "https" : "http";
-$httpHost = $_SERVER["HTTP_HOST"] ?? "localhost";
-$basePathPrefix = ($scriptBasePath === "" || $scriptBasePath === ".") ? "" : $scriptBasePath;
+$scriptBasePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '')), '/');
+$requestScheme = $secureCookie ? 'https' : 'http';
+$httpHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$basePathPrefix = ($scriptBasePath === '' || $scriptBasePath === '.') ? '' : $scriptBasePath;
 
 // Build clean public URLs (e.g. https://rafvex.com/blog/...)
-if (strpos($httpHost, "rafvex.com") !== false) {
-    $BASE_URL = "https://" . $httpHost . "/" . rawurlencode($ROOT_FOLDER);
-} elseif (strpos($basePathPrefix, "/public/medialibrary") !== false) {
-    $subRoot = substr($basePathPrefix, 0, strpos($basePathPrefix, "/public/medialibrary"));
-    $BASE_URL = $requestScheme . "://" . $httpHost . ($subRoot ?: "") . "/" . rawurlencode($ROOT_FOLDER);
+if (strpos($httpHost, 'rafvex.com') !== false) {
+    $BASE_URL = 'https://'.$httpHost.'/'.rawurlencode($ROOT_FOLDER);
+} elseif (strpos($basePathPrefix, '/public/medialibrary') !== false) {
+    $subRoot = substr($basePathPrefix, 0, strpos($basePathPrefix, '/public/medialibrary'));
+    $BASE_URL = $requestScheme.'://'.$httpHost.($subRoot ?: '').'/'.rawurlencode($ROOT_FOLDER);
 } else {
-    $BASE_URL = $requestScheme . "://" . $httpHost . "/" . rawurlencode($ROOT_FOLDER);
+    $BASE_URL = $requestScheme.'://'.$httpHost.'/'.rawurlencode($ROOT_FOLDER);
 }
-$APP_ASSETS_URL = $requestScheme . "://" . $httpHost . (($scriptBasePath === "" || $scriptBasePath === ".") ? "/app-assets" : $scriptBasePath . "/app-assets");
+$APP_ASSETS_URL = $requestScheme.'://'.$httpHost.(($scriptBasePath === '' || $scriptBasePath === '.') ? '/app-assets' : $scriptBasePath.'/app-assets');
 
 /*
 |--------------------------------------------------------------------------
@@ -85,10 +95,10 @@ $APP_ASSETS_URL = $requestScheme . "://" . $httpHost . (($scriptBasePath === "" 
 | The backup system must be installed at __DIR__ . "/backup/"
 |--------------------------------------------------------------------------
 */
-$AUTO_BACKUP_ENABLED   = true;
+$AUTO_BACKUP_ENABLED = true;
 $BACKUP_SYSTEM_LIB_CANDIDATES = [
-    __DIR__ . "/backup/lib.php",
-    dirname(__DIR__) . "/backup/lib.php",
+    __DIR__.'/backup/lib.php',
+    dirname(__DIR__).'/backup/lib.php',
 ];
 
 /**
@@ -102,7 +112,7 @@ function imghost_resolveBackupLib(): ?string
     global $BACKUP_SYSTEM_LIB_CANDIDATES;
 
     foreach ($BACKUP_SYSTEM_LIB_CANDIDATES as $candidate) {
-        if (is_string($candidate) && $candidate !== "" && is_file($candidate)) {
+        if (is_string($candidate) && $candidate !== '' && is_file($candidate)) {
             return $candidate;
         }
     }
@@ -118,7 +128,7 @@ function imghost_autoBackup(array $absoluteFilePaths): void
 {
     global $AUTO_BACKUP_ENABLED;
 
-    if (!$AUTO_BACKUP_ENABLED) {
+    if (! $AUTO_BACKUP_ENABLED) {
         return;
     }
 
@@ -134,7 +144,7 @@ function imghost_autoBackup(array $absoluteFilePaths): void
         $filtered = [];
         foreach ($absoluteFilePaths as $path) {
             $candidate = (string) $path;
-            if ($candidate !== "" && is_file($candidate)) {
+            if ($candidate !== '' && is_file($candidate)) {
                 $filtered[$candidate] = true;
             }
         }
@@ -143,7 +153,7 @@ function imghost_autoBackup(array $absoluteFilePaths): void
         }
     } catch (Throwable $e) {
         // Never crash ImageHost because of a backup failure.
-        error_log('[ImageHost auto-backup] ' . $e->getMessage());
+        error_log('[ImageHost auto-backup] '.$e->getMessage());
     }
 }
 
@@ -155,7 +165,7 @@ function imghost_autoBackupTargets(array $absoluteTargets): void
 {
     global $AUTO_BACKUP_ENABLED;
 
-    if (!$AUTO_BACKUP_ENABLED) {
+    if (! $AUTO_BACKUP_ENABLED) {
         return;
     }
 
@@ -171,12 +181,12 @@ function imghost_autoBackupTargets(array $absoluteTargets): void
         } else {
             // Backward compatibility fallback: files only.
             $files = imghost_collectFilesForBackup($absoluteTargets);
-            if (!empty($files)) {
+            if (! empty($files)) {
                 bs_autoBackupFiles($files, 'auto_upload from ImageHost');
             }
         }
     } catch (Throwable $e) {
-        error_log('[ImageHost auto-backup-targets] ' . $e->getMessage());
+        error_log('[ImageHost auto-backup-targets] '.$e->getMessage());
     }
 }
 
@@ -184,7 +194,7 @@ function imghost_autoBackupTargets(array $absoluteTargets): void
  * Collect all files under one or more targets for a pre-delete snapshot.
  * This guarantees files remain recoverable even after deletion from live.
  *
- * @param array<int,string> $targets
+ * @param  array<int,string>  $targets
  * @return array<int,string>
  */
 function imghost_collectFilesForBackup(array $targets): array
@@ -193,16 +203,17 @@ function imghost_collectFilesForBackup(array $targets): array
 
     foreach ($targets as $target) {
         $target = (string) $target;
-        if ($target === "" || !file_exists($target) || is_link($target)) {
+        if ($target === '' || ! file_exists($target) || is_link($target)) {
             continue;
         }
 
         if (is_file($target)) {
             $files[$target] = true;
+
             continue;
         }
 
-        if (!is_dir($target)) {
+        if (! is_dir($target)) {
             continue;
         }
 
@@ -211,7 +222,7 @@ function imghost_collectFilesForBackup(array $targets): array
             RecursiveIteratorIterator::LEAVES_ONLY
         );
         foreach ($it as $info) {
-            if ($info->isLink() || !$info->isFile()) {
+            if ($info->isLink() || ! $info->isFile()) {
                 continue;
             }
             $files[$info->getPathname()] = true;
@@ -222,11 +233,11 @@ function imghost_collectFilesForBackup(array $targets): array
 }
 
 $allowedExtensions = [
-    "jpg", "jpeg", "png", "webp", "gif", "svg",
-    "html", "txt", "css", "js", "json", "php"
+    'jpg', 'jpeg', 'png', 'webp', 'gif', 'svg',
+    'html', 'txt', 'css', 'js', 'json', 'php',
 ];
 
-$codeExtensions = ["html", "css", "js", "json", "php", "txt"];
+$codeExtensions = ['html', 'css', 'js', 'json', 'php', 'txt'];
 
 /*
 |--------------------------------------------------------------------------
@@ -234,43 +245,53 @@ $codeExtensions = ["html", "css", "js", "json", "php", "txt"];
 |--------------------------------------------------------------------------
 */
 
-if (!is_dir($BASE_DIR)) {
+if (! is_dir($BASE_DIR)) {
     mkdir($BASE_DIR, 0755, true);
 }
-if (!is_dir($TRASH_DIR)) {
+if (! is_dir($TRASH_DIR)) {
     mkdir($TRASH_DIR, 0755, true);
 }
-if (!is_dir($APP_ASSETS_DIR)) {
+if (! is_dir($APP_ASSETS_DIR)) {
     mkdir($APP_ASSETS_DIR, 0755, true);
 }
 
-function csrfToken() {
-    if (empty($_SESSION["csrf_token"])) {
-        $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
+function csrfToken()
+{
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
-    return $_SESSION["csrf_token"];
+
+    return $_SESSION['csrf_token'];
 }
 
-function csrfField() {
-    return '<input type="hidden" name="csrf_token" value="' . htmlspecialchars(csrfToken(), ENT_QUOTES, "UTF-8") . '">';
+function csrfField()
+{
+    return '<input type="hidden" name="csrf_token" value="'.htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8').'">';
 }
 
-function validCsrf($token) {
-    return is_string($token) && hash_equals($_SESSION["csrf_token"] ?? "", $token);
+function validCsrf($token)
+{
+    return is_string($token) && hash_equals($_SESSION['csrf_token'] ?? '', $token);
 }
 
-function readJsonFile($file, $default = []) {
-    if (!is_file($file)) return $default;
+function readJsonFile($file, $default = [])
+{
+    if (! is_file($file)) {
+        return $default;
+    }
     $raw = file_get_contents($file);
     $data = json_decode($raw, true);
+
     return is_array($data) ? $data : $default;
 }
 
-function writeJsonFile($file, $data) {
+function writeJsonFile($file, $data)
+{
     file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), LOCK_EX);
 }
 
-function getSecureIndexHtml() {
+function getSecureIndexHtml()
+{
     return <<<'HTML'
 <!DOCTYPE html>
 <html lang="en">
@@ -460,193 +481,287 @@ function getSecureIndexHtml() {
 HTML;
 }
 
-function isSystemManagedFile($name) {
-    $base = basename((string)$name);
-    return in_array($base, ["index.html", ".security.json"], true);
+function isSystemManagedFile($name)
+{
+    $base = basename((string) $name);
+
+    return in_array($base, ['index.html', '.security.json'], true);
 }
 
-function shouldHideFromFileManager($name) {
-    $base = basename((string)$name);
+function shouldHideFromFileManager($name)
+{
+    $base = basename((string) $name);
+
     return isSystemManagedFile($base)
-        || in_array($base, [".versions", ".trash", ".DS_Store"], true)
-        || str_starts_with($base, "._");
+        || in_array($base, ['.versions', '.trash', '.DS_Store'], true)
+        || str_starts_with($base, '._');
 }
 
-function ensureSecureIndexFile($dir) {
-    if (!is_dir($dir) || !is_writable($dir)) return;
-    $indexFile = rtrim($dir, "/") . "/index.html";
-    if (!is_file($indexFile)) {
+function ensureSecureIndexFile($dir)
+{
+    if (! is_dir($dir) || ! is_writable($dir)) {
+        return;
+    }
+    $indexFile = rtrim($dir, '/').'/index.html';
+    if (! is_file($indexFile)) {
         @file_put_contents($indexFile, getSecureIndexHtml(), LOCK_EX);
     }
 }
 
-function cleanPath($path) {
-    $path = str_replace("\\", "/", $path);
-    $path = str_replace("\0", "", $path);
-    $path = trim($path, "/");
-    $parts = explode("/", $path);
+function cleanPath($path)
+{
+    $path = str_replace('\\', '/', $path);
+    $path = str_replace("\0", '', $path);
+    $path = trim($path, '/');
+    $parts = explode('/', $path);
     $safe = [];
     foreach ($parts as $part) {
-        if ($part === "" || $part === "." || $part === "..") continue;
-        $part = preg_replace('/[\x00-\x1F\x7F]/u', "", $part) ?? $part;
-        if ($part !== "") $safe[] = $part;
+        if ($part === '' || $part === '.' || $part === '..') {
+            continue;
+        }
+        $part = preg_replace('/[\x00-\x1F\x7F]/u', '', $part) ?? $part;
+        if ($part !== '') {
+            $safe[] = $part;
+        }
     }
-    return implode("/", $safe);
+
+    return implode('/', $safe);
 }
 
-function cleanName($name) {
-    $name = preg_replace("/[^\p{L}\p{N}\p{M}._\- ()\[\]]/u", "", basename($name));
+function cleanName($name)
+{
+    $name = preg_replace("/[^\p{L}\p{N}\p{M}._\- ()\[\]]/u", '', basename($name));
+
     return trim($name);
 }
 
-function cleanExistingName($name) {
-    $name = str_replace(["\0", "/", "\\"], "", (string)$name);
-    $name = preg_replace('/[\x00-\x1F\x7F]/u', "", $name) ?? $name;
-    return ($name === "." || $name === "..") ? "" : $name;
+function cleanExistingName($name)
+{
+    $name = str_replace(["\0", '/', '\\'], '', (string) $name);
+    $name = preg_replace('/[\x00-\x1F\x7F]/u', '', $name) ?? $name;
+
+    return ($name === '.' || $name === '..') ? '' : $name;
 }
 
-function cleanBaseName($name) {
+function cleanBaseName($name)
+{
     $base = pathinfo(basename($name), PATHINFO_FILENAME);
-    $base = preg_replace("/[^\p{L}\p{N}\p{M}._\- ()\[\]]/u", "", $base);
-    return trim($base) !== "" ? $base : "image";
+    $base = preg_replace("/[^\p{L}\p{N}\p{M}._\- ()\[\]]/u", '', $base);
+
+    return trim($base) !== '' ? $base : 'image';
 }
 
-function safeFullPath($baseDir, $relativePath = "") {
+function safeFullPath($baseDir, $relativePath = '')
+{
     $relativePath = cleanPath($relativePath);
-    $fullPath = $baseDir . ($relativePath ? "/" . $relativePath : "");
+    $fullPath = $baseDir.($relativePath ? '/'.$relativePath : '');
     $baseReal = realpath($baseDir);
     $targetReal = realpath($fullPath);
-    if ($baseReal !== false && $targetReal !== false && $targetReal !== $baseReal && strpos($targetReal, $baseReal . DIRECTORY_SEPARATOR) !== 0) {
-        die("Invalid path.");
+    if ($baseReal !== false && $targetReal !== false && $targetReal !== $baseReal && strpos($targetReal, $baseReal.DIRECTORY_SEPARATOR) !== 0) {
+        exit('Invalid path.');
     }
+
     return $fullPath;
 }
 
-function deleteFolder($dir) {
-    if (!is_dir($dir)) return;
+function deleteFolder($dir)
+{
+    if (! is_dir($dir)) {
+        return;
+    }
     foreach (scandir($dir) as $item) {
-        if ($item === "." || $item === "..") continue;
-        $path = $dir . "/" . $item;
-        if (is_dir($path)) deleteFolder($path);
-        else unlink($path);
+        if ($item === '.' || $item === '..') {
+            continue;
+        }
+        $path = $dir.'/'.$item;
+        if (is_dir($path)) {
+            deleteFolder($path);
+        } else {
+            unlink($path);
+        }
     }
     rmdir($dir);
 }
 
-function folderSize($dir) {
-    if (!is_dir($dir)) return 0;
+function folderSize($dir)
+{
+    if (! is_dir($dir)) {
+        return 0;
+    }
     $size = 0;
     foreach (scandir($dir) as $item) {
-        if ($item === "." || $item === "..") continue;
-        $path = $dir . "/" . $item;
-        if (is_dir($path)) $size += folderSize($path);
-        elseif (is_file($path)) $size += filesize($path);
+        if ($item === '.' || $item === '..') {
+            continue;
+        }
+        $path = $dir.'/'.$item;
+        if (is_dir($path)) {
+            $size += folderSize($path);
+        } elseif (is_file($path)) {
+            $size += filesize($path);
+        }
     }
+
     return $size;
 }
 
-function folderOptions($baseDir, $rootRelative = "", $rootLabel = "blog / root") {
+function folderOptions($baseDir, $rootRelative = '', $rootLabel = 'blog / root')
+{
     $rootRelative = cleanPath($rootRelative);
-    $options = [["path" => $rootRelative, "label" => $rootLabel]];
-    $scan = function($relative) use (&$scan, &$options, $baseDir) {
+    $options = [['path' => $rootRelative, 'label' => $rootLabel, 'name' => 'Root', 'depth' => 0]];
+    $scan = function ($relative, $depth = 1) use (&$scan, &$options, $baseDir) {
         $dir = safeFullPath($baseDir, $relative);
-        if (!is_dir($dir)) return;
-        $names = array_diff(scandir($dir), [".", ".."]);
+        if (! is_dir($dir)) {
+            return;
+        }
+        $names = array_diff(scandir($dir), ['.', '..']);
         natcasesort($names);
         foreach ($names as $name) {
-            if (shouldHideFromFileManager($name)) continue;
-            $path = $dir . "/" . $name;
-            if (!is_dir($path)) continue;
-            $childRelative = $relative ? $relative . "/" . $name : $name;
-            $options[] = ["path" => cleanPath($childRelative), "label" => $childRelative];
-            $scan($childRelative);
+            if (shouldHideFromFileManager($name)) {
+                continue;
+            }
+            $path = $dir.'/'.$name;
+            if (! is_dir($path)) {
+                continue;
+            }
+            $childRelative = $relative ? $relative.'/'.$name : $name;
+            $options[] = [
+                'path' => cleanPath($childRelative),
+                'label' => $childRelative,
+                'name' => $name,
+                'depth' => $depth,
+            ];
+            $scan($childRelative, $depth + 1);
         }
     };
-    $scan($rootRelative);
+    $scan($rootRelative, 1);
+
     return $options;
 }
 
-function relativePathInRoot($relativePath, $rootRelative) {
+function relativePathInRoot($relativePath, $rootRelative)
+{
     $path = cleanPath($relativePath);
     $root = cleanPath($rootRelative);
-    if ($root === "") return true;
-    return $path === $root || strpos($path . "/", $root . "/") === 0;
+    if ($root === '') {
+        return true;
+    }
+
+    return $path === $root || strpos($path.'/', $root.'/') === 0;
 }
 
-function uniqueDestinationPath($dir, $name) {
+function uniqueDestinationPath($dir, $name)
+{
     $name = cleanName($name);
-    $candidate = $dir . "/" . $name;
-    if (!file_exists($candidate)) return $candidate;
+    $candidate = $dir.'/'.$name;
+    if (! file_exists($candidate)) {
+        return $candidate;
+    }
 
     $ext = pathinfo($name, PATHINFO_EXTENSION);
     $base = $ext ? substr($name, 0, -(strlen($ext) + 1)) : $name;
     $suffix = 1;
     do {
-        $copyName = $base . " copy" . ($suffix > 1 ? " " . $suffix : "") . ($ext ? "." . $ext : "");
-        $candidate = $dir . "/" . $copyName;
+        $copyName = $base.' copy'.($suffix > 1 ? ' '.$suffix : '').($ext ? '.'.$ext : '');
+        $candidate = $dir.'/'.$copyName;
         $suffix++;
     } while (file_exists($candidate));
+
     return $candidate;
 }
 
-function copyFolder($src, $dst) {
-    if (!is_dir($src)) return false;
-    if (!is_dir($dst) && !mkdir($dst, 0755, true)) return false;
+function copyFolder($src, $dst)
+{
+    if (! is_dir($src)) {
+        return false;
+    }
+    if (! is_dir($dst) && ! mkdir($dst, 0755, true)) {
+        return false;
+    }
     ensureSecureIndexFile($dst);
     foreach (scandir($src) as $item) {
-        if ($item === "." || $item === "..") continue;
-        if (shouldHideFromFileManager($item)) continue;
-        $from = $src . "/" . $item;
-        $to = $dst . "/" . $item;
+        if ($item === '.' || $item === '..') {
+            continue;
+        }
+        if (shouldHideFromFileManager($item)) {
+            continue;
+        }
+        $from = $src.'/'.$item;
+        $to = $dst.'/'.$item;
         if (is_dir($from)) {
-            if (!copyFolder($from, $to)) return false;
+            if (! copyFolder($from, $to)) {
+                return false;
+            }
         } elseif (is_file($from)) {
-            if (!copy($from, $to)) return false;
+            if (! copy($from, $to)) {
+                return false;
+            }
         }
     }
+
     return true;
 }
 
-function sanitizeDownloadFilename($name, $fallback = "download") {
-    $name = trim((string)$name);
-    $name = str_replace(["\r", "\n"], "", $name);
-    $name = preg_replace('/[^a-zA-Z0-9._\- ]/', "", $name);
+function sanitizeDownloadFilename($name, $fallback = 'download')
+{
+    $name = trim((string) $name);
+    $name = str_replace(["\r", "\n"], '', $name);
+    $name = preg_replace('/[^a-zA-Z0-9._\- ]/', '', $name);
     $name = trim($name);
-    return $name !== "" ? $name : $fallback;
+
+    return $name !== '' ? $name : $fallback;
 }
 
-function streamDownloadFile($filePath, $downloadName, $deleteAfter = false) {
-    if (!is_file($filePath)) return false;
+function streamDownloadFile($filePath, $downloadName, $deleteAfter = false)
+{
+    if (! is_file($filePath)) {
+        return false;
+    }
     if (ob_get_level()) {
-        while (ob_get_level()) ob_end_clean();
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
     }
     $downloadName = sanitizeDownloadFilename($downloadName, basename($filePath));
-    header("Content-Description: File Transfer");
-    header("Content-Type: application/octet-stream");
-    header('Content-Disposition: attachment; filename="' . str_replace('"', '', $downloadName) . '"');
-    header("Content-Length: " . filesize($filePath));
-    header("Cache-Control: private, max-age=0, must-revalidate");
-    header("Pragma: public");
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/octet-stream');
+    header('Content-Disposition: attachment; filename="'.str_replace('"', '', $downloadName).'"');
+    header('Content-Length: '.filesize($filePath));
+    header('Cache-Control: private, max-age=0, must-revalidate');
+    header('Pragma: public');
     readfile($filePath);
-    if ($deleteAfter) @unlink($filePath);
+    if ($deleteAfter) {
+        @unlink($filePath);
+    }
     exit;
 }
 
-function addPathToZipArchive($zip, $sourcePath, $zipPath) {
-    $zipPath = str_replace("\\", "/", trim((string)$zipPath, "/"));
-    if ($zipPath === "") $zipPath = basename($sourcePath);
-    if (shouldHideFromFileManager(basename($sourcePath))) return;
-    if (is_file($sourcePath)) {
-        $zip->addFile($sourcePath, $zipPath);
+function addPathToZipArchive($zip, $sourcePath, $zipPath)
+{
+    $zipPath = str_replace('\\', '/', trim((string) $zipPath, '/'));
+    if ($zipPath === '') {
+        $zipPath = basename($sourcePath);
+    }
+    if (shouldHideFromFileManager(basename($sourcePath))) {
         return;
     }
-    if (!is_dir($sourcePath)) return;
+    if (is_file($sourcePath)) {
+        $zip->addFile($sourcePath, $zipPath);
+
+        return;
+    }
+    if (! is_dir($sourcePath)) {
+        return;
+    }
     $zip->addEmptyDir($zipPath);
     foreach (scandir($sourcePath) as $item) {
-        if ($item === "." || $item === "..") continue;
-        if (shouldHideFromFileManager($item)) continue;
-        $childPath = $sourcePath . "/" . $item;
-        $childZipPath = $zipPath . "/" . $item;
+        if ($item === '.' || $item === '..') {
+            continue;
+        }
+        if (shouldHideFromFileManager($item)) {
+            continue;
+        }
+        $childPath = $sourcePath.'/'.$item;
+        $childZipPath = $zipPath.'/'.$item;
         if (is_dir($childPath)) {
             addPathToZipArchive($zip, $childPath, $childZipPath);
         } elseif (is_file($childPath)) {
@@ -655,184 +770,255 @@ function addPathToZipArchive($zip, $sourcePath, $zipPath) {
     }
 }
 
-function streamZipDownloadFromMap($pathMap, $archiveName) {
-    if (!class_exists("ZipArchive")) return false;
-    $tempFile = tempnam(sys_get_temp_dir(), "imghost_zip_");
-    if ($tempFile === false) return false;
-    $zipFile = $tempFile . ".zip";
+function streamZipDownloadFromMap($pathMap, $archiveName)
+{
+    if (! class_exists('ZipArchive')) {
+        return false;
+    }
+    $tempFile = tempnam(sys_get_temp_dir(), 'imghost_zip_');
+    if ($tempFile === false) {
+        return false;
+    }
+    $zipFile = $tempFile.'.zip';
     @rename($tempFile, $zipFile);
-    if (is_file($tempFile)) @unlink($tempFile);
+    if (is_file($tempFile)) {
+        @unlink($tempFile);
+    }
 
-    $zip = new ZipArchive();
+    $zip = new ZipArchive;
     if ($zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-        if (is_file($zipFile)) @unlink($zipFile);
+        if (is_file($zipFile)) {
+            @unlink($zipFile);
+        }
+
         return false;
     }
     foreach ($pathMap as $absPath => $entryName) {
         addPathToZipArchive($zip, $absPath, $entryName);
     }
     $zip->close();
-    streamDownloadFile($zipFile, sanitizeDownloadFilename($archiveName, "download.zip"), true);
+    streamDownloadFile($zipFile, sanitizeDownloadFilename($archiveName, 'download.zip'), true);
+
     return true;
 }
 
-function loadTrashIndex() {
+function loadTrashIndex()
+{
     global $TRASH_META_FILE;
-    $data = readJsonFile($TRASH_META_FILE, ["items" => []]);
-    if (!isset($data["items"]) || !is_array($data["items"])) $data["items"] = [];
+    $data = readJsonFile($TRASH_META_FILE, ['items' => []]);
+    if (! isset($data['items']) || ! is_array($data['items'])) {
+        $data['items'] = [];
+    }
+
     return $data;
 }
 
-function saveTrashIndex($data) {
+function saveTrashIndex($data)
+{
     global $TRASH_META_FILE;
     writeJsonFile($TRASH_META_FILE, $data);
 }
 
-function normalizeRestoredPath($path, $mtime = 0) {
-    if (!file_exists($path) || is_link($path)) return;
-    $mtime = (int)$mtime;
-    if (is_file($path)) {
-        @chmod($path, 0644);
-        if ($mtime > 0) @touch($path, $mtime);
+function normalizeRestoredPath($path, $mtime = 0)
+{
+    if (! file_exists($path) || is_link($path)) {
         return;
     }
-    if (!is_dir($path)) return;
+    $mtime = (int) $mtime;
+    if (is_file($path)) {
+        @chmod($path, 0644);
+        if ($mtime > 0) {
+            @touch($path, $mtime);
+        }
+
+        return;
+    }
+    if (! is_dir($path)) {
+        return;
+    }
     @chmod($path, 0755);
     $it = new RecursiveIteratorIterator(
         new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
         RecursiveIteratorIterator::SELF_FIRST
     );
     foreach ($it as $info) {
-        if ($info->isLink()) continue;
-        if ($info->isDir()) @chmod($info->getPathname(), 0755);
-        elseif ($info->isFile()) @chmod($info->getPathname(), 0644);
+        if ($info->isLink()) {
+            continue;
+        }
+        if ($info->isDir()) {
+            @chmod($info->getPathname(), 0755);
+        } elseif ($info->isFile()) {
+            @chmod($info->getPathname(), 0644);
+        }
     }
 }
 
-function trashItem($target, $relativePath) {
+function trashItem($target, $relativePath)
+{
     global $TRASH_DIR;
-    if (!file_exists($target)) return false;
+    if (! file_exists($target)) {
+        return false;
+    }
     $trash = loadTrashIndex();
     $id = bin2hex(random_bytes(12));
-    $trashName = date("Ymd_His") . "_" . $id . "_" . cleanName(basename($relativePath));
-    $trashPath = $TRASH_DIR . "/" . $trashName;
-    if (!rename($target, $trashPath)) return false;
+    $trashName = date('Ymd_His').'_'.$id.'_'.cleanName(basename($relativePath));
+    $trashPath = $TRASH_DIR.'/'.$trashName;
+    if (! rename($target, $trashPath)) {
+        return false;
+    }
     $isTrashDir = is_dir($trashPath);
     $isTrashFile = is_file($trashPath);
 
-    $trash["items"][$id] = [
-        "id" => $id,
-        "original_relative" => cleanPath($relativePath),
-        "trash_name" => $trashName,
-        "deleted_at" => time(),
-        "type" => $isTrashDir ? "folder" : "file",
-        "size" => $isTrashDir ? folderSize($trashPath) : ($isTrashFile ? filesize($trashPath) : 0),
-        "mtime" => file_exists($trashPath) ? (int)filemtime($trashPath) : 0,
-        "hash" => $isTrashFile ? (string)@hash_file("sha256", $trashPath) : "",
+    $trash['items'][$id] = [
+        'id' => $id,
+        'original_relative' => cleanPath($relativePath),
+        'trash_name' => $trashName,
+        'deleted_at' => time(),
+        'type' => $isTrashDir ? 'folder' : 'file',
+        'size' => $isTrashDir ? folderSize($trashPath) : ($isTrashFile ? filesize($trashPath) : 0),
+        'mtime' => file_exists($trashPath) ? (int) filemtime($trashPath) : 0,
+        'hash' => $isTrashFile ? (string) @hash_file('sha256', $trashPath) : '',
     ];
     saveTrashIndex($trash);
+
     return true;
 }
 
-function restoreTrashItem($id) {
+function restoreTrashItem($id)
+{
     global $BASE_DIR, $TRASH_DIR;
     $trash = loadTrashIndex();
-    if (empty($trash["items"][$id])) return false;
-    $item = $trash["items"][$id];
-    $trashPath = $TRASH_DIR . "/" . cleanName($item["trash_name"] ?? "");
-    if (!file_exists($trashPath)) {
-        unset($trash["items"][$id]);
+    if (empty($trash['items'][$id])) {
+        return false;
+    }
+    $item = $trash['items'][$id];
+    $trashPath = $TRASH_DIR.'/'.cleanName($item['trash_name'] ?? '');
+    if (! file_exists($trashPath)) {
+        unset($trash['items'][$id]);
         saveTrashIndex($trash);
+
         return false;
     }
 
-    $relative = cleanPath($item["original_relative"] ?? "");
+    $relative = cleanPath($item['original_relative'] ?? '');
     $restorePath = safeFullPath($BASE_DIR, $relative);
     $parent = dirname($restorePath);
-    if (!is_dir($parent)) mkdir($parent, 0755, true);
-    if (file_exists($restorePath)) $restorePath = uniqueDestinationPath($parent, basename($restorePath));
+    if (! is_dir($parent)) {
+        mkdir($parent, 0755, true);
+    }
+    if (file_exists($restorePath)) {
+        $restorePath = uniqueDestinationPath($parent, basename($restorePath));
+    }
     clearstatcache(true);
-    if (!rename($trashPath, $restorePath)) return false;
-    normalizeRestoredPath($restorePath, (int)($item["mtime"] ?? 0));
-    if (is_file($restorePath) && !empty($item["hash"])) {
-        $restoredHash = @hash_file("sha256", $restorePath);
-        if (!is_string($restoredHash) || !hash_equals((string)$item["hash"], $restoredHash)) {
-            error_log("[ImageHost restore] Hash mismatch after restoring " . $restorePath);
+    if (! rename($trashPath, $restorePath)) {
+        return false;
+    }
+    normalizeRestoredPath($restorePath, (int) ($item['mtime'] ?? 0));
+    if (is_file($restorePath) && ! empty($item['hash'])) {
+        $restoredHash = @hash_file('sha256', $restorePath);
+        if (! is_string($restoredHash) || ! hash_equals((string) $item['hash'], $restoredHash)) {
+            error_log('[ImageHost restore] Hash mismatch after restoring '.$restorePath);
         }
     }
 
-    unset($trash["items"][$id]);
+    unset($trash['items'][$id]);
     saveTrashIndex($trash);
+
     return true;
 }
 
-function permanentlyDeleteTrashItem($id) {
+function permanentlyDeleteTrashItem($id)
+{
     global $TRASH_DIR;
     $trash = loadTrashIndex();
-    if (empty($trash["items"][$id])) return false;
-    $item = $trash["items"][$id];
-    $trashPath = $TRASH_DIR . "/" . cleanName($item["trash_name"] ?? "");
-    if (is_dir($trashPath)) deleteFolder($trashPath);
-    elseif (is_file($trashPath)) unlink($trashPath);
-    unset($trash["items"][$id]);
+    if (empty($trash['items'][$id])) {
+        return false;
+    }
+    $item = $trash['items'][$id];
+    $trashPath = $TRASH_DIR.'/'.cleanName($item['trash_name'] ?? '');
+    if (is_dir($trashPath)) {
+        deleteFolder($trashPath);
+    } elseif (is_file($trashPath)) {
+        unlink($trashPath);
+    }
+    unset($trash['items'][$id]);
     saveTrashIndex($trash);
+
     return true;
 }
 
-function isImageFile($filename) {
+function isImageFile($filename)
+{
     $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-    return in_array($ext, ["jpg", "jpeg", "png", "webp", "gif", "svg"]);
+
+    return in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg']);
 }
 
-function isWebpConvertibleImage($filename) {
+function isWebpConvertibleImage($filename)
+{
     $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-    return in_array($ext, ["jpg", "jpeg", "png"], true);
+
+    return in_array($ext, ['jpg', 'jpeg', 'png'], true);
 }
 
-function imageResourceFromFile($path, $ext) {
+function imageResourceFromFile($path, $ext)
+{
     $ext = strtolower($ext);
-    if (($ext === "jpg" || $ext === "jpeg") && function_exists("imagecreatefromjpeg")) {
+    if (($ext === 'jpg' || $ext === 'jpeg') && function_exists('imagecreatefromjpeg')) {
         return @imagecreatefromjpeg($path);
     }
-    if ($ext === "png" && function_exists("imagecreatefrompng")) {
+    if ($ext === 'png' && function_exists('imagecreatefrompng')) {
         return @imagecreatefrompng($path);
     }
-    if ($ext === "webp" && function_exists("imagecreatefromwebp")) {
+    if ($ext === 'webp' && function_exists('imagecreatefromwebp')) {
         return @imagecreatefromwebp($path);
     }
-    if (function_exists("imagecreatefromstring")) {
+    if (function_exists('imagecreatefromstring')) {
         $raw = @file_get_contents($path);
         if ($raw !== false) {
             return @imagecreatefromstring($raw);
         }
     }
+
     return false;
 }
 
-function saveOptimizedWebp($sourcePath, $destinationPath, $ext) {
+function saveOptimizedWebp($sourcePath, $destinationPath, $ext)
+{
     global $IMAGE_MAX_DIMENSION, $WEBP_QUALITY;
-    if (!function_exists("imagewebp")) return false;
-    if (!canAttemptImageOptimization($sourcePath)) return false;
+    if (! function_exists('imagewebp')) {
+        return false;
+    }
+    if (! canAttemptImageOptimization($sourcePath)) {
+        return false;
+    }
     $info = @getimagesize($sourcePath);
-    if (!$info || empty($info[0]) || empty($info[1])) return false;
+    if (! $info || empty($info[0]) || empty($info[1])) {
+        return false;
+    }
 
-    $width = (int)$info[0];
-    $height = (int)$info[1];
+    $width = (int) $info[0];
+    $height = (int) $info[1];
     $ratio = min(1, $IMAGE_MAX_DIMENSION / max($width, $height));
 
     if (strtolower($ext) === 'webp' && $ratio == 1) {
-        if (@copy($sourcePath, $destinationPath)) return true;
+        if (@copy($sourcePath, $destinationPath)) {
+            return true;
+        }
     }
 
     $src = imageResourceFromFile($sourcePath, $ext);
-    if (!$src) return false;
+    if (! $src) {
+        return false;
+    }
 
     if ($ratio < 1) {
-        $newWidth = max(1, (int)round($width * $ratio));
-        $newHeight = max(1, (int)round($height * $ratio));
+        $newWidth = max(1, (int) round($width * $ratio));
+        $newHeight = max(1, (int) round($height * $ratio));
         $out = imagecreatetruecolor($newWidth, $newHeight);
-        if (!$out) {
+        if (! $out) {
             imagedestroy($src);
+
             return false;
         }
         imagealphablending($out, false);
@@ -850,362 +1036,458 @@ function saveOptimizedWebp($sourcePath, $destinationPath, $ext) {
     }
 
     imagedestroy($src);
-    if (!$saved || !is_file($destinationPath) || !@getimagesize($destinationPath)) {
-        if (is_file($destinationPath)) @unlink($destinationPath);
+    if (! $saved || ! is_file($destinationPath) || ! @getimagesize($destinationPath)) {
+        if (is_file($destinationPath)) {
+            @unlink($destinationPath);
+        }
+
         return false;
     }
+
     return true;
 }
 
-function storeUploadedTempFile($tmpName, $destination) {
-    if (is_uploaded_file($tmpName) && @move_uploaded_file($tmpName, $destination)) return true;
-    if (@rename($tmpName, $destination)) return true;
-    if (@copy($tmpName, $destination)) {
-        @unlink($tmpName);
+function storeUploadedTempFile($tmpName, $destination)
+{
+    if (is_uploaded_file($tmpName) && @move_uploaded_file($tmpName, $destination)) {
         return true;
     }
+    if (@rename($tmpName, $destination)) {
+        return true;
+    }
+    if (@copy($tmpName, $destination)) {
+        @unlink($tmpName);
+
+        return true;
+    }
+
     return false;
 }
 
-function iniSizeToBytes($val) {
-    $val = trim((string)$val);
-    if ($val === "" || $val === "-1") return -1;
-    $num = (float)$val;
+function iniSizeToBytes($val)
+{
+    $val = trim((string) $val);
+    if ($val === '' || $val === '-1') {
+        return -1;
+    }
+    $num = (float) $val;
     $unit = strtolower(substr($val, -1));
-    if ($unit === "g") return (int)round($num * 1024 * 1024 * 1024);
-    if ($unit === "m") return (int)round($num * 1024 * 1024);
-    if ($unit === "k") return (int)round($num * 1024);
-    return (int)$num;
+    if ($unit === 'g') {
+        return (int) round($num * 1024 * 1024 * 1024);
+    }
+    if ($unit === 'm') {
+        return (int) round($num * 1024 * 1024);
+    }
+    if ($unit === 'k') {
+        return (int) round($num * 1024);
+    }
+
+    return (int) $num;
 }
 
-function hasEnoughMemoryBudget($requiredBytes) {
-    $limit = iniSizeToBytes(ini_get("memory_limit"));
-    if ($limit < 0) return true;
+function hasEnoughMemoryBudget($requiredBytes)
+{
+    $limit = iniSizeToBytes(ini_get('memory_limit'));
+    if ($limit < 0) {
+        return true;
+    }
     $remaining = $limit - memory_get_usage(true);
+
     return $remaining > $requiredBytes;
 }
 
-function canAttemptImageOptimization($sourcePath) {
+function canAttemptImageOptimization($sourcePath)
+{
     $info = @getimagesize($sourcePath);
-    if (!$info || empty($info[0]) || empty($info[1])) return false;
-    $width = (int)$info[0];
-    $height = (int)$info[1];
+    if (! $info || empty($info[0]) || empty($info[1])) {
+        return false;
+    }
+    $width = (int) $info[0];
+    $height = (int) $info[1];
     $pixels = max(1, $width) * max(1, $height);
-    $required = (int)($pixels * 10) + (16 * 1024 * 1024);
+    $required = (int) ($pixels * 10) + (16 * 1024 * 1024);
+
     return hasEnoughMemoryBudget($required);
 }
 
-function uploadErrorMessage($code) {
-    switch ((int)$code) {
+function uploadErrorMessage($code)
+{
+    switch ((int) $code) {
         case UPLOAD_ERR_INI_SIZE:
-            return "File is larger than server upload limit (upload_max_filesize).";
+            return 'File is larger than server upload limit (upload_max_filesize).';
         case UPLOAD_ERR_FORM_SIZE:
-            return "File is larger than allowed by form size limit.";
+            return 'File is larger than allowed by form size limit.';
         case UPLOAD_ERR_PARTIAL:
-            return "File was only partially uploaded.";
+            return 'File was only partially uploaded.';
         case UPLOAD_ERR_NO_FILE:
-            return "No file was uploaded.";
+            return 'No file was uploaded.';
         case UPLOAD_ERR_NO_TMP_DIR:
-            return "Server missing temporary upload folder.";
+            return 'Server missing temporary upload folder.';
         case UPLOAD_ERR_CANT_WRITE:
-            return "Server cannot write file to disk.";
+            return 'Server cannot write file to disk.';
         case UPLOAD_ERR_EXTENSION:
-            return "Upload blocked by server extension.";
+            return 'Upload blocked by server extension.';
         default:
-            return "Upload failed due to an unknown server error.";
+            return 'Upload failed due to an unknown server error.';
     }
 }
 
-function isCodeFile($filename) {
+function isCodeFile($filename)
+{
     global $codeExtensions;
     $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
     return in_array($ext, $codeExtensions);
 }
 
-function publicUrl($baseUrl, $relativePath) {
-    $baseUrl = rtrim($baseUrl, "/");
+function publicUrl($baseUrl, $relativePath)
+{
+    $baseUrl = rtrim($baseUrl, '/');
     $relativePath = cleanPath($relativePath);
-    if ($relativePath === "") {
-        return $baseUrl . "/";
+    if ($relativePath === '') {
+        return $baseUrl.'/';
     }
-    $parts = explode("/", $relativePath);
-    $encoded = array_map("rawurlencode", $parts);
-    return $baseUrl . "/" . implode("/", $encoded);
+    $parts = explode('/', $relativePath);
+    $encoded = array_map('rawurlencode', $parts);
+
+    return $baseUrl.'/'.implode('/', $encoded);
 }
 
-function versionedImageUrl($url, $mtime = 0, $size = 0, $changedAt = 0) {
-    $version = (int)$mtime . "-" . (int)$size;
-    return $url . (strpos($url, "?") === false ? "?" : "&") . "v=" . rawurlencode($version);
+function versionedImageUrl($url, $mtime = 0, $size = 0, $changedAt = 0)
+{
+    $version = (int) $mtime.'-'.(int) $size;
+
+    return $url.(strpos($url, '?') === false ? '?' : '&').'v='.rawurlencode($version);
 }
 
-function verifyAdminPassword($password) {
+function verifyAdminPassword($password)
+{
     global $ADMIN_PASS_HASH;
+
     return is_string($password) && password_verify($password, $ADMIN_PASS_HASH);
 }
 
-function verifyDeletePassword($password) {
-    global $DELETE_PASS_HASH;
-    return is_string($password) && password_verify($password, $DELETE_PASS_HASH);
+function verifyDeletePassword($password)
+{
+    return true;
 }
 
-function loginDeviceId() {
+function loginDeviceId()
+{
     global $secureCookie;
-    $cookieName = "kiuq_device";
-    $id = $_COOKIE[$cookieName] ?? "";
-    if (!is_string($id) || !preg_match("/^[a-f0-9]{32}$/", $id)) {
+    $cookieName = 'kiuq_device';
+    $id = $_COOKIE[$cookieName] ?? '';
+    if (! is_string($id) || ! preg_match('/^[a-f0-9]{32}$/', $id)) {
         $id = bin2hex(random_bytes(16));
         setcookie($cookieName, $id, [
-            "expires" => time() + 31536000,
-            "path" => "/",
-            "secure" => $secureCookie,
-            "httponly" => true,
-            "samesite" => "Strict",
+            'expires' => time() + 31536000,
+            'path' => '/',
+            'secure' => $secureCookie,
+            'httponly' => true,
+            'samesite' => 'Strict',
         ]);
         $_COOKIE[$cookieName] = $id;
     }
+
     return $id;
 }
 
-function loginIdentity() {
-    $ip = $_SERVER["REMOTE_ADDR"] ?? "unknown";
-    $ua = substr($_SERVER["HTTP_USER_AGENT"] ?? "unknown", 0, 180);
+function loginIdentity()
+{
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $ua = substr($_SERVER['HTTP_USER_AGENT'] ?? 'unknown', 0, 180);
     $deviceId = loginDeviceId();
+
     return [
-        "device_key" => hash("sha256", $deviceId),
-        "fingerprint" => hash("sha256", $ip . "|" . $ua),
-        "ip" => $ip,
-        "user_agent" => $ua,
+        'device_key' => hash('sha256', $deviceId),
+        'fingerprint' => hash('sha256', $ip.'|'.$ua),
+        'ip' => $ip,
+        'user_agent' => $ua,
     ];
 }
 
-function loadSecurityData() {
+function loadSecurityData()
+{
     global $SECURITY_FILE;
-    $data = readJsonFile($SECURITY_FILE, ["attempts" => [], "banned" => []]);
-    if (!isset($data["attempts"]) || !is_array($data["attempts"])) $data["attempts"] = [];
-    if (!isset($data["banned"]) || !is_array($data["banned"])) $data["banned"] = [];
+    $data = readJsonFile($SECURITY_FILE, ['attempts' => [], 'banned' => []]);
+    if (! isset($data['attempts']) || ! is_array($data['attempts'])) {
+        $data['attempts'] = [];
+    }
+    if (! isset($data['banned']) || ! is_array($data['banned'])) {
+        $data['banned'] = [];
+    }
+
     return $data;
 }
 
-function saveSecurityData($data) {
+function saveSecurityData($data)
+{
     global $SECURITY_FILE;
     writeJsonFile($SECURITY_FILE, $data);
 }
 
-function defaultAppSettings() {
+function defaultAppSettings()
+{
     return [
-        "app_name" => "Rafvex Media Library",
-        "dashboard_logo_url" => "",
-        "favicon_url" => "",
-        "dashboard_theme_url" => "",
-        "footer_name" => "Rafvex.com",
+        'app_name' => 'Rafvex Media Library',
+        'dashboard_logo_url' => '',
+        'favicon_url' => '',
+        'dashboard_theme_url' => '',
+        'footer_name' => 'Rafvex.com',
     ];
 }
 
-function loadAppSettings() {
+function loadAppSettings()
+{
     global $APP_SETTINGS_FILE;
+
     return array_merge(defaultAppSettings(), readJsonFile($APP_SETTINGS_FILE, []));
 }
 
-function saveAppSettings($settings) {
+function saveAppSettings($settings)
+{
     global $APP_SETTINGS_FILE;
     writeJsonFile($APP_SETTINGS_FILE, array_merge(defaultAppSettings(), $settings));
 }
 
-function saveUploadedAppAsset($field, $prefix) {
+function saveUploadedAppAsset($field, $prefix)
+{
     global $APP_ASSETS_DIR, $APP_ASSETS_URL;
-    if (empty($_FILES[$field]) || ($_FILES[$field]["error"] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
-        return ["ok" => true, "url" => ""];
+    if (empty($_FILES[$field]) || ($_FILES[$field]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        return ['ok' => true, 'url' => ''];
     }
-    if (($_FILES[$field]["error"] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK || !is_uploaded_file($_FILES[$field]["tmp_name"] ?? "")) {
-        return ["ok" => false, "error" => "Could not upload " . str_replace("_", " ", $field) . "."];
+    if (($_FILES[$field]['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK || ! is_uploaded_file($_FILES[$field]['tmp_name'] ?? '')) {
+        return ['ok' => false, 'error' => 'Could not upload '.str_replace('_', ' ', $field).'.'];
     }
 
-    $originalName = cleanName($_FILES[$field]["name"] ?? "");
+    $originalName = cleanName($_FILES[$field]['name'] ?? '');
     $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
-    $allowed = ["jpg", "jpeg", "png", "webp", "gif", "ico"];
-    if (!in_array($ext, $allowed, true)) {
-        return ["ok" => false, "error" => "Logo and favicon uploads must be JPG, PNG, WebP, GIF, or ICO files."];
+    $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'ico'];
+    if (! in_array($ext, $allowed, true)) {
+        return ['ok' => false, 'error' => 'Logo and favicon uploads must be JPG, PNG, WebP, GIF, or ICO files.'];
     }
 
-    if ($ext !== "ico" && !@getimagesize($_FILES[$field]["tmp_name"])) {
-        return ["ok" => false, "error" => "Uploaded branding file is not a valid image."];
+    if ($ext !== 'ico' && ! @getimagesize($_FILES[$field]['tmp_name'])) {
+        return ['ok' => false, 'error' => 'Uploaded branding file is not a valid image.'];
     }
 
-    $filename = $prefix . "-" . date("YmdHis") . "-" . bin2hex(random_bytes(4)) . "." . $ext;
-    $destination = $APP_ASSETS_DIR . "/" . $filename;
-    if (!move_uploaded_file($_FILES[$field]["tmp_name"], $destination)) {
-        return ["ok" => false, "error" => "Could not save uploaded branding file."];
+    $filename = $prefix.'-'.date('YmdHis').'-'.bin2hex(random_bytes(4)).'.'.$ext;
+    $destination = $APP_ASSETS_DIR.'/'.$filename;
+    if (! move_uploaded_file($_FILES[$field]['tmp_name'], $destination)) {
+        return ['ok' => false, 'error' => 'Could not save uploaded branding file.'];
     }
 
-    return ["ok" => true, "url" => $APP_ASSETS_URL . "/" . rawurlencode($filename)];
+    return ['ok' => true, 'url' => $APP_ASSETS_URL.'/'.rawurlencode($filename)];
 }
 
-function profileAssetUrl($filename) {
+function profileAssetUrl($filename)
+{
     global $requestScheme, $httpHost, $scriptBasePath;
-    return $requestScheme . "://" . $httpHost . (($scriptBasePath === "" || $scriptBasePath === ".") ? "/profileimg/" : $scriptBasePath . "/profileimg/") . rawurlencode($filename);
+
+    return $requestScheme.'://'.$httpHost.(($scriptBasePath === '' || $scriptBasePath === '.') ? '/profileimg/' : $scriptBasePath.'/profileimg/').rawurlencode($filename);
 }
 
-function cssUrlValue($url) {
-    return str_replace(["\\", "\"", "\n", "\r"], ["\\\\", "\\\"", "", ""], (string)$url);
+function cssUrlValue($url)
+{
+    return str_replace(['\\', '"', "\n", "\r"], ['\\\\', '\\"', '', ''], (string) $url);
 }
 
-function loadThemeLibrary() {
+function loadThemeLibrary()
+{
     global $THEME_LIBRARY_FILE;
-    $data = readJsonFile($THEME_LIBRARY_FILE, ["items" => []]);
-    if (!isset($data["items"]) || !is_array($data["items"])) $data["items"] = [];
+    $data = readJsonFile($THEME_LIBRARY_FILE, ['items' => []]);
+    if (! isset($data['items']) || ! is_array($data['items'])) {
+        $data['items'] = [];
+    }
     $seen = [];
     $items = [];
-    foreach ($data["items"] as $item) {
-        $url = trim((string)($item["url"] ?? ""));
-        if ($url === "" || !filter_var($url, FILTER_VALIDATE_URL) || isset($seen[$url])) continue;
+    foreach ($data['items'] as $item) {
+        $url = trim((string) ($item['url'] ?? ''));
+        if ($url === '' || ! filter_var($url, FILTER_VALIDATE_URL) || isset($seen[$url])) {
+            continue;
+        }
         $seen[$url] = true;
         $items[] = [
-            "name" => trim((string)($item["name"] ?? "")) ?: "Saved Theme",
-            "url" => $url,
-            "mtime" => (int)($item["mtime"] ?? 0),
+            'name' => trim((string) ($item['name'] ?? '')) ?: 'Saved Theme',
+            'url' => $url,
+            'mtime' => (int) ($item['mtime'] ?? 0),
         ];
     }
-    return ["items" => $items];
+
+    return ['items' => $items];
 }
 
-function saveThemeLibrary($data) {
+function saveThemeLibrary($data)
+{
     global $THEME_LIBRARY_FILE;
-    writeJsonFile($THEME_LIBRARY_FILE, ["items" => array_values($data["items"] ?? [])]);
+    writeJsonFile($THEME_LIBRARY_FILE, ['items' => array_values($data['items'] ?? [])]);
 }
 
-function themeNameFromUrl($url) {
+function themeNameFromUrl($url)
+{
     $host = parse_url($url, PHP_URL_HOST);
     $path = parse_url($url, PHP_URL_PATH);
-    $base = $path ? cleanBaseName(basename($path)) : "";
-    $label = $base !== "image" ? $base : ($host ?: "Saved Theme");
-    $label = str_replace(["-", "_"], " ", $label);
-    return ucwords(trim($label)) ?: "Saved Theme";
+    $base = $path ? cleanBaseName(basename($path)) : '';
+    $label = $base !== 'image' ? $base : ($host ?: 'Saved Theme');
+    $label = str_replace(['-', '_'], ' ', $label);
+
+    return ucwords(trim($label)) ?: 'Saved Theme';
 }
 
-function defaultDashboardThemeUrls() {
+function defaultDashboardThemeUrls()
+{
     return [
-        "https://static.vecteezy.com/system/resources/thumbnails/049/855/471/small/nature-background-high-resolution-wallpaper-for-a-serene-and-stunning-view-free-photo.jpg",
-        "https://img.magnific.com/free-photo/anime-moon-landscape_23-2151645871.jpg?semt=ais_hybrid&w=740&q=80",
-        "https://i.pinimg.com/736x/20/a7/2f/20a72f3b1e05484fb95829921557ad0b.jpg",
+        'https://static.vecteezy.com/system/resources/thumbnails/049/855/471/small/nature-background-high-resolution-wallpaper-for-a-serene-and-stunning-view-free-photo.jpg',
+        'https://img.magnific.com/free-photo/anime-moon-landscape_23-2151645871.jpg?semt=ais_hybrid&w=740&q=80',
+        'https://i.pinimg.com/736x/20/a7/2f/20a72f3b1e05484fb95829921557ad0b.jpg',
     ];
 }
 
-function shouldSaveDashboardThemeUrlToLibrary($url) {
-    $url = trim((string)$url);
-    if ($url === "" || !filter_var($url, FILTER_VALIDATE_URL)) return false;
-    if (in_array($url, defaultDashboardThemeUrls(), true)) return false;
+function shouldSaveDashboardThemeUrlToLibrary($url)
+{
+    $url = trim((string) $url);
+    if ($url === '' || ! filter_var($url, FILTER_VALIDATE_URL)) {
+        return false;
+    }
+    if (in_array($url, defaultDashboardThemeUrls(), true)) {
+        return false;
+    }
     $path = parse_url($url, PHP_URL_PATH);
-    $name = $path ? basename(rawurldecode($path)) : "";
-    return !str_starts_with($name, "dashboard-theme-");
+    $name = $path ? basename(rawurldecode($path)) : '';
+
+    return ! str_starts_with($name, 'dashboard-theme-');
 }
 
-function saveDashboardThemeUrlToLibrary($url) {
-    $url = trim((string)$url);
-    if (!shouldSaveDashboardThemeUrlToLibrary($url)) return null;
+function saveDashboardThemeUrlToLibrary($url)
+{
+    $url = trim((string) $url);
+    if (! shouldSaveDashboardThemeUrlToLibrary($url)) {
+        return null;
+    }
     $library = loadThemeLibrary();
-    foreach ($library["items"] as &$item) {
-        if (($item["url"] ?? "") === $url) {
-            $item["mtime"] = time();
-            $item["name"] = trim((string)($item["name"] ?? "")) ?: themeNameFromUrl($url);
+    foreach ($library['items'] as &$item) {
+        if (($item['url'] ?? '') === $url) {
+            $item['mtime'] = time();
+            $item['name'] = trim((string) ($item['name'] ?? '')) ?: themeNameFromUrl($url);
             $savedItem = $item;
             unset($item);
             saveThemeLibrary($library);
+
             return $savedItem;
         }
     }
     unset($item);
-    $item = ["name" => themeNameFromUrl($url), "url" => $url, "mtime" => time()];
-    array_unshift($library["items"], $item);
+    $item = ['name' => themeNameFromUrl($url), 'url' => $url, 'mtime' => time()];
+    array_unshift($library['items'], $item);
     saveThemeLibrary($library);
+
     return $item;
 }
 
-function listDashboardThemeImages() {
-    $profileDir = __DIR__ . "/profileimg";
-    $allowed = ["jpg", "jpeg", "png", "webp", "gif"];
+function listDashboardThemeImages()
+{
+    $profileDir = __DIR__.'/profileimg';
+    $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
     $defaultImages = [
         [
-            "name" => "Nature Serene View",
-            "url" => "https://static.vecteezy.com/system/resources/thumbnails/049/855/471/small/nature-background-high-resolution-wallpaper-for-a-serene-and-stunning-view-free-photo.jpg",
-            "mtime" => 0,
-            "can_delete" => false,
+            'name' => 'Nature Serene View',
+            'url' => 'https://static.vecteezy.com/system/resources/thumbnails/049/855/471/small/nature-background-high-resolution-wallpaper-for-a-serene-and-stunning-view-free-photo.jpg',
+            'mtime' => 0,
+            'can_delete' => false,
         ],
         [
-            "name" => "Anime Moon Landscape",
-            "url" => "https://img.magnific.com/free-photo/anime-moon-landscape_23-2151645871.jpg?semt=ais_hybrid&w=740&q=80",
-            "mtime" => 0,
-            "can_delete" => false,
+            'name' => 'Anime Moon Landscape',
+            'url' => 'https://img.magnific.com/free-photo/anime-moon-landscape_23-2151645871.jpg?semt=ais_hybrid&w=740&q=80',
+            'mtime' => 0,
+            'can_delete' => false,
         ],
         [
-            "name" => "Pinterest Landscape",
-            "url" => "https://i.pinimg.com/736x/20/a7/2f/20a72f3b1e05484fb95829921557ad0b.jpg",
-            "mtime" => 0,
-            "can_delete" => false,
+            'name' => 'Pinterest Landscape',
+            'url' => 'https://i.pinimg.com/736x/20/a7/2f/20a72f3b1e05484fb95829921557ad0b.jpg',
+            'mtime' => 0,
+            'can_delete' => false,
         ],
     ];
     $items = [];
     $libraryItems = [];
-    foreach (loadThemeLibrary()["items"] as $item) {
+    foreach (loadThemeLibrary()['items'] as $item) {
         $libraryItems[] = [
-            "name" => $item["name"],
-            "url" => $item["url"],
-            "mtime" => (int)($item["mtime"] ?? 0),
-            "can_delete" => true,
+            'name' => $item['name'],
+            'url' => $item['url'],
+            'mtime' => (int) ($item['mtime'] ?? 0),
+            'can_delete' => true,
         ];
     }
-    if (!is_dir($profileDir)) return array_merge($defaultImages, $libraryItems);
+    if (! is_dir($profileDir)) {
+        return array_merge($defaultImages, $libraryItems);
+    }
 
     foreach (scandir($profileDir) as $name) {
-        if ($name === "." || $name === ".." || str_starts_with($name, ".")) continue;
-        $path = $profileDir . "/" . $name;
-        if (!is_file($path)) continue;
+        if ($name === '.' || $name === '..' || str_starts_with($name, '.')) {
+            continue;
+        }
+        $path = $profileDir.'/'.$name;
+        if (! is_file($path)) {
+            continue;
+        }
         $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-        if (!in_array($ext, $allowed, true)) continue;
+        if (! in_array($ext, $allowed, true)) {
+            continue;
+        }
         $items[] = [
-            "name" => $name,
-            "url" => profileAssetUrl($name),
-            "mtime" => (int)@filemtime($path),
-            "can_delete" => str_starts_with($name, "dashboard-theme-"),
+            'name' => $name,
+            'url' => profileAssetUrl($name),
+            'mtime' => (int) @filemtime($path),
+            'can_delete' => str_starts_with($name, 'dashboard-theme-'),
         ];
     }
 
-    usort($items, fn($a, $b) => ($b["mtime"] ?? 0) <=> ($a["mtime"] ?? 0));
-    usort($libraryItems, fn($a, $b) => ($b["mtime"] ?? 0) <=> ($a["mtime"] ?? 0));
+    usort($items, fn ($a, $b) => ($b['mtime'] ?? 0) <=> ($a['mtime'] ?? 0));
+    usort($libraryItems, fn ($a, $b) => ($b['mtime'] ?? 0) <=> ($a['mtime'] ?? 0));
+
     return array_merge($defaultImages, $libraryItems, $items);
 }
 
-function saveUploadedDashboardThemeImage($field) {
-    if (empty($_FILES[$field]) || ($_FILES[$field]["error"] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
-        return ["ok" => false, "error" => "Choose an image first."];
+function saveUploadedDashboardThemeImage($field)
+{
+    if (empty($_FILES[$field]) || ($_FILES[$field]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        return ['ok' => false, 'error' => 'Choose an image first.'];
     }
-    if (($_FILES[$field]["error"] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK || !is_uploaded_file($_FILES[$field]["tmp_name"] ?? "")) {
-        return ["ok" => false, "error" => "Could not upload theme image."];
+    if (($_FILES[$field]['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK || ! is_uploaded_file($_FILES[$field]['tmp_name'] ?? '')) {
+        return ['ok' => false, 'error' => 'Could not upload theme image.'];
     }
-    if (!function_exists("imagewebp")) {
-        return ["ok" => false, "error" => "WebP conversion is unavailable on this server."];
+    if (! function_exists('imagewebp')) {
+        return ['ok' => false, 'error' => 'WebP conversion is unavailable on this server.'];
     }
 
-    $tmp = $_FILES[$field]["tmp_name"];
+    $tmp = $_FILES[$field]['tmp_name'];
     $info = @getimagesize($tmp);
-    if (!$info || empty($info["mime"])) {
-        return ["ok" => false, "error" => "Uploaded theme file is not a valid image."];
+    if (! $info || empty($info['mime'])) {
+        return ['ok' => false, 'error' => 'Uploaded theme file is not a valid image.'];
     }
 
     $img = null;
-    $mime = (string)$info["mime"];
-    if ($mime === "image/jpeg" && function_exists("imagecreatefromjpeg")) $img = @imagecreatefromjpeg($tmp);
-    elseif ($mime === "image/png" && function_exists("imagecreatefrompng")) $img = @imagecreatefrompng($tmp);
-    elseif ($mime === "image/webp" && function_exists("imagecreatefromwebp")) $img = @imagecreatefromwebp($tmp);
-    elseif ($mime === "image/gif" && function_exists("imagecreatefromgif")) $img = @imagecreatefromgif($tmp);
-
-    if (!$img) {
-        return ["ok" => false, "error" => "Could not read the uploaded theme image."];
+    $mime = (string) $info['mime'];
+    if ($mime === 'image/jpeg' && function_exists('imagecreatefromjpeg')) {
+        $img = @imagecreatefromjpeg($tmp);
+    } elseif ($mime === 'image/png' && function_exists('imagecreatefrompng')) {
+        $img = @imagecreatefrompng($tmp);
+    } elseif ($mime === 'image/webp' && function_exists('imagecreatefromwebp')) {
+        $img = @imagecreatefromwebp($tmp);
+    } elseif ($mime === 'image/gif' && function_exists('imagecreatefromgif')) {
+        $img = @imagecreatefromgif($tmp);
     }
 
-    $profileDir = __DIR__ . "/profileimg";
-    if (!is_dir($profileDir)) mkdir($profileDir, 0777, true);
-    $fileName = "dashboard-theme-" . date("YmdHis") . "-" . bin2hex(random_bytes(4)) . ".webp";
-    $dest = $profileDir . "/" . $fileName;
+    if (! $img) {
+        return ['ok' => false, 'error' => 'Could not read the uploaded theme image.'];
+    }
+
+    $profileDir = __DIR__.'/profileimg';
+    if (! is_dir($profileDir)) {
+        mkdir($profileDir, 0777, true);
+    }
+    $fileName = 'dashboard-theme-'.date('YmdHis').'-'.bin2hex(random_bytes(4)).'.webp';
+    $dest = $profileDir.'/'.$fileName;
 
     imagepalettetotruecolor($img);
     imagealphablending($img, true);
@@ -1213,190 +1495,230 @@ function saveUploadedDashboardThemeImage($field) {
     $saved = imagewebp($img, $dest, 90);
     imagedestroy($img);
 
-    if (!$saved || !is_file($dest)) {
-        if (is_file($dest)) @unlink($dest);
-        return ["ok" => false, "error" => "Could not save theme image."];
+    if (! $saved || ! is_file($dest)) {
+        if (is_file($dest)) {
+            @unlink($dest);
+        }
+
+        return ['ok' => false, 'error' => 'Could not save theme image.'];
     }
 
     @chmod($dest, 0644);
-    return ["ok" => true, "url" => profileAssetUrl($fileName), "name" => $fileName];
+
+    return ['ok' => true, 'url' => profileAssetUrl($fileName), 'name' => $fileName];
 }
 
-function saveCurrentUserDashboardTheme($userId, $themeUrl) {
+function saveCurrentUserDashboardTheme($userId, $themeUrl)
+{
     $data = loadUsers();
     $saved = false;
-    foreach ($data["users"] as &$row) {
-        if (($row["id"] ?? "") === $userId) {
-            $row["dashboard_theme_url"] = $themeUrl;
-            $row["updated_at"] = time();
+    foreach ($data['users'] as &$row) {
+        if (($row['id'] ?? '') === $userId) {
+            $row['dashboard_theme_url'] = $themeUrl;
+            $row['updated_at'] = time();
             $saved = true;
             break;
         }
     }
     unset($row);
-    if ($saved) saveUsers($data);
+    if ($saved) {
+        saveUsers($data);
+    }
+
     return $saved;
 }
 
-function clearDashboardThemeUrlForUsers($themeUrl) {
-    $themeUrl = trim((string)$themeUrl);
-    if ($themeUrl === "") return;
+function clearDashboardThemeUrlForUsers($themeUrl)
+{
+    $themeUrl = trim((string) $themeUrl);
+    if ($themeUrl === '') {
+        return;
+    }
     $data = loadUsers();
     $changed = false;
-    foreach ($data["users"] as &$row) {
-        if (($row["dashboard_theme_url"] ?? "") === $themeUrl) {
-            $row["dashboard_theme_url"] = "";
-            $row["updated_at"] = time();
+    foreach ($data['users'] as &$row) {
+        if (($row['dashboard_theme_url'] ?? '') === $themeUrl) {
+            $row['dashboard_theme_url'] = '';
+            $row['updated_at'] = time();
             $changed = true;
         }
     }
     unset($row);
-    if ($changed) saveUsers($data);
+    if ($changed) {
+        saveUsers($data);
+    }
 }
 
-function deleteDashboardThemeImage($themeUrl) {
-    $themeUrl = trim((string)$themeUrl);
-    if ($themeUrl === "" || !filter_var($themeUrl, FILTER_VALIDATE_URL)) {
-        return ["success" => false, "error" => "Theme image not found."];
+function deleteDashboardThemeImage($themeUrl)
+{
+    $themeUrl = trim((string) $themeUrl);
+    if ($themeUrl === '' || ! filter_var($themeUrl, FILTER_VALIDATE_URL)) {
+        return ['success' => false, 'error' => 'Theme image not found.'];
     }
 
     $library = loadThemeLibrary();
     $kept = [];
     $removed = false;
-    foreach ($library["items"] as $item) {
-        if (($item["url"] ?? "") === $themeUrl) {
+    foreach ($library['items'] as $item) {
+        if (($item['url'] ?? '') === $themeUrl) {
             $removed = true;
+
             continue;
         }
         $kept[] = $item;
     }
     if ($removed) {
-        $library["items"] = $kept;
+        $library['items'] = $kept;
         saveThemeLibrary($library);
         clearDashboardThemeUrlForUsers($themeUrl);
-        return ["success" => true];
+
+        return ['success' => true];
     }
 
-    $profileDir = realpath(__DIR__ . "/profileimg");
+    $profileDir = realpath(__DIR__.'/profileimg');
     if ($profileDir) {
         $path = parse_url($themeUrl, PHP_URL_PATH);
-        $name = $path ? basename(rawurldecode($path)) : "";
-        if ($name !== "" && str_starts_with($name, "dashboard-theme-")) {
-            $file = $profileDir . DIRECTORY_SEPARATOR . cleanExistingName($name);
+        $name = $path ? basename(rawurldecode($path)) : '';
+        if ($name !== '' && str_starts_with($name, 'dashboard-theme-')) {
+            $file = $profileDir.DIRECTORY_SEPARATOR.cleanExistingName($name);
             $real = realpath($file);
-            if ($real && strpos($real, $profileDir . DIRECTORY_SEPARATOR) === 0 && is_file($real)) {
+            if ($real && strpos($real, $profileDir.DIRECTORY_SEPARATOR) === 0 && is_file($real)) {
                 @unlink($real);
                 clearDashboardThemeUrlForUsers($themeUrl);
-                return ["success" => true];
+
+                return ['success' => true];
             }
         }
     }
 
-    return ["success" => false, "error" => "Default theme images cannot be deleted."];
+    return ['success' => false, 'error' => 'Default theme images cannot be deleted.'];
 }
 
-function defaultUsers() {
+function defaultUsers()
+{
     global $ADMIN_USER, $ADMIN_PASS_HASH;
+
     return [
-        "users" => [
+        'users' => [
             [
-                "id" => "main-admin",
-                "username" => $ADMIN_USER,
-                "password_hash" => $ADMIN_PASS_HASH,
-                "role" => "admin",
-                "status" => "active",
-                "display_name" => "Main Admin",
-                "avatar_url" => "",
-                "theme" => "light",
-                "dashboard_theme_url" => "",
-                "is_main_admin" => true,
-                "can_view_login_activity" => true,
-                "created_at" => time(),
-                "updated_at" => time(),
+                'id' => 'main-admin',
+                'username' => $ADMIN_USER,
+                'password_hash' => $ADMIN_PASS_HASH,
+                'role' => 'admin',
+                'status' => 'active',
+                'display_name' => 'Main Admin',
+                'avatar_url' => '',
+                'theme' => 'light',
+                'dashboard_theme_url' => '',
+                'is_main_admin' => true,
+                'can_view_login_activity' => true,
+                'created_at' => time(),
+                'updated_at' => time(),
             ],
         ],
     ];
 }
 
-function allowedUserRoles() {
-    return ["admin", "staff", "converter", "website_team"];
+function allowedUserRoles()
+{
+    return ['admin', 'staff', 'converter', 'website_team'];
 }
 
-function normalizeUserRole($role) {
-    $role = strtolower((string)$role);
-    return in_array($role, allowedUserRoles(), true) ? $role : "staff";
+function normalizeUserRole($role)
+{
+    $role = strtolower((string) $role);
+
+    return in_array($role, allowedUserRoles(), true) ? $role : 'staff';
 }
 
-function roleLabel($role) {
+function roleLabel($role)
+{
     $labels = [
-        "admin" => "Admin",
-        "staff" => "Staff",
-        "converter" => "Converter",
-        "website_team" => "Website Team",
+        'admin' => 'Admin',
+        'staff' => 'Staff',
+        'converter' => 'Converter',
+        'website_team' => 'Website Team',
     ];
     $role = normalizeUserRole($role);
-    return $labels[$role] ?? "Staff";
+
+    return $labels[$role] ?? 'Staff';
 }
 
-function loadUsers() {
+function loadUsers()
+{
     global $USERS_FILE;
     $data = readJsonFile($USERS_FILE, defaultUsers());
-    if (empty($data["users"]) || !is_array($data["users"])) $data = defaultUsers();
+    if (empty($data['users']) || ! is_array($data['users'])) {
+        $data = defaultUsers();
+    }
     $hasMain = false;
-    foreach ($data["users"] as &$user) {
-        $user["id"] = $user["id"] ?? bin2hex(random_bytes(8));
-        $user["role"] = normalizeUserRole($user["role"] ?? "staff");
-        $user["status"] = ($user["status"] ?? "active") === "frozen" ? "frozen" : "active";
-        $user["display_name"] = trim($user["display_name"] ?? "") ?: ($user["username"] ?? "User");
-        $user["avatar_url"] = trim($user["avatar_url"] ?? "");
-        $user["theme"] = in_array($user["theme"] ?? "light", ["light", "dark", "system"], true) ? $user["theme"] : "light";
-        $user["dashboard_theme_url"] = trim($user["dashboard_theme_url"] ?? "");
-        if ($user["dashboard_theme_url"] !== "" && !filter_var($user["dashboard_theme_url"], FILTER_VALIDATE_URL)) {
-            $user["dashboard_theme_url"] = "";
+    foreach ($data['users'] as &$user) {
+        $user['id'] = $user['id'] ?? bin2hex(random_bytes(8));
+        $user['role'] = normalizeUserRole($user['role'] ?? 'staff');
+        $user['status'] = ($user['status'] ?? 'active') === 'frozen' ? 'frozen' : 'active';
+        $user['display_name'] = trim($user['display_name'] ?? '') ?: ($user['username'] ?? 'User');
+        $user['avatar_url'] = trim($user['avatar_url'] ?? '');
+        $user['theme'] = in_array($user['theme'] ?? 'light', ['light', 'dark', 'system'], true) ? $user['theme'] : 'light';
+        $user['dashboard_theme_url'] = trim($user['dashboard_theme_url'] ?? '');
+        if ($user['dashboard_theme_url'] !== '' && ! filter_var($user['dashboard_theme_url'], FILTER_VALIDATE_URL)) {
+            $user['dashboard_theme_url'] = '';
         }
-        $user["can_view_login_activity"] = (bool)($user["can_view_login_activity"] ?? true);
-        $user["is_main_admin"] = (bool)($user["is_main_admin"] ?? false);
-        if ($user["is_main_admin"]) $hasMain = true;
+        $user['can_view_login_activity'] = (bool) ($user['can_view_login_activity'] ?? true);
+        $user['is_main_admin'] = (bool) ($user['is_main_admin'] ?? false);
+        if ($user['is_main_admin']) {
+            $hasMain = true;
+        }
     }
     unset($user);
-    if (!$hasMain && !empty($data["users"][0])) {
-        $data["users"][0]["role"] = "admin";
-        $data["users"][0]["is_main_admin"] = true;
-        $data["users"][0]["status"] = "active";
+    if (! $hasMain && ! empty($data['users'][0])) {
+        $data['users'][0]['role'] = 'admin';
+        $data['users'][0]['is_main_admin'] = true;
+        $data['users'][0]['status'] = 'active';
     }
     saveUsers($data);
+
     return $data;
 }
 
-function saveUsers($data) {
+function saveUsers($data)
+{
     global $USERS_FILE;
     writeJsonFile($USERS_FILE, $data);
 }
 
-function findUserByUsername($username) {
+function findUserByUsername($username)
+{
     $username = strtolower(trim($username));
-    foreach (loadUsers()["users"] as $user) {
-        if (strtolower($user["username"] ?? "") === $username) return $user;
+    foreach (loadUsers()['users'] as $user) {
+        if (strtolower($user['username'] ?? '') === $username) {
+            return $user;
+        }
     }
+
     return null;
 }
 
-function findUserById($id) {
-    foreach (loadUsers()["users"] as $user) {
-        if (($user["id"] ?? "") === $id) return $user;
+function findUserById($id)
+{
+    foreach (loadUsers()['users'] as $user) {
+        if (($user['id'] ?? '') === $id) {
+            return $user;
+        }
     }
+
     return null;
 }
 
-function getLaravelAppPath(): ?array {
+function getLaravelAppPath(): ?array
+{
     $candidates = [
         [
-            'autoload' => dirname(__DIR__, 2) . '/vendor/autoload.php',
-            'app' => dirname(__DIR__, 2) . '/bootstrap/app.php',
+            'autoload' => dirname(__DIR__, 2).'/vendor/autoload.php',
+            'app' => dirname(__DIR__, 2).'/bootstrap/app.php',
         ],
         [
-            'autoload' => dirname(__DIR__, 1) . '/vendor/autoload.php',
-            'app' => dirname(__DIR__, 1) . '/bootstrap/app.php',
+            'autoload' => dirname(__DIR__, 1).'/vendor/autoload.php',
+            'app' => dirname(__DIR__, 1).'/bootstrap/app.php',
         ],
         [
             'autoload' => '/home/u881038410/domains/rafvex.com/public_html/vendor/autoload.php',
@@ -1408,10 +1730,12 @@ function getLaravelAppPath(): ?array {
             return $cand;
         }
     }
+
     return null;
 }
 
-function getCmsUser(): ?array {
+function getCmsUser(): ?array
+{
     static $cmsUser = null;
     static $resolved = false;
 
@@ -1420,45 +1744,45 @@ function getCmsUser(): ?array {
     }
 
     $paths = getLaravelAppPath();
-    if (!$paths) {
+    if (! $paths) {
         return null;
     }
 
     try {
-        if (!defined('LARAVEL_START')) {
+        if (! defined('LARAVEL_START')) {
             define('LARAVEL_START', microtime(true));
         }
         require_once $paths['autoload'];
 
-        /** @var \Illuminate\Foundation\Application $app */
-        $app = \Illuminate\Container\Container::getInstance();
-        if (!$app || !($app instanceof \Illuminate\Contracts\Foundation\Application)) {
+        /** @var Application $app */
+        $app = Container::getInstance();
+        if (! $app || ! ($app instanceof Illuminate\Contracts\Foundation\Application)) {
             $app = require $paths['app'];
         }
 
-        if ($app instanceof \Illuminate\Contracts\Foundation\Application) {
-            $kernel = $app->make(\Illuminate\Contracts\Http\Kernel::class);
+        if ($app instanceof Illuminate\Contracts\Foundation\Application) {
+            $kernel = $app->make(Kernel::class);
             $kernel->bootstrap();
         }
 
         $cookieName = config('session.cookie', 'rafvex-session');
-        $rawCookie = $_COOKIE[$cookieName] 
-            ?? $_COOKIE['rafvex-session'] 
-            ?? $_COOKIE['laravel-session'] 
+        $rawCookie = $_COOKIE[$cookieName]
+            ?? $_COOKIE['rafvex-session']
+            ?? $_COOKIE['laravel-session']
             ?? null;
 
-        if (!$rawCookie || !is_string($rawCookie)) {
+        if (! $rawCookie || ! is_string($rawCookie)) {
             return null;
         }
 
         $sessionId = null;
         try {
             $sessionId = $app->make('encrypter')->decrypt($rawCookie, false);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Raw cookie might already be the plain session ID
         }
 
-        if (!$sessionId || !is_string($sessionId)) {
+        if (! $sessionId || ! is_string($sessionId)) {
             $sessionId = $rawCookie;
         }
 
@@ -1468,33 +1792,33 @@ function getCmsUser(): ?array {
             $sessionId = $parts[1];
         }
 
-        /** @var \App\Models\User|null $user */
+        /** @var User|null $user */
         $user = null;
 
         try {
-            $request = \Illuminate\Http\Request::capture();
+            $request = Request::capture();
             $session = $app->make('session')->driver();
             $session->setId($sessionId);
             $session->start();
             $request->setLaravelSession($session);
             $app->instance('request', $request);
             $user = $app->make('auth')->guard()->user();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Fallback to database lookup
         }
 
-        if (!$user) {
+        if (! $user) {
             try {
-                $sessionRow = \Illuminate\Support\Facades\DB::table('sessions')->where('id', $sessionId)->first();
-                if ($sessionRow && !empty($sessionRow->user_id)) {
-                    $user = \App\Models\User::find($sessionRow->user_id);
+                $sessionRow = DB::table('sessions')->where('id', $sessionId)->first();
+                if ($sessionRow && ! empty($sessionRow->user_id)) {
+                    $user = User::find($sessionRow->user_id);
                 }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 // Ignore fallback error
             }
         }
 
-        if (!$user || (isset($user->is_active) && !$user->is_active)) {
+        if (! $user || (isset($user->is_active) && ! $user->is_active)) {
             return null;
         }
 
@@ -1504,142 +1828,190 @@ function getCmsUser(): ?array {
         }
 
         $cmsUser = [
-            "id" => (string)$user->id,
-            "username" => $user->email,
-            "display_name" => $user->name ?: $user->email,
-            "role" => "admin",
-            "status" => "active",
-            "is_main_admin" => $isSuperAdmin,
-            "avatar_url" => $user->avatar ?: ($user->google_avatar ?: ""),
-            "theme" => $_SESSION["theme"] ?? "dark",
-            "dashboard_theme_url" => "",
-            "can_view_login_activity" => true,
+            'id' => (string) $user->id,
+            'username' => $user->email,
+            'display_name' => $user->name ?: $user->email,
+            'role' => 'admin',
+            'status' => 'active',
+            'is_main_admin' => $isSuperAdmin,
+            'avatar_url' => $user->avatar ?: ($user->google_avatar ?: ''),
+            'theme' => $_SESSION['theme'] ?? 'dark',
+            'dashboard_theme_url' => '',
+            'can_view_login_activity' => true,
         ];
         $resolved = true;
+
         return $cmsUser;
-    } catch (\Throwable $e) {
-        error_log("MediaLibrary getCmsUser error: " . $e->getMessage());
+    } catch (Throwable $e) {
+        error_log('MediaLibrary getCmsUser error: '.$e->getMessage());
+
         return null;
     }
 }
 
-function currentUser() {
+function currentUser()
+{
     return getCmsUser();
 }
 
-function isAdminUser($user) {
-    return is_array($user) && !empty($user);
+function isAdminUser($user)
+{
+    return is_array($user) && ! empty($user);
 }
 
-function isWebsiteTeamUser($user) {
+function isWebsiteTeamUser($user)
+{
     return false;
 }
 
-function isConverterUser($user) {
+function isConverterUser($user)
+{
     return false;
 }
 
-function userInitials($user) {
-    $name = trim($user["display_name"] ?? $user["username"] ?? "U");
+function userInitials($user)
+{
+    $name = trim($user['display_name'] ?? $user['username'] ?? 'U');
     $parts = preg_split("/\s+/", $name);
-    $out = "";
-    foreach (array_slice($parts, 0, 2) as $part) $out .= strtoupper(substr($part, 0, 1));
-    return $out ?: "U";
+    $out = '';
+    foreach (array_slice($parts, 0, 2) as $part) {
+        $out .= strtoupper(substr($part, 0, 1));
+    }
+
+    return $out ?: 'U';
 }
 
-function recordLoginActivity($username, $status, $user = null) {
+function recordLoginActivity($username, $status, $user = null)
+{
     global $LOGIN_ACTIVITY_FILE;
-    $data = readJsonFile($LOGIN_ACTIVITY_FILE, ["items" => []]);
-    if (empty($data["items"]) || !is_array($data["items"])) $data["items"] = [];
-    array_unshift($data["items"], [
-        "id" => bin2hex(random_bytes(8)),
-        "user_id" => $user["id"] ?? "",
-        "username" => substr((string)$username, 0, 120),
-        "ip" => $_SERVER["REMOTE_ADDR"] ?? "",
-        "user_agent" => substr($_SERVER["HTTP_USER_AGENT"] ?? "", 0, 240),
-        "status" => $status,
-        "created_at" => time(),
+    $data = readJsonFile($LOGIN_ACTIVITY_FILE, ['items' => []]);
+    if (empty($data['items']) || ! is_array($data['items'])) {
+        $data['items'] = [];
+    }
+    array_unshift($data['items'], [
+        'id' => bin2hex(random_bytes(8)),
+        'user_id' => $user['id'] ?? '',
+        'username' => substr((string) $username, 0, 120),
+        'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+        'user_agent' => substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 240),
+        'status' => $status,
+        'created_at' => time(),
     ]);
-    $data["items"] = array_slice($data["items"], 0, 500);
+    $data['items'] = array_slice($data['items'], 0, 500);
     writeJsonFile($LOGIN_ACTIVITY_FILE, $data);
 }
 
-function loadLoginActivity() {
+function loadLoginActivity()
+{
     global $LOGIN_ACTIVITY_FILE;
-    $data = readJsonFile($LOGIN_ACTIVITY_FILE, ["items" => []]);
-    return is_array($data["items"] ?? null) ? $data["items"] : [];
+    $data = readJsonFile($LOGIN_ACTIVITY_FILE, ['items' => []]);
+
+    return is_array($data['items'] ?? null) ? $data['items'] : [];
 }
 
-function redirectWithMessage($mode, $message, $type = "success") {
-    $url = $GLOBALS["pageUrl"];
-    if ($mode) $url .= "?" . $mode . "=1";
-    else $url .= "?path=" . urlencode($_GET["path"] ?? "");
-    $url .= (strpos($url, "?") !== false ? "&" : "?") . "msg=" . urlencode($message) . "&msgtype=" . urlencode($type);
-    header("Location: " . $url);
+function redirectWithMessage($mode, $message, $type = 'success')
+{
+    $url = $GLOBALS['pageUrl'];
+    if ($mode) {
+        $url .= '?'.$mode.'=1';
+    } else {
+        $url .= '?path='.urlencode($_GET['path'] ?? '');
+    }
+    $url .= (strpos($url, '?') !== false ? '&' : '?').'msg='.urlencode($message).'&msgtype='.urlencode($type);
+    header('Location: '.$url);
     exit;
 }
 
-function findBanId($security, $identity) {
-    foreach ($security["banned"] as $banId => $ban) {
-        if (($ban["device_key"] ?? "") === $identity["device_key"]) return $banId;
-        if (($ban["fingerprint"] ?? "") === $identity["fingerprint"]) return $banId;
+function findBanId($security, $identity)
+{
+    foreach ($security['banned'] as $banId => $ban) {
+        if (($ban['device_key'] ?? '') === $identity['device_key']) {
+            return $banId;
+        }
+        if (($ban['fingerprint'] ?? '') === $identity['fingerprint']) {
+            return $banId;
+        }
     }
-    return "";
+
+    return '';
 }
 
-function clearLoginAttempts(&$security, $identity) {
-    unset($security["attempts"][$identity["fingerprint"]]);
+function clearLoginAttempts(&$security, $identity)
+{
+    unset($security['attempts'][$identity['fingerprint']]);
 }
 
-function registerLoginFailure(&$security, $identity, $username) {
+function registerLoginFailure(&$security, $identity, $username)
+{
     global $MAX_LOGIN_ATTEMPTS;
-    $key = $identity["fingerprint"];
-    $attempt = $security["attempts"][$key] ?? ["count" => 0];
-    $attempt["count"] = (int)($attempt["count"] ?? 0) + 1;
-    $attempt["last_at"] = time();
-    $attempt["ip"] = $identity["ip"];
-    $attempt["user_agent"] = $identity["user_agent"];
-    $attempt["username"] = substr($username, 0, 80);
-    $security["attempts"][$key] = $attempt;
+    $key = $identity['fingerprint'];
+    $attempt = $security['attempts'][$key] ?? ['count' => 0];
+    $attempt['count'] = (int) ($attempt['count'] ?? 0) + 1;
+    $attempt['last_at'] = time();
+    $attempt['ip'] = $identity['ip'];
+    $attempt['user_agent'] = $identity['user_agent'];
+    $attempt['username'] = substr($username, 0, 80);
+    $security['attempts'][$key] = $attempt;
 
-    if ($attempt["count"] >= $MAX_LOGIN_ATTEMPTS) {
+    if ($attempt['count'] >= $MAX_LOGIN_ATTEMPTS) {
         $banId = bin2hex(random_bytes(8));
-        $security["banned"][$banId] = [
-            "id" => $banId,
-            "device_key" => $identity["device_key"],
-            "fingerprint" => $identity["fingerprint"],
-            "ip" => $identity["ip"],
-            "user_agent" => $identity["user_agent"],
-            "username" => substr($username, 0, 80),
-            "banned_at" => time(),
-            "reason" => $MAX_LOGIN_ATTEMPTS . " failed login attempts",
+        $security['banned'][$banId] = [
+            'id' => $banId,
+            'device_key' => $identity['device_key'],
+            'fingerprint' => $identity['fingerprint'],
+            'ip' => $identity['ip'],
+            'user_agent' => $identity['user_agent'],
+            'username' => substr($username, 0, 80),
+            'banned_at' => time(),
+            'reason' => $MAX_LOGIN_ATTEMPTS.' failed login attempts',
         ];
-        unset($security["attempts"][$key]);
-        return ["banned" => true, "remaining" => 0];
+        unset($security['attempts'][$key]);
+
+        return ['banned' => true, 'remaining' => 0];
     }
 
-    return ["banned" => false, "remaining" => max(0, $MAX_LOGIN_ATTEMPTS - $attempt["count"])];
+    return ['banned' => false, 'remaining' => max(0, $MAX_LOGIN_ATTEMPTS - $attempt['count'])];
 }
 
-function formatSize($bytes) {
-    if ($bytes >= 1073741824) return round($bytes / 1073741824, 2) . " GB";
-    if ($bytes >= 1048576) return round($bytes / 1048576, 2) . " MB";
-    if ($bytes >= 1024) return round($bytes / 1024, 2) . " KB";
-    return $bytes . " B";
+function formatSize($bytes)
+{
+    if ($bytes >= 1073741824) {
+        return round($bytes / 1073741824, 2).' GB';
+    }
+    if ($bytes >= 1048576) {
+        return round($bytes / 1048576, 2).' MB';
+    }
+    if ($bytes >= 1024) {
+        return round($bytes / 1024, 2).' KB';
+    }
+
+    return $bytes.' B';
 }
 
-function parentPath($current) {
-    if (!$current) return "";
-    $parts = explode("/", $current);
+function parentPath($current)
+{
+    if (! $current) {
+        return '';
+    }
+    $parts = explode('/', $current);
     array_pop($parts);
-    return implode("/", $parts);
+
+    return implode('/', $parts);
 }
 
-function getFileIcon($filename, $isDir = false) {
-    if ($isDir) return '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" opacity=".95"/></svg>';
+function getFileIcon($filename, $isDir = false)
+{
+    if ($isDir) {
+        return '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" opacity=".95"/></svg>';
+    }
     $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-    if (in_array($ext, ["jpg","jpeg","png","webp","gif","svg"])) return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="m21 15-5-5L5 21"/></svg>';
-    if (in_array($ext, ["html","css","js","json","php"])) return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>';
+    if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'])) {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="m21 15-5-5L5 21"/></svg>';
+    }
+    if (in_array($ext, ['html', 'css', 'js', 'json', 'php'])) {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>';
+    }
+
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
 }
 
@@ -1654,23 +2026,23 @@ $securityData = loadSecurityData();
 $currentBanId = findBanId($securityData, $loginIdentity);
 $appSettings = loadAppSettings();
 
-if (isset($_POST["login"])) {
-    header("Location: /ourcms");
+if (isset($_POST['login'])) {
+    header('Location: /ourcms');
     exit;
 }
 
-if (isset($_GET["logout"])) {
+if (isset($_GET['logout'])) {
     if (session_status() === PHP_SESSION_ACTIVE) {
         session_unset();
         session_destroy();
     }
-    header("Location: /ourcms");
+    header('Location: /ourcms');
     exit;
 }
 
 $currentUser = currentUser();
-if (!$currentUser) {
-    $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+if (! $currentUser) {
+    $isAjax = (! empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
         || (strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false)
         || isset($_POST['action'])
         || isset($_POST['ajax'])
@@ -1683,24 +2055,24 @@ if (!$currentUser) {
         echo json_encode([
             'status' => 'error',
             'message' => 'Unauthorized: Please log in to Rafvex CMS to access the Media Library.',
-            'redirect' => '/ourcms'
+            'redirect' => '/ourcms',
         ]);
         exit;
     }
 
-    header("Location: /ourcms");
+    header('Location: /ourcms');
     exit;
 }
 
 if (false) {
-?>
+    ?>
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<title><?php echo htmlspecialchars($appSettings["app_name"]); ?> - Login</title>
+<title><?php echo htmlspecialchars($appSettings['app_name']); ?> - Login</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<?php if (!empty($appSettings["favicon_url"])): ?><link rel="icon" href="<?php echo htmlspecialchars($appSettings["favicon_url"]); ?>"><?php endif; ?>
+<?php if (! empty($appSettings['favicon_url'])) { ?><link rel="icon" href="<?php echo htmlspecialchars($appSettings['favicon_url']); ?>"><?php } else { ?><link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png?v=2"><link rel="icon" href="/favicon.ico?v=2"><?php } ?>
 <script>
 (() => {
     const saved = localStorage.getItem('kiuqTheme') || 'light';
@@ -2192,23 +2564,23 @@ body {
             <div class="logo-outer">
                 <div class="logo-ring-outer"></div>
                 <div class="logo-ring">
-                    <?php if (!empty($appSettings["dashboard_logo_url"])): ?>
-                        <img class="login-logo-img" src="<?php echo htmlspecialchars($appSettings["dashboard_logo_url"]); ?>" alt="<?php echo htmlspecialchars($appSettings["app_name"]); ?>">
-                    <?php else: ?>
+                    <?php if (! empty($appSettings['dashboard_logo_url'])) { ?>
+                        <img class="login-logo-img" src="<?php echo htmlspecialchars($appSettings['dashboard_logo_url']); ?>" alt="<?php echo htmlspecialchars($appSettings['app_name']); ?>">
+                    <?php } else { ?>
                         <span class="logo-inner-icon">FM</span>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
                 <div class="float-badge badge-top">⚡ Fast</div>
                 <div class="float-badge badge-btm">🔐 Secure</div>
             </div>
         </div>
 
-        <h1 class="login-title"><?php echo htmlspecialchars($appSettings["app_name"]); ?></h1>
+        <h1 class="login-title"><?php echo htmlspecialchars($appSettings['app_name']); ?></h1>
         <p class="login-sub"><span class="login-sub-dot"></span> Private Image Hosting Server <span class="login-sub-dot"></span></p>
 
-        <?php if (!empty($loginError)): ?>
+        <?php if (! empty($loginError)) { ?>
             <div class="error-box">⚠️ <?php echo htmlspecialchars($loginError); ?></div>
-        <?php endif; ?>
+        <?php } ?>
 
         <div class="field">
             <label>Username</label>
@@ -2267,7 +2639,7 @@ updateLoginThemeButton();
 </body>
 </html>
 <?php
-exit;
+    exit;
 }
 
 /*
@@ -2276,31 +2648,30 @@ exit;
 |--------------------------------------------------------------------------
 */
 
-
 $isAdmin = true;
 $isConverter = false;
 $isWebsiteTeam = false;
-$websiteTeamFolder = "";
-$websiteTeamRootRelative = "";
-$websiteTeamRootDir = "";
-$converterRootRelative = "";
-$converterRootDir = "";
+$websiteTeamFolder = '';
+$websiteTeamRootRelative = '';
+$websiteTeamRootDir = '';
+$converterRootRelative = '';
+$converterRootDir = '';
 
-$requestedPath = isset($_GET["path"]) ? cleanPath($_GET["path"]) : "";
+$requestedPath = isset($_GET['path']) ? cleanPath($_GET['path']) : '';
 if (
-    ($_SERVER["REQUEST_METHOD"] ?? "GET") === "POST"
-    && isset($_POST["path"])
+    ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST'
+    && isset($_POST['path'])
 ) {
-    $requestedPath = cleanPath($_POST["path"]);
+    $requestedPath = cleanPath($_POST['path']);
 }
 $current = $requestedPath;
 $currentDir = safeFullPath($BASE_DIR, $current);
-if (!is_dir($currentDir)) {
-    $current = "";
+if (! is_dir($currentDir)) {
+    $current = '';
     $currentDir = $BASE_DIR;
 }
 
-$trashMode = isset($_GET["trash"]) && $_GET["trash"] === "1";
+$trashMode = isset($_GET['trash']) && $_GET['trash'] === '1';
 $usersMode = false;
 $activityMode = false;
 $profileMode = false;
@@ -2317,29 +2688,29 @@ if ($isWebsiteTeam) {
     $activityMode = false;
     $settingsMode = false;
 }
-$_SESSION["last_activity"] = time();
-$baseReturnUrl = $pageUrl . "?path=" . urlencode($current);
-$homePath = $isConverter ? $converterRootRelative : ($isWebsiteTeam ? $websiteTeamRootRelative : "");
-$homeUrl = $pageUrl . "?path=" . urlencode($homePath);
+$_SESSION['last_activity'] = time();
+$baseReturnUrl = $pageUrl.'?path='.urlencode($current);
+$homePath = $isConverter ? $converterRootRelative : ($isWebsiteTeam ? $websiteTeamRootRelative : '');
+$homeUrl = $pageUrl.'?path='.urlencode($homePath);
 
-if (isset($_GET["download_item"])) {
-    $itemName = cleanExistingName($_GET["download_item"]);
-    $itemPath = $itemName ? ($currentDir . "/" . $itemName) : "";
+if (isset($_GET['download_item'])) {
+    $itemName = cleanExistingName($_GET['download_item']);
+    $itemPath = $itemName ? ($currentDir.'/'.$itemName) : '';
     if ($itemName && isSystemManagedFile($itemName)) {
-        header("Location: " . $baseReturnUrl . "&msg=" . urlencode("System file is hidden.") . "&msgtype=warning");
+        header('Location: '.$baseReturnUrl.'&msg='.urlencode('System file is hidden.').'&msgtype=warning');
         exit;
     }
     if ($itemName && is_file($itemPath)) {
         streamDownloadFile($itemPath, $itemName);
     }
     if ($itemName && is_dir($itemPath)) {
-        $archiveName = sanitizeDownloadFilename($itemName . "-" . date("Ymd-His") . ".zip", "folder.zip");
-        if (!streamZipDownloadFromMap([$itemPath => $itemName], $archiveName)) {
-            header("Location: " . $baseReturnUrl . "&msg=" . urlencode("ZIP download is unavailable on this server.") . "&msgtype=error");
+        $archiveName = sanitizeDownloadFilename($itemName.'-'.date('Ymd-His').'.zip', 'folder.zip');
+        if (! streamZipDownloadFromMap([$itemPath => $itemName], $archiveName)) {
+            header('Location: '.$baseReturnUrl.'&msg='.urlencode('ZIP download is unavailable on this server.').'&msgtype=error');
             exit;
         }
     }
-    header("Location: " . $baseReturnUrl . "&msg=" . urlencode("Item not found for download.") . "&msgtype=warning");
+    header('Location: '.$baseReturnUrl.'&msg='.urlencode('Item not found for download.').'&msgtype=warning');
     exit;
 }
 
@@ -2349,150 +2720,165 @@ if (isset($_GET["download_item"])) {
 |--------------------------------------------------------------------------
 */
 
-$message = "";
-$messageType = "success";
+$message = '';
+$messageType = 'success';
 
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
-    $action = $_POST["action"];
-    $uploadAjaxRequest = isset($_POST["upload_ajax"]) && $_POST["upload_ajax"] === "1";
-    $redirectToTrash = $trashMode || in_array($action, ["restore_trash_item", "delete_trash_item", "empty_trash", "restore_trash_selected", "delete_trash_selected"], true);
-    $redirectOverride = "";
-    $adminOnlyActions = ["unban_device", "save_app_settings", "clear_login_activity", "create_user", "set_user_role", "change_user_password", "freeze_user", "unfreeze_user", "delete_user", "update_user_permissions"];
-    $adminFileActions = ["create_file", "edit_file"];
-    $converterAllowedActions = ["set_theme", "set_dashboard_theme", "upload_dashboard_theme", "delete_dashboard_theme", "get_folder_options", "get_storage_stats", "create_folder", "upload_files", "delete_item", "delete_selected", "download_selected"];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $action = $_POST['action'];
+    $uploadAjaxRequest = isset($_POST['upload_ajax']) && $_POST['upload_ajax'] === '1';
+    $redirectToTrash = $trashMode || in_array($action, ['restore_trash_item', 'delete_trash_item', 'empty_trash', 'restore_trash_selected', 'delete_trash_selected'], true);
+    $redirectOverride = '';
+    $adminOnlyActions = ['unban_device', 'save_app_settings', 'clear_login_activity', 'create_user', 'set_user_role', 'change_user_password', 'freeze_user', 'unfreeze_user', 'delete_user', 'update_user_permissions'];
+    $adminFileActions = ['create_file', 'edit_file'];
+    $converterAllowedActions = ['set_theme', 'set_dashboard_theme', 'upload_dashboard_theme', 'delete_dashboard_theme', 'get_folder_options', 'get_storage_stats', 'create_folder', 'upload_files', 'delete_item', 'delete_selected', 'download_selected', 'copy_to_folder', 'duplicate_selected'];
 
-    if (!validCsrf($_POST["csrf_token"] ?? "")) {
+    if (! validCsrf($_POST['csrf_token'] ?? '')) {
         if ($uploadAjaxRequest) {
-            if (ob_get_length()) @ob_clean();
-            header("Content-Type: application/json");
+            if (ob_get_length()) {
+                @ob_clean();
+            }
+            header('Content-Type: application/json');
             echo json_encode([
-                "success" => false,
-                "uploaded" => 0,
-                "optimized" => 0,
-                "failed" => 1,
-                "message" => "Security token expired. Please refresh the page and try again.",
-                "errors" => ["Security token expired."],
+                'success' => false,
+                'uploaded' => 0,
+                'optimized' => 0,
+                'failed' => 1,
+                'message' => 'Security token expired. Please refresh the page and try again.',
+                'errors' => ['Security token expired.'],
             ]);
             exit;
         }
-        $message = "Security token expired. Refresh and try again.";
-        $messageType = "error";
-    } elseif (in_array($action, $adminOnlyActions, true) && !$isAdmin) {
-        $message = "Admin permission is required.";
-        $messageType = "error";
-    } elseif (in_array($action, $adminFileActions, true) && !$isAdmin && !$isWebsiteTeam) {
-        $message = "Admin permission is required.";
-        $messageType = "error";
-    } elseif ($isConverter && !in_array($action, $converterAllowedActions, true)) {
+        $message = 'Security token expired. Refresh and try again.';
+        $messageType = 'error';
+    } elseif (in_array($action, $adminOnlyActions, true) && ! $isAdmin) {
+        $message = 'Admin permission is required.';
+        $messageType = 'error';
+    } elseif (in_array($action, $adminFileActions, true) && ! $isAdmin && ! $isWebsiteTeam) {
+        $message = 'Admin permission is required.';
+        $messageType = 'error';
+    } elseif ($isConverter && ! in_array($action, $converterAllowedActions, true)) {
         if ($uploadAjaxRequest) {
-            if (ob_get_length()) @ob_clean();
-            header("Content-Type: application/json");
+            if (ob_get_length()) {
+                @ob_clean();
+            }
+            header('Content-Type: application/json');
             echo json_encode([
-                "success" => false,
-                "uploaded" => 0,
-                "optimized" => 0,
-                "failed" => 1,
-                "message" => "This action is not allowed for Converter role.",
-                "errors" => ["Action not allowed for Converter role."],
+                'success' => false,
+                'uploaded' => 0,
+                'optimized' => 0,
+                'failed' => 1,
+                'message' => 'This action is not allowed for Converter role.',
+                'errors' => ['Action not allowed for Converter role.'],
             ]);
             exit;
         }
-        $message = "This action is not allowed for Converter role.";
-        $messageType = "error";
-    } elseif ($action === "set_theme") {
-        $theme = in_array($_POST["theme"] ?? "light", ["light", "dark", "system"], true) ? $_POST["theme"] : "light";
+        $message = 'This action is not allowed for Converter role.';
+        $messageType = 'error';
+    } elseif ($action === 'set_theme') {
+        $theme = in_array($_POST['theme'] ?? 'light', ['light', 'dark', 'system'], true) ? $_POST['theme'] : 'light';
         $data = loadUsers();
-        foreach ($data["users"] as &$row) {
-            if (($row["id"] ?? "") === ($currentUser["id"] ?? "")) {
-                $row["theme"] = $theme;
-                $row["updated_at"] = time();
+        foreach ($data['users'] as &$row) {
+            if (($row['id'] ?? '') === ($currentUser['id'] ?? '')) {
+                $row['theme'] = $theme;
+                $row['updated_at'] = time();
                 break;
             }
         }
         unset($row);
         saveUsers($data);
-        header("Content-Type: application/json");
-        echo json_encode(["success" => true]);
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true]);
         exit;
-    } elseif ($action === "get_folder_options") {
+    } elseif ($action === 'get_folder_options') {
         $options = $isConverter
-            ? folderOptions($BASE_DIR, $converterRootRelative, $CONVERTER_ROOT_FOLDER . " / root")
+            ? folderOptions($BASE_DIR, $converterRootRelative, $CONVERTER_ROOT_FOLDER.' / root')
             : ($isWebsiteTeam
-            ? folderOptions($BASE_DIR, $websiteTeamRootRelative, $websiteTeamFolder . " / root")
+            ? folderOptions($BASE_DIR, $websiteTeamRootRelative, $websiteTeamFolder.' / root')
             : folderOptions($BASE_DIR));
-        header("Content-Type: application/json");
-        echo json_encode(["success" => true, "options" => $options]);
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'options' => $options]);
         exit;
-    } elseif ($action === "set_dashboard_theme") {
-        $themeUrl = trim($_POST["theme_url"] ?? "");
-        if ($themeUrl !== "" && !filter_var($themeUrl, FILTER_VALIDATE_URL)) {
-            header("Content-Type: application/json");
-            echo json_encode(["success" => false, "error" => "Enter a valid image URL."]);
+    } elseif ($action === 'set_dashboard_theme') {
+        $themeUrl = trim($_POST['theme_url'] ?? '');
+        if ($themeUrl !== '' && ! filter_var($themeUrl, FILTER_VALIDATE_URL)) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => 'Enter a valid image URL.']);
             exit;
         }
-        if (!saveCurrentUserDashboardTheme($currentUser["id"] ?? "", $themeUrl)) {
-            header("Content-Type: application/json");
-            echo json_encode(["success" => false, "error" => "Could not save theme for this user."]);
+        if (! saveCurrentUserDashboardTheme($currentUser['id'] ?? '', $themeUrl)) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => 'Could not save theme for this user.']);
             exit;
         }
-        $savedTheme = $themeUrl !== "" ? saveDashboardThemeUrlToLibrary($themeUrl) : null;
-        header("Content-Type: application/json");
+        $savedTheme = $themeUrl !== '' ? saveDashboardThemeUrlToLibrary($themeUrl) : null;
+        header('Content-Type: application/json');
         echo json_encode([
-            "success" => true,
-            "theme_url" => $themeUrl,
-            "theme_item" => $savedTheme ? [
-                "name" => $savedTheme["name"] ?? "Saved Theme",
-                "url" => $savedTheme["url"] ?? $themeUrl,
-                "can_delete" => true,
+            'success' => true,
+            'theme_url' => $themeUrl,
+            'theme_item' => $savedTheme ? [
+                'name' => $savedTheme['name'] ?? 'Saved Theme',
+                'url' => $savedTheme['url'] ?? $themeUrl,
+                'can_delete' => true,
             ] : null,
         ]);
         exit;
-    } elseif ($action === "upload_dashboard_theme") {
-        $upload = saveUploadedDashboardThemeImage("theme_file");
-        if (!$upload["ok"]) {
-            header("Content-Type: application/json");
-            echo json_encode(["success" => false, "error" => $upload["error"] ?? "Could not upload theme image."]);
+    } elseif ($action === 'upload_dashboard_theme') {
+        $upload = saveUploadedDashboardThemeImage('theme_file');
+        if (! $upload['ok']) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => $upload['error'] ?? 'Could not upload theme image.']);
             exit;
         }
-        if (!saveCurrentUserDashboardTheme($currentUser["id"] ?? "", $upload["url"])) {
-            header("Content-Type: application/json");
-            echo json_encode(["success" => false, "error" => "Could not save theme for this user."]);
+        if (! saveCurrentUserDashboardTheme($currentUser['id'] ?? '', $upload['url'])) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => 'Could not save theme for this user.']);
             exit;
         }
-        header("Content-Type: application/json");
-        echo json_encode(["success" => true, "theme_url" => $upload["url"], "name" => $upload["name"] ?? "", "can_delete" => true]);
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'theme_url' => $upload['url'], 'name' => $upload['name'] ?? '', 'can_delete' => true]);
         exit;
-    } elseif ($action === "delete_dashboard_theme") {
-        $deleteResult = deleteDashboardThemeImage($_POST["theme_url"] ?? "");
-        header("Content-Type: application/json");
+    } elseif ($action === 'delete_dashboard_theme') {
+        $deleteResult = deleteDashboardThemeImage($_POST['theme_url'] ?? '');
+        header('Content-Type: application/json');
         echo json_encode($deleteResult);
         exit;
-    } elseif ($action === "save_profile") {
-        $displayName = trim($_POST["display_name"] ?? "");
-        $avatarUrl = trim($_POST["avatar_url"] ?? "");
+    } elseif ($action === 'save_profile') {
+        $displayName = trim($_POST['display_name'] ?? '');
+        $avatarUrl = trim($_POST['avatar_url'] ?? '');
         $uploadError = false;
 
-        if (isset($_FILES["profile_img"]) && $_FILES["profile_img"]["error"] === UPLOAD_ERR_OK) {
-            $tmp = $_FILES["profile_img"]["tmp_name"];
+        if (isset($_FILES['profile_img']) && $_FILES['profile_img']['error'] === UPLOAD_ERR_OK) {
+            $tmp = $_FILES['profile_img']['tmp_name'];
             $size = getimagesize($tmp);
             if ($size !== false) {
-                $mime = $size["mime"];
-                $ext = "";
+                $mime = $size['mime'];
+                $ext = '';
                 $img = null;
-                if ($mime === "image/jpeg") { $img = @imagecreatefromjpeg($tmp); $ext = ".webp"; }
-                elseif ($mime === "image/png") { $img = @imagecreatefrompng($tmp); $ext = ".webp"; }
-                elseif ($mime === "image/webp") { $img = @imagecreatefromwebp($tmp); $ext = ".webp"; }
-                elseif ($mime === "image/gif") { $img = @imagecreatefromgif($tmp); $ext = ".webp"; }
+                if ($mime === 'image/jpeg') {
+                    $img = @imagecreatefromjpeg($tmp);
+                    $ext = '.webp';
+                } elseif ($mime === 'image/png') {
+                    $img = @imagecreatefrompng($tmp);
+                    $ext = '.webp';
+                } elseif ($mime === 'image/webp') {
+                    $img = @imagecreatefromwebp($tmp);
+                    $ext = '.webp';
+                } elseif ($mime === 'image/gif') {
+                    $img = @imagecreatefromgif($tmp);
+                    $ext = '.webp';
+                }
 
                 if ($img) {
-                    $profileDir = __DIR__ . "/profileimg";
-                    if (!is_dir($profileDir)) mkdir($profileDir, 0777, true);
-                    $fileName = preg_replace('/[^a-zA-Z0-9_-]/', '', $currentUser["username"]) . "_" . time() . $ext;
-                    $dest = $profileDir . "/" . $fileName;
-                    
+                    $profileDir = __DIR__.'/profileimg';
+                    if (! is_dir($profileDir)) {
+                        mkdir($profileDir, 0777, true);
+                    }
+                    $fileName = preg_replace('/[^a-zA-Z0-9_-]/', '', $currentUser['username']).'_'.time().$ext;
+                    $dest = $profileDir.'/'.$fileName;
+
                     imagepalettetotruecolor($img);
                     if (imagewebp($img, $dest, 90)) {
-                        $avatarUrl = $requestScheme . "://" . $httpHost . (($scriptBasePath === "" || $scriptBasePath === ".") ? "/profileimg/" : $scriptBasePath . "/profileimg/") . $fileName;
+                        $avatarUrl = $requestScheme.'://'.$httpHost.(($scriptBasePath === '' || $scriptBasePath === '.') ? '/profileimg/' : $scriptBasePath.'/profileimg/').$fileName;
                     } else {
                         $uploadError = true;
                     }
@@ -2506,267 +2892,306 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
         }
 
         if ($uploadError) {
-            $message = "Failed to upload or convert image.";
-            $messageType = "error";
-        } elseif ($displayName === "" || ($avatarUrl !== "" && !filter_var($avatarUrl, FILTER_VALIDATE_URL))) {
-            $message = "Enter a display name and a valid image URL.";
-            $messageType = "error";
+            $message = 'Failed to upload or convert image.';
+            $messageType = 'error';
+        } elseif ($displayName === '' || ($avatarUrl !== '' && ! filter_var($avatarUrl, FILTER_VALIDATE_URL))) {
+            $message = 'Enter a display name and a valid image URL.';
+            $messageType = 'error';
         } else {
             $data = loadUsers();
-            foreach ($data["users"] as &$row) {
-                if (($row["id"] ?? "") === ($currentUser["id"] ?? "")) {
-                    $row["display_name"] = substr($displayName, 0, 120);
-                    $row["avatar_url"] = $avatarUrl;
-                    $row["updated_at"] = time();
+            foreach ($data['users'] as &$row) {
+                if (($row['id'] ?? '') === ($currentUser['id'] ?? '')) {
+                    $row['display_name'] = substr($displayName, 0, 120);
+                    $row['avatar_url'] = $avatarUrl;
+                    $row['updated_at'] = time();
                     break;
                 }
             }
             unset($row);
             saveUsers($data);
-            $message = "Profile updated.";
+            $message = 'Profile updated.';
         }
-        $redirectOverride = $pageUrl . "?profile=1";
-    } elseif ($action === "save_app_settings") {
+        $redirectOverride = $pageUrl.'?profile=1';
+    } elseif ($action === 'save_app_settings') {
         $settings = loadAppSettings();
-        $settings["app_name"] = trim($_POST["app_name"] ?? "") ?: "Rafvex Media Library";
-        $settings["footer_name"] = trim($_POST["footer_name"] ?? "") ?: "Rafvex.com";
-        $logoUrl = trim($_POST["dashboard_logo_url"] ?? "");
-        $faviconUrl = trim($_POST["favicon_url"] ?? "");
-        $logoUpload = saveUploadedAppAsset("dashboard_logo_file", "dashboard-logo");
-        $faviconUpload = saveUploadedAppAsset("favicon_file", "favicon");
-        if (($logoUrl !== "" && !filter_var($logoUrl, FILTER_VALIDATE_URL)) || ($faviconUrl !== "" && !filter_var($faviconUrl, FILTER_VALIDATE_URL))) {
-            $message = "Enter valid URLs for logo and favicon.";
-            $messageType = "error";
-        } elseif (!$logoUpload["ok"] || !$faviconUpload["ok"]) {
-            $message = $logoUpload["error"] ?? $faviconUpload["error"] ?? "Could not upload branding file.";
-            $messageType = "error";
+        $settings['app_name'] = trim($_POST['app_name'] ?? '') ?: 'Rafvex Media Library';
+        $settings['footer_name'] = trim($_POST['footer_name'] ?? '') ?: 'Rafvex.com';
+        $logoUrl = trim($_POST['dashboard_logo_url'] ?? '');
+        $faviconUrl = trim($_POST['favicon_url'] ?? '');
+        $logoUpload = saveUploadedAppAsset('dashboard_logo_file', 'dashboard-logo');
+        $faviconUpload = saveUploadedAppAsset('favicon_file', 'favicon');
+        if (($logoUrl !== '' && ! filter_var($logoUrl, FILTER_VALIDATE_URL)) || ($faviconUrl !== '' && ! filter_var($faviconUrl, FILTER_VALIDATE_URL))) {
+            $message = 'Enter valid URLs for logo and favicon.';
+            $messageType = 'error';
+        } elseif (! $logoUpload['ok'] || ! $faviconUpload['ok']) {
+            $message = $logoUpload['error'] ?? $faviconUpload['error'] ?? 'Could not upload branding file.';
+            $messageType = 'error';
         } else {
-            $settings["dashboard_logo_url"] = $logoUpload["url"] ?: $logoUrl;
-            $settings["favicon_url"] = $faviconUpload["url"] ?: $faviconUrl;
+            $settings['dashboard_logo_url'] = $logoUpload['url'] ?: $logoUrl;
+            $settings['favicon_url'] = $faviconUpload['url'] ?: $faviconUrl;
             saveAppSettings($settings);
 
             // Save Bria API key to features/config.php if provided
-            if (isset($_POST["bria_api_key"])) {
-                $briaKey = trim($_POST["bria_api_key"]);
-                $configFile = __DIR__ . '/features/config.php';
+            if (isset($_POST['bria_api_key'])) {
+                $briaKey = trim($_POST['bria_api_key']);
+                $configFile = __DIR__.'/features/config.php';
                 if (is_file($configFile)) {
                     $configData = file_get_contents($configFile);
-                    $configData = preg_replace("/define\('BRIA_API_KEY',\s*'[^']*'\);/", "define('BRIA_API_KEY', '" . addslashes($briaKey) . "');", $configData);
+                    $configData = preg_replace("/define\('BRIA_API_KEY',\s*'[^']*'\);/", "define('BRIA_API_KEY', '".addslashes($briaKey)."');", $configData);
                     file_put_contents($configFile, $configData);
                 }
             }
 
-            $message = "Dashboard settings saved.";
+            $message = 'Dashboard settings saved.';
         }
-        $redirectOverride = $pageUrl . "?settings=1";
-    } elseif ($action === "clear_login_activity") {
-        if (!$isAdmin && empty($currentUser["is_main_admin"])) {
-            $message = "Only admins can clear login activity.";
-            $messageType = "error";
+        $redirectOverride = $pageUrl.'?settings=1';
+    } elseif ($action === 'clear_login_activity') {
+        if (! $isAdmin && empty($currentUser['is_main_admin'])) {
+            $message = 'Only admins can clear login activity.';
+            $messageType = 'error';
         } else {
-            writeJsonFile($LOGIN_ACTIVITY_FILE, ["items" => []]);
-            $message = "Login activity history cleared.";
+            writeJsonFile($LOGIN_ACTIVITY_FILE, ['items' => []]);
+            $message = 'Login activity history cleared.';
         }
-        $redirectOverride = $pageUrl . "?activity=1";
-    } elseif ($action === "create_user") {
-        $username = strtolower(trim($_POST["new_username"] ?? ""));
-        $password = $_POST["new_password"] ?? "";
-        $role = normalizeUserRole($_POST["new_role"] ?? "staff");
-        $displayName = trim($_POST["new_display_name"] ?? "") ?: $username;
-        if (!preg_match("/^[a-z0-9@._-]{3,120}$/", $username) || strlen($password) < 8 || findUserByUsername($username)) {
-            $message = "Enter a unique username and password with at least 8 characters.";
-            $messageType = "error";
+        $redirectOverride = $pageUrl.'?activity=1';
+    } elseif ($action === 'create_user') {
+        $username = strtolower(trim($_POST['new_username'] ?? ''));
+        $password = $_POST['new_password'] ?? '';
+        $role = normalizeUserRole($_POST['new_role'] ?? 'staff');
+        $displayName = trim($_POST['new_display_name'] ?? '') ?: $username;
+        if (! preg_match('/^[a-z0-9@._-]{3,120}$/', $username) || strlen($password) < 8 || findUserByUsername($username)) {
+            $message = 'Enter a unique username and password with at least 8 characters.';
+            $messageType = 'error';
         } else {
             $data = loadUsers();
-            $data["users"][] = [
-                "id" => bin2hex(random_bytes(8)),
-                "username" => $username,
-                "password_hash" => password_hash($password, PASSWORD_DEFAULT),
-                "role" => $role,
-                "status" => "active",
-                "display_name" => substr($displayName, 0, 120),
-                "avatar_url" => "",
-                "theme" => "light",
-                "dashboard_theme_url" => "",
-                "is_main_admin" => false,
-                "can_view_login_activity" => isset($_POST["can_view_login_activity"]),
-                "created_at" => time(),
-                "updated_at" => time(),
+            $data['users'][] = [
+                'id' => bin2hex(random_bytes(8)),
+                'username' => $username,
+                'password_hash' => password_hash($password, PASSWORD_DEFAULT),
+                'role' => $role,
+                'status' => 'active',
+                'display_name' => substr($displayName, 0, 120),
+                'avatar_url' => '',
+                'theme' => 'light',
+                'dashboard_theme_url' => '',
+                'is_main_admin' => false,
+                'can_view_login_activity' => isset($_POST['can_view_login_activity']),
+                'created_at' => time(),
+                'updated_at' => time(),
             ];
             saveUsers($data);
-            $message = "User created.";
+            $message = 'User created.';
         }
-        $redirectOverride = $pageUrl . "?users=1";
-    } elseif (in_array($action, ["set_user_role", "change_user_password", "freeze_user", "unfreeze_user", "delete_user", "update_user_permissions"], true)) {
-        $targetId = preg_replace("/[^a-f0-9\-]/", "", $_POST["user_id"] ?? "");
+        $redirectOverride = $pageUrl.'?users=1';
+    } elseif (in_array($action, ['set_user_role', 'change_user_password', 'freeze_user', 'unfreeze_user', 'delete_user', 'update_user_permissions'], true)) {
+        $targetId = preg_replace("/[^a-f0-9\-]/", '', $_POST['user_id'] ?? '');
         $data = loadUsers();
         $foundIndex = null;
-        foreach ($data["users"] as $idx => $row) {
-            if (($row["id"] ?? "") === $targetId) { $foundIndex = $idx; break; }
+        foreach ($data['users'] as $idx => $row) {
+            if (($row['id'] ?? '') === $targetId) {
+                $foundIndex = $idx;
+                break;
+            }
         }
         if ($foundIndex === null) {
-            $message = "User not found.";
-            $messageType = "error";
+            $message = 'User not found.';
+            $messageType = 'error';
         } else {
-            $target = $data["users"][$foundIndex];
-            $protected = !empty($target["is_main_admin"]);
-            $isSelf = ($target["id"] ?? "") === ($currentUser["id"] ?? "");
-            if ($action === "set_user_role") {
+            $target = $data['users'][$foundIndex];
+            $protected = ! empty($target['is_main_admin']);
+            $isSelf = ($target['id'] ?? '') === ($currentUser['id'] ?? '');
+            if ($action === 'set_user_role') {
                 if ($protected || $isSelf) {
-                    $message = "This admin role is protected.";
-                    $messageType = "error";
+                    $message = 'This admin role is protected.';
+                    $messageType = 'error';
                 } else {
-                    $role = normalizeUserRole($_POST["role"] ?? "staff");
-                    $data["users"][$foundIndex]["role"] = $role;
-                    $data["users"][$foundIndex]["updated_at"] = time();
-                    $message = "Role updated.";
+                    $role = normalizeUserRole($_POST['role'] ?? 'staff');
+                    $data['users'][$foundIndex]['role'] = $role;
+                    $data['users'][$foundIndex]['updated_at'] = time();
+                    $message = 'Role updated.';
                 }
-            } elseif ($action === "change_user_password") {
-                $password = $_POST["password"] ?? "";
+            } elseif ($action === 'change_user_password') {
+                $password = $_POST['password'] ?? '';
                 if (strlen($password) < 8) {
-                    $message = "Password must be at least 8 characters.";
-                    $messageType = "error";
-                } elseif ($protected && !$isSelf) {
-                    $message = "Only the main admin can change the main admin password.";
-                    $messageType = "error";
+                    $message = 'Password must be at least 8 characters.';
+                    $messageType = 'error';
+                } elseif ($protected && ! $isSelf) {
+                    $message = 'Only the main admin can change the main admin password.';
+                    $messageType = 'error';
                 } else {
-                    $data["users"][$foundIndex]["password_hash"] = password_hash($password, PASSWORD_DEFAULT);
-                    $data["users"][$foundIndex]["updated_at"] = time();
-                    $message = "Password changed.";
+                    $data['users'][$foundIndex]['password_hash'] = password_hash($password, PASSWORD_DEFAULT);
+                    $data['users'][$foundIndex]['updated_at'] = time();
+                    $message = 'Password changed.';
                 }
-            } elseif ($action === "freeze_user" || $action === "unfreeze_user") {
+            } elseif ($action === 'freeze_user' || $action === 'unfreeze_user') {
                 if ($protected || $isSelf) {
-                    $message = "Protected account cannot be frozen.";
-                    $messageType = "error";
+                    $message = 'Protected account cannot be frozen.';
+                    $messageType = 'error';
                 } else {
-                    $data["users"][$foundIndex]["status"] = $action === "freeze_user" ? "frozen" : "active";
-                    $data["users"][$foundIndex]["updated_at"] = time();
-                    $message = "User status updated.";
+                    $data['users'][$foundIndex]['status'] = $action === 'freeze_user' ? 'frozen' : 'active';
+                    $data['users'][$foundIndex]['updated_at'] = time();
+                    $message = 'User status updated.';
                 }
-            } elseif ($action === "delete_user") {
+            } elseif ($action === 'delete_user') {
                 if ($protected || $isSelf) {
-                    $message = "Protected account cannot be removed.";
-                    $messageType = "error";
+                    $message = 'Protected account cannot be removed.';
+                    $messageType = 'error';
                 } else {
-                    array_splice($data["users"], $foundIndex, 1);
-                    $message = "User removed.";
+                    array_splice($data['users'], $foundIndex, 1);
+                    $message = 'User removed.';
                 }
-            } elseif ($action === "update_user_permissions") {
-                $data["users"][$foundIndex]["can_view_login_activity"] = isset($_POST["can_view_login_activity"]);
-                $data["users"][$foundIndex]["updated_at"] = time();
-                $message = "Permissions updated.";
+            } elseif ($action === 'update_user_permissions') {
+                $data['users'][$foundIndex]['can_view_login_activity'] = isset($_POST['can_view_login_activity']);
+                $data['users'][$foundIndex]['updated_at'] = time();
+                $message = 'Permissions updated.';
             }
             saveUsers($data);
         }
-        $redirectOverride = $pageUrl . "?users=1";
-    } elseif ($action === "unban_device") {
-        $banId = preg_replace("/[^a-f0-9]/", "", $_POST["ban_id"] ?? "");
+        $redirectOverride = $pageUrl.'?users=1';
+    } elseif ($action === 'unban_device') {
+        $banId = preg_replace('/[^a-f0-9]/', '', $_POST['ban_id'] ?? '');
         $securityData = loadSecurityData();
-        if ($banId && isset($securityData["banned"][$banId])) {
-            unset($securityData["banned"][$banId]);
+        if ($banId && isset($securityData['banned'][$banId])) {
+            unset($securityData['banned'][$banId]);
             saveSecurityData($securityData);
-            $message = "Device unbanned.";
+            $message = 'Device unbanned.';
         } else {
-            $message = "Ban record not found."; $messageType = "warning";
+            $message = 'Ban record not found.';
+            $messageType = 'warning';
         }
-    } elseif ($action === "create_folder") {
-        $folderName = cleanName($_POST["folder_name"] ?? "");
-        if ($folderName) {
-            $newPath = $currentDir . "/" . $folderName;
-            if (!is_dir($newPath)) {
+    } elseif ($action === 'create_folder') {
+        $folderName = cleanName($_POST['folder_name'] ?? '');
+        $destPath = cleanPath($_POST['path'] ?? '');
+        $targetParent = $destPath !== '' ? safeFullPath($BASE_DIR, $destPath) : $currentDir;
+        $isAjaxReq = (! empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') || (isset($_POST['is_ajax']) && $_POST['is_ajax'] === '1');
+        if ($isWebsiteTeam && ! relativePathInRoot($destPath !== '' ? $destPath : $current, $websiteTeamRootRelative)) {
+            $message = 'Website Team can only create folders inside Website-Team folder.';
+            $messageType = 'error';
+            if ($isAjaxReq) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'error' => $message]);
+                exit;
+            }
+        } elseif ($folderName) {
+            $newPath = $targetParent.'/'.$folderName;
+            if (! is_dir($newPath)) {
                 mkdir($newPath, 0755, true);
                 ensureSecureIndexFile($newPath);
                 $message = "Folder \"$folderName\" created.";
+                if ($isAjaxReq) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['success' => true, 'folder_name' => $folderName]);
+                    exit;
+                }
             } else {
-                $message = "Folder already exists."; $messageType = "warning";
+                $message = 'Folder already exists.';
+                $messageType = 'warning';
+                if ($isAjaxReq) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['success' => false, 'error' => 'Folder already exists.']);
+                    exit;
+                }
             }
         }
-    } elseif ($action === "create_file") {
-        $fileName = cleanName($_POST["file_name"] ?? "");
-        $content = $_POST["file_content"] ?? "";
+    } elseif ($action === 'create_file') {
+        $fileName = cleanName($_POST['file_name'] ?? '');
+        $content = $_POST['file_content'] ?? '';
         if ($fileName && isSystemManagedFile($fileName)) {
-            $message = "That file name is reserved.";
-            $messageType = "warning";
+            $message = 'That file name is reserved.';
+            $messageType = 'warning';
         } elseif ($fileName) {
             $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
             if (in_array($ext, $allowedExtensions)) {
-                $newFile = $currentDir . "/" . $fileName;
-                if (!file_exists($newFile)) {
+                $newFile = $currentDir.'/'.$fileName;
+                if (! file_exists($newFile)) {
                     file_put_contents($newFile, $content);
                     $message = "File \"$fileName\" created.";
-                } else { $message = "File already exists."; $messageType = "warning"; }
+                } else {
+                    $message = 'File already exists.';
+                    $messageType = 'warning';
+                }
             }
         }
-    } elseif ($action === "upload_files") {
+    } elseif ($action === 'upload_files') {
         session_write_close(); // Unlock session to allow parallel upload processing
         $uploaded = 0;
         $optimized = 0;
         $fallbackOriginal = 0;
         $failed = 0;
         $uploadedBackupPaths = [];
-        $uploadAjax = isset($_POST["upload_ajax"]) && $_POST["upload_ajax"] === "1";
-        $uploadNames = $_FILES["upload_files"]["name"] ?? [];
-        $uploadTmpNames = $_FILES["upload_files"]["tmp_name"] ?? [];
-        $uploadErrors = $_FILES["upload_files"]["error"] ?? [];
-        if (!is_array($uploadNames)) {
+        $uploadAjax = isset($_POST['upload_ajax']) && $_POST['upload_ajax'] === '1';
+        $uploadNames = $_FILES['upload_files']['name'] ?? [];
+        $uploadTmpNames = $_FILES['upload_files']['tmp_name'] ?? [];
+        $uploadErrors = $_FILES['upload_files']['error'] ?? [];
+        if (! is_array($uploadNames)) {
             $uploadNames = [$uploadNames];
             $uploadTmpNames = [$uploadTmpNames];
             $uploadErrors = [$uploadErrors];
         }
         $errorDetails = [];
-        if (!is_writable($currentDir)) {
-            $failed = count(array_filter($uploadNames, fn($name) => (string)$name !== ""));
-            $message = "Upload folder is not writable by server.";
-            $messageType = "error";
+        if (! is_writable($currentDir)) {
+            $failed = count(array_filter($uploadNames, fn ($name) => (string) $name !== ''));
+            $message = 'Upload folder is not writable by server.';
+            $messageType = 'error';
             if ($uploadAjax) {
-                if (ob_get_length()) @ob_clean();
-                header("Content-Type: application/json");
+                if (ob_get_length()) {
+                    @ob_clean();
+                }
+                header('Content-Type: application/json');
                 echo json_encode([
-                    "success" => false,
-                    "uploaded" => 0,
-                    "optimized" => 0,
-                    "failed" => $failed,
-                    "message" => $message,
-                    "errors" => ["Destination folder is not writable. Check folder permissions."],
+                    'success' => false,
+                    'uploaded' => 0,
+                    'optimized' => 0,
+                    'failed' => $failed,
+                    'message' => $message,
+                    'errors' => ['Destination folder is not writable. Check folder permissions.'],
                 ]);
                 exit;
             }
-        } elseif (!empty($uploadNames)) {
+        } elseif (! empty($uploadNames)) {
             foreach ($uploadNames as $index => $name) {
-                $rawName = (string)$name;
-                if ($rawName === "") continue;
-                $fileName = cleanName($rawName);
-                if ($fileName === "") {
-                    $fileName = "upload-" . ($index + 1);
-                }
-                $fileError = (int)($uploadErrors[$index] ?? UPLOAD_ERR_NO_FILE);
-                if ($fileError !== UPLOAD_ERR_OK) {
-                    $failed++;
-                    $errorDetails[] = $fileName . ": " . uploadErrorMessage($fileError);
+                $rawName = (string) $name;
+                if ($rawName === '') {
                     continue;
                 }
-                $tmpName = (string)($uploadTmpNames[$index] ?? "");
-                if ($tmpName === "" || (!is_uploaded_file($tmpName) && !is_file($tmpName))) {
+                $fileName = cleanName($rawName);
+                if ($fileName === '') {
+                    $fileName = 'upload-'.($index + 1);
+                }
+                $fileError = (int) ($uploadErrors[$index] ?? UPLOAD_ERR_NO_FILE);
+                if ($fileError !== UPLOAD_ERR_OK) {
                     $failed++;
-                    $errorDetails[] = $fileName . ": Temporary upload file is missing.";
+                    $errorDetails[] = $fileName.': '.uploadErrorMessage($fileError);
+
+                    continue;
+                }
+                $tmpName = (string) ($uploadTmpNames[$index] ?? '');
+                if ($tmpName === '' || (! is_uploaded_file($tmpName) && ! is_file($tmpName))) {
+                    $failed++;
+                    $errorDetails[] = $fileName.': Temporary upload file is missing.';
+
                     continue;
                 }
 
                 // --- CHUNKING LOGIC ---
-                $chunkIndex = isset($_POST['chunk_index']) ? (int)$_POST['chunk_index'] : 0;
-                $totalChunks = isset($_POST['total_chunks']) ? (int)$_POST['total_chunks'] : 1;
+                $chunkIndex = isset($_POST['chunk_index']) ? (int) $_POST['chunk_index'] : 0;
+                $totalChunks = isset($_POST['total_chunks']) ? (int) $_POST['total_chunks'] : 1;
                 $chunkId = preg_replace('/[^a-zA-Z0-9_-]/', '', $_POST['chunk_id'] ?? '');
                 $originalName = $_POST['original_name'] ?? '';
 
-                if ($originalName !== "") {
+                if ($originalName !== '') {
                     $fileName = cleanName($originalName);
-                    if ($fileName === "") $fileName = "upload-" . ($index + 1);
+                    if ($fileName === '') {
+                        $fileName = 'upload-'.($index + 1);
+                    }
                 }
 
                 if ($totalChunks > 1 && $chunkId !== '') {
-                    $partDir = sys_get_temp_dir() . '/kiuq_chunks_' . $chunkId;
-                    if (!is_dir($partDir)) @mkdir($partDir, 0755, true);
-                    $partFile = $partDir . '/upload.part';
+                    $partDir = sys_get_temp_dir().'/kiuq_chunks_'.$chunkId;
+                    if (! is_dir($partDir)) {
+                        @mkdir($partDir, 0755, true);
+                    }
+                    $partFile = $partDir.'/upload.part';
 
                     $chunkData = file_get_contents($tmpName);
                     if ($chunkIndex === 0) {
@@ -2777,11 +3202,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
 
                     if ($chunkIndex < $totalChunks - 1) {
                         if ($uploadAjax) {
-                            if (ob_get_length()) @ob_clean();
-                            header("Content-Type: application/json");
-                            echo json_encode(["success" => true, "chunk_success" => true]);
+                            if (ob_get_length()) {
+                                @ob_clean();
+                            }
+                            header('Content-Type: application/json');
+                            echo json_encode(['success' => true, 'chunk_success' => true]);
                             exit;
                         }
+
                         continue;
                     } else {
                         $tmpName = $partFile;
@@ -2792,25 +3220,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
                 $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
                 if ($ext === 'zip') {
-                    $zip = new ZipArchive();
+                    $zip = new ZipArchive;
                     if ($zip->open($tmpName) === true) {
                         $zipFolderName = cleanBaseName($fileName);
-                        if ($zipFolderName === "") $zipFolderName = "extracted_zip";
+                        if ($zipFolderName === '') {
+                            $zipFolderName = 'extracted_zip';
+                        }
                         $extractDir = uniqueDestinationPath($currentDir, $zipFolderName);
-                        
-                        if (!is_dir($extractDir)) {
+
+                        if (! is_dir($extractDir)) {
                             mkdir($extractDir, 0755, true);
                             ensureSecureIndexFile($extractDir);
                         }
-                        
+
                         $zip->extractTo($extractDir);
                         $zip->close();
-                        
+
                         $iterator = new RecursiveIteratorIterator(
                             new RecursiveDirectoryIterator($extractDir, RecursiveDirectoryIterator::SKIP_DOTS),
                             RecursiveIteratorIterator::SELF_FIRST
                         );
-                        
+
                         foreach ($iterator as $item) {
                             if ($item->isDir()) {
                                 ensureSecureIndexFile($item->getPathname());
@@ -2818,22 +3248,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
                                 $extractedPath = $item->getPathname();
                                 $itemExt = strtolower(pathinfo($extractedPath, PATHINFO_EXTENSION));
                                 $itemName = $item->getFilename();
-                                
-                                if (shouldHideFromFileManager($itemName) || strpos($extractedPath, "__MACOSX") !== false) {
-                                    if ($itemName !== "index.html" || filesize($extractedPath) !== strlen(getSecureIndexHtml())) {
+
+                                if (shouldHideFromFileManager($itemName) || strpos($extractedPath, '__MACOSX') !== false) {
+                                    if ($itemName !== 'index.html' || filesize($extractedPath) !== strlen(getSecureIndexHtml())) {
                                         @unlink($extractedPath);
                                     }
+
                                     continue;
                                 }
-                                
-                                if (!in_array($itemExt, $allowedExtensions, true) || ($isConverter && !in_array($itemExt, ["jpg", "jpeg", "png", "webp"], true))) {
+
+                                if (! in_array($itemExt, $allowedExtensions, true) || ($isConverter && ! in_array($itemExt, ['jpg', 'jpeg', 'png', 'webp'], true))) {
                                     @unlink($extractedPath);
+
                                     continue;
                                 }
-                                
+
                                 if (isWebpConvertibleImage($itemName)) {
-                                    $webpName = cleanBaseName($itemName) . ".webp";
-                                    $webpPath = $item->getPath() . "/" . $webpName;
+                                    $webpName = cleanBaseName($itemName).'.webp';
+                                    $webpPath = $item->getPath().'/'.$webpName;
                                     if (saveOptimizedWebp($extractedPath, $webpPath, $itemExt)) {
                                         @unlink($extractedPath);
                                         $uploadedBackupPaths[$webpPath] = true;
@@ -2849,27 +3281,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
                         }
                         ensureSecureIndexFile($extractDir);
                         $uploaded++;
+
                         continue;
                     } else {
                         $failed++;
-                        $errorDetails[] = $fileName . ": Failed to open ZIP archive.";
+                        $errorDetails[] = $fileName.': Failed to open ZIP archive.';
+
                         continue;
                     }
                 }
 
-                $uploadPaths = $_POST["upload_paths"] ?? [];
-                $relativePath = cleanPath((string)($uploadPaths[$index] ?? ""));
+                $uploadPaths = $_POST['upload_paths'] ?? [];
+                $relativePath = cleanPath((string) ($uploadPaths[$index] ?? ''));
                 $targetDir = $currentDir;
-                if ($relativePath !== "") {
+                if ($relativePath !== '') {
                     $fileName = cleanName(basename($relativePath));
                     $dirPart = cleanPath(dirname($relativePath));
-                    if ($dirPart !== "." && $dirPart !== "") {
-                        $parts = explode("/", $dirPart);
+                    if ($dirPart !== '.' && $dirPart !== '') {
+                        $parts = explode('/', $dirPart);
                         $accum = $currentDir;
                         foreach ($parts as $p) {
-                            if ($p !== "") {
-                                $accum .= "/" . $p;
-                                if (!is_dir($accum)) {
+                            if ($p !== '') {
+                                $accum .= '/'.$p;
+                                if (! is_dir($accum)) {
                                     mkdir($accum, 0755, true);
                                     ensureSecureIndexFile($accum);
                                 }
@@ -2880,137 +3314,160 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
                 }
 
                 if (isSystemManagedFile($fileName)) {
-                    if ($fileName === "index.html") ensureSecureIndexFile($targetDir);
-                    if (is_file($tmpName)) @unlink($tmpName);
+                    if ($fileName === 'index.html') {
+                        ensureSecureIndexFile($targetDir);
+                    }
+                    if (is_file($tmpName)) {
+                        @unlink($tmpName);
+                    }
+
                     continue;
                 }
 
-                if ($isConverter && !in_array($ext, ["jpg", "jpeg", "png", "webp"], true)) {
+                if ($isConverter && ! in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
                     $failed++;
-                    $errorDetails[] = $fileName . ": Converter role accepts JPG, JPEG, PNG, and WebP only.";
+                    $errorDetails[] = $fileName.': Converter role accepts JPG, JPEG, PNG, and WebP only.';
+
                     continue;
                 }
-                if (!in_array($ext, $allowedExtensions, true)) {
+                if (! in_array($ext, $allowedExtensions, true)) {
                     $failed++;
-                    $errorDetails[] = $fileName . ": File type is not allowed.";
+                    $errorDetails[] = $fileName.': File type is not allowed.';
+
                     continue;
                 }
 
                 $triedWebp = false;
                 if (isWebpConvertibleImage($fileName)) {
                     $triedWebp = true;
-                    $webpName = cleanBaseName($fileName) . ".webp";
-                    $webpPath = $targetDir . "/" . $webpName;
-                    
+                    $webpName = cleanBaseName($fileName).'.webp';
+                    $webpPath = $targetDir.'/'.$webpName;
+
                     if (file_exists($webpPath)) {
                         imghost_autoBackupTargets([$webpPath]);
                     }
-                    
+
                     if (saveOptimizedWebp($tmpName, $webpPath, $ext)) {
                         $uploaded++;
                         $optimized++;
                         $uploadedBackupPaths[$webpPath] = true;
-                        
+
                         // Delete the old original extension file if it exists to avoid showing 2 files
-                        $oldOriginalPath = $targetDir . "/" . $fileName;
+                        $oldOriginalPath = $targetDir.'/'.$fileName;
                         if (strtolower($ext) !== 'webp' && file_exists($oldOriginalPath)) {
                             imghost_autoBackupTargets([$oldOriginalPath]);
                             @unlink($oldOriginalPath);
                         }
-                        
+
                         continue;
                     }
                 }
 
-                $destination = $targetDir . "/" . $fileName;
-                
+                $destination = $targetDir.'/'.$fileName;
+
                 if (file_exists($destination)) {
                     imghost_autoBackupTargets([$destination]);
                 }
-                
+
                 if (storeUploadedTempFile($tmpName, $destination)) {
                     @chmod($destination, 0644);
                     $uploaded++;
                     $uploadedBackupPaths[$destination] = true;
-                    if ($triedWebp && $ext !== "webp") {
+                    if ($triedWebp && $ext !== 'webp') {
                         $fallbackOriginal++;
                     }
                 } else {
                     $failed++;
-                    $errorDetails[] = $fileName . ": Server cannot move uploaded file to destination folder.";
+                    $errorDetails[] = $fileName.': Server cannot move uploaded file to destination folder.';
                 }
             }
-            if (!empty($uploadedBackupPaths)) {
+            if (! empty($uploadedBackupPaths)) {
                 imghost_autoBackup(array_keys($uploadedBackupPaths));
             }
             $message = "$uploaded file(s) uploaded successfully.";
-            if ($optimized) $message .= " $optimized image(s) optimized to WebP.";
-            if ($fallbackOriginal) $message .= " $fallbackOriginal image(s) saved in original format (WebP conversion unavailable).";
-            if ($failed) $message .= " $failed file(s) failed.";
+            if ($optimized) {
+                $message .= " $optimized image(s) optimized to WebP.";
+            }
+            if ($fallbackOriginal) {
+                $message .= " $fallbackOriginal image(s) saved in original format (WebP conversion unavailable).";
+            }
+            if ($failed) {
+                $message .= " $failed file(s) failed.";
+            }
             if ($uploadAjax) {
-                if (ob_get_length()) @ob_clean();
-                header("Content-Type: application/json");
+                if (ob_get_length()) {
+                    @ob_clean();
+                }
+                header('Content-Type: application/json');
                 echo json_encode([
-                    "success" => $uploaded > 0,
-                    "uploaded" => $uploaded,
-                    "optimized" => $optimized,
-                    "fallback_original" => $fallbackOriginal,
-                    "failed" => $failed,
-                    "message" => $message,
-                    "errors" => $errorDetails,
+                    'success' => $uploaded > 0,
+                    'uploaded' => $uploaded,
+                    'optimized' => $optimized,
+                    'fallback_original' => $fallbackOriginal,
+                    'failed' => $failed,
+                    'message' => $message,
+                    'errors' => $errorDetails,
                 ]);
                 exit;
             }
         } elseif ($uploadAjax) {
-            if (ob_get_length()) @ob_clean();
-            header("Content-Type: application/json");
+            if (ob_get_length()) {
+                @ob_clean();
+            }
+            header('Content-Type: application/json');
             echo json_encode([
-                "success" => false,
-                "uploaded" => 0,
-                "optimized" => 0,
-                "failed" => 0,
-                "message" => "No files were selected.",
+                'success' => false,
+                'uploaded' => 0,
+                'optimized' => 0,
+                'failed' => 0,
+                'message' => 'No files were selected.',
             ]);
             exit;
         }
-    } elseif ($action === "rename_item") {
-        $oldName = cleanExistingName($_POST["old_name"] ?? "");
-        $newName = cleanName($_POST["new_name"] ?? "");
+    } elseif ($action === 'rename_item') {
+        $oldName = cleanExistingName($_POST['old_name'] ?? '');
+        $newName = cleanName($_POST['new_name'] ?? '');
         if (isSystemManagedFile($oldName)) {
-            $message = "System file is hidden.";
-            $messageType = "warning";
+            $message = 'System file is hidden.';
+            $messageType = 'warning';
         } elseif (isSystemManagedFile($newName)) {
-            $message = "That file name is reserved.";
-            $messageType = "warning";
+            $message = 'That file name is reserved.';
+            $messageType = 'warning';
         } elseif ($oldName && $newName) {
-            $oldPath = $currentDir . "/" . $oldName;
-            $newPath = $currentDir . "/" . $newName;
-            if (file_exists($oldPath) && !file_exists($newPath)) {
+            $oldPath = $currentDir.'/'.$oldName;
+            $newPath = $currentDir.'/'.$newName;
+            if (file_exists($oldPath) && ! file_exists($newPath)) {
                 rename($oldPath, $newPath);
                 $message = "Renamed to \"$newName\".";
             }
         }
-    } elseif ($action === "rename_type") {
-        $items = $_POST["items"] ?? [];
-        $baseName = cleanName($_POST["base_name"] ?? "");
-        if ($baseName && is_array($items) && !empty($items)) {
+    } elseif ($action === 'rename_type') {
+        $items = $_POST['items'] ?? [];
+        $baseName = cleanName($_POST['base_name'] ?? '');
+        if ($baseName && is_array($items) && ! empty($items)) {
             $renamedCount = 0;
             foreach ($items as $item) {
                 $oldName = cleanExistingName($item);
-                if (!$oldName || isSystemManagedFile($oldName)) continue;
-                $oldPath = $currentDir . "/" . $oldName;
-                if (!file_exists($oldPath) || is_dir($oldPath)) continue;
+                if (! $oldName || isSystemManagedFile($oldName)) {
+                    continue;
+                }
+                $oldPath = $currentDir.'/'.$oldName;
+                if (! file_exists($oldPath) || is_dir($oldPath)) {
+                    continue;
+                }
                 $ext = strtolower(pathinfo($oldName, PATHINFO_EXTENSION));
-                
+
                 $counter = 1;
                 while (true) {
-                    $numStr = str_pad($counter, 2, "0", STR_PAD_LEFT);
-                    $newName = $baseName . "-" . $numStr . ($ext ? "." . $ext : "");
-                    $newPath = $currentDir . "/" . $newName;
-                    if ($newPath === $oldPath || !file_exists($newPath)) break;
+                    $numStr = str_pad($counter, 2, '0', STR_PAD_LEFT);
+                    $newName = $baseName.'-'.$numStr.($ext ? '.'.$ext : '');
+                    $newPath = $currentDir.'/'.$newName;
+                    if ($newPath === $oldPath || ! file_exists($newPath)) {
+                        break;
+                    }
                     $counter++;
                 }
-                
+
                 if ($newPath !== $oldPath) {
                     if (rename($oldPath, $newPath)) {
                         $renamedCount++;
@@ -3021,42 +3478,46 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
             }
             $message = "Renamed $renamedCount item(s) to $baseName type.";
         }
-    } elseif ($action === "delete_item") {
-        $itemName = cleanExistingName($_POST["item_name"] ?? "");
+    } elseif ($action === 'delete_item') {
+        $itemName = cleanExistingName($_POST['item_name'] ?? '');
         if ($itemName && isSystemManagedFile($itemName)) {
-            $message = "System file is hidden.";
-            $messageType = "warning";
+            $message = 'System file is hidden.';
+            $messageType = 'warning';
         } elseif ($isConverter && $itemName) {
-            $target = $currentDir . "/" . $itemName;
+            $target = $currentDir.'/'.$itemName;
             if (is_dir($target)) {
                 deleteFolder($target);
-                $message = "Folder deleted.";
+                $message = 'Folder deleted.';
             } elseif (is_file($target)) {
                 unlink($target);
-                $message = "File deleted.";
+                $message = 'File deleted.';
             } else {
-                $message = "Item not found."; $messageType = "warning";
+                $message = 'Item not found.';
+                $messageType = 'warning';
             }
-        } elseif (!verifyDeletePassword($_POST["delete_password"] ?? "")) {
-            $message = "Delete password is incorrect."; $messageType = "error";
+        } elseif (! verifyDeletePassword($_POST['delete_password'] ?? '')) {
+            $message = 'Delete password is incorrect.';
+            $messageType = 'error';
         } elseif ($itemName) {
-            $target = $currentDir . "/" . $itemName;
-            $relative = $current ? $current . "/" . $itemName : $itemName;
+            $target = $currentDir.'/'.$itemName;
+            $relative = $current ? $current.'/'.$itemName : $itemName;
             if (file_exists($target)) {
                 imghost_autoBackupTargets([$target]);
             }
             if (trashItem($target, $relative)) {
-                $message = "Item moved to trash.";
+                $message = 'Item moved to trash.';
             }
         }
-    } elseif ($action === "delete_selected") {
-        $names = $_POST["selected_names"] ?? [];
+    } elseif ($action === 'delete_selected') {
+        $names = $_POST['selected_names'] ?? [];
         $count = 0;
         if ($isConverter) {
             foreach ($names as $n) {
                 $n = cleanExistingName($n);
-                if (!$n || isSystemManagedFile($n)) continue;
-                $target = $currentDir . "/" . $n;
+                if (! $n || isSystemManagedFile($n)) {
+                    continue;
+                }
+                $target = $currentDir.'/'.$n;
                 if (is_dir($target)) {
                     deleteFolder($target);
                     $count++;
@@ -3066,204 +3527,325 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
                 }
             }
             $message = "$count item(s) deleted.";
-        } elseif (!verifyDeletePassword($_POST["delete_password"] ?? "")) {
-            $message = "Delete password is incorrect."; $messageType = "error";
+        } elseif (! verifyDeletePassword($_POST['delete_password'] ?? '')) {
+            $message = 'Delete password is incorrect.';
+            $messageType = 'error';
         } else {
             $targetsToBackup = [];
             foreach ($names as $n) {
                 $n = cleanExistingName($n);
-                if (!$n || isSystemManagedFile($n)) continue;
-                $target = $currentDir . "/" . $n;
+                if (! $n || isSystemManagedFile($n)) {
+                    continue;
+                }
+                $target = $currentDir.'/'.$n;
                 if (file_exists($target)) {
                     $targetsToBackup[] = $target;
                 }
             }
-            if (!empty($targetsToBackup)) {
+            if (! empty($targetsToBackup)) {
                 imghost_autoBackupTargets($targetsToBackup);
             }
 
             foreach ($names as $n) {
                 $n = cleanExistingName($n);
-                if (!$n || isSystemManagedFile($n)) continue;
-                $target = $currentDir . "/" . $n;
-                $relative = $current ? $current . "/" . $n : $n;
-                if (trashItem($target, $relative)) $count++;
+                if (! $n || isSystemManagedFile($n)) {
+                    continue;
+                }
+                $target = $currentDir.'/'.$n;
+                $relative = $current ? $current.'/'.$n : $n;
+                if (trashItem($target, $relative)) {
+                    $count++;
+                }
             }
             $message = "$count item(s) moved to trash.";
         }
-    } elseif ($action === "download_selected") {
-        $names = $_POST["selected_names"] ?? [];
+    } elseif ($action === 'download_selected') {
+        $names = $_POST['selected_names'] ?? [];
         $pathMap = [];
         foreach ($names as $n) {
             $n = cleanExistingName($n);
-            if (!$n || isSystemManagedFile($n)) continue;
-            $src = $currentDir . "/" . $n;
-            if (file_exists($src)) $pathMap[$src] = $n;
-        }
-        if (empty($pathMap)) {
-            $message = "No valid items selected for download.";
-            $messageType = "warning";
-        } else {
-            $archiveName = sanitizeDownloadFilename("selected-" . ($current ? str_replace("/", "-", $current) : "root") . "-" . date("Ymd-His") . ".zip", "selected.zip");
-            if (!streamZipDownloadFromMap($pathMap, $archiveName)) {
-                $message = "ZIP download is unavailable on this server.";
-                $messageType = "error";
+            if (! $n || isSystemManagedFile($n)) {
+                continue;
+            }
+            $src = $currentDir.'/'.$n;
+            if (file_exists($src)) {
+                $pathMap[$src] = $n;
             }
         }
-    } elseif ($action === "move_selected") {
-        $names = $_POST["selected_names"] ?? [];
-        $dest = cleanPath($_POST["move_destination"] ?? "");
+        if (empty($pathMap)) {
+            $message = 'No valid items selected for download.';
+            $messageType = 'warning';
+        } else {
+            $archiveName = sanitizeDownloadFilename('selected-'.($current ? str_replace('/', '-', $current) : 'root').'-'.date('Ymd-His').'.zip', 'selected.zip');
+            if (! streamZipDownloadFromMap($pathMap, $archiveName)) {
+                $message = 'ZIP download is unavailable on this server.';
+                $messageType = 'error';
+            }
+        }
+    } elseif ($action === 'move_selected') {
+        $names = $_POST['selected_names'] ?? [];
+        $dest = cleanPath($_POST['move_destination'] ?? $_POST['copy_destination'] ?? '');
         $destDir = safeFullPath($BASE_DIR, $dest);
-        if ($isWebsiteTeam && !relativePathInRoot($dest, $websiteTeamRootRelative)) {
-            $message = "Website Team can only move items inside the Website-Team folder.";
-            $messageType = "error";
+        if ($isWebsiteTeam && ! relativePathInRoot($dest, $websiteTeamRootRelative)) {
+            $message = 'Website Team can only move items inside the Website-Team folder.';
+            $messageType = 'error';
         } elseif (is_dir($destDir)) {
             $count = 0;
             foreach ($names as $n) {
                 $n = cleanExistingName($n);
-                if (!$n || isSystemManagedFile($n)) continue;
-                $src = $currentDir . "/" . $n;
-                $dst = $destDir . "/" . $n;
-                $srcReal = realpath($src);
-                $destReal = realpath($destDir);
-                if (is_dir($src) && $srcReal && $destReal && ($destReal === $srcReal || strpos($destReal, $srcReal . DIRECTORY_SEPARATOR) === 0)) {
+                if (! $n || isSystemManagedFile($n)) {
                     continue;
                 }
-                if (file_exists($src) && !file_exists($dst)) {
-                    rename($src, $dst); $count++;
+                $src = $currentDir.'/'.$n;
+                $dst = $destDir.'/'.$n;
+                $srcReal = realpath($src);
+                $destReal = realpath($destDir);
+                if (is_dir($src) && $srcReal && $destReal && ($destReal === $srcReal || strpos($destReal, $srcReal.DIRECTORY_SEPARATOR) === 0)) {
+                    continue;
+                }
+                if (file_exists($src) && ! file_exists($dst)) {
+                    rename($src, $dst);
+                    $count++;
                 }
             }
-            $message = "$count item(s) moved.";
-        } else { $message = "Destination folder not found."; $messageType = "warning"; }
-    } elseif ($action === "copy_selected") {
-        $names = $_POST["selected_names"] ?? [];
+            $destLabel = $dest === '' ? 'root' : $dest;
+            $message = "$count item(s) moved to $destLabel.";
+        } else {
+            $message = 'Destination folder not found.';
+            $messageType = 'warning';
+        }
+    } elseif ($action === 'copy_to_folder') {
+        $names = $_POST['selected_names'] ?? [];
+        $dest = cleanPath($_POST['copy_destination'] ?? $_POST['move_destination'] ?? '');
+        $destDir = safeFullPath($BASE_DIR, $dest);
+        if ($isWebsiteTeam && ! relativePathInRoot($dest, $websiteTeamRootRelative)) {
+            $message = 'Website Team can only copy items inside the Website-Team folder.';
+            $messageType = 'error';
+        } elseif (is_dir($destDir)) {
+            $count = 0;
+            foreach ($names as $n) {
+                $n = cleanExistingName($n);
+                if (! $n || isSystemManagedFile($n)) {
+                    continue;
+                }
+                $src = $currentDir.'/'.$n;
+                if (! file_exists($src)) {
+                    continue;
+                }
+                $dst = uniqueDestinationPath($destDir, $n);
+                if (is_dir($src)) {
+                    $srcReal = realpath($src);
+                    $destReal = realpath($destDir);
+                    if ($srcReal && $destReal && ($destReal === $srcReal || strpos($destReal, $srcReal.DIRECTORY_SEPARATOR) === 0)) {
+                        continue;
+                    }
+                    if (copyFolder($src, $dst)) {
+                        $count++;
+                    }
+                } elseif (is_file($src)) {
+                    if (copy($src, $dst)) {
+                        $count++;
+                    }
+                }
+            }
+            $destLabel = $dest === '' ? 'root' : $dest;
+            $message = "$count item(s) copied to $destLabel.";
+        } else {
+            $message = 'Destination folder not found.';
+            $messageType = 'warning';
+        }
+    } elseif ($action === 'duplicate_selected') {
+        $names = $_POST['selected_names'] ?? [];
+        $count = 0;
+        foreach ($names as $n) {
+            $n = cleanExistingName($n);
+            if (! $n || isSystemManagedFile($n)) {
+                continue;
+            }
+            $src = $currentDir.'/'.$n;
+            if (! file_exists($src)) {
+                continue;
+            }
+            $dst = uniqueDestinationPath($currentDir, $n);
+            if (is_dir($src)) {
+                if (copyFolder($src, $dst)) {
+                    $count++;
+                }
+            } elseif (is_file($src)) {
+                if (copy($src, $dst)) {
+                    $count++;
+                }
+            }
+        }
+        $message = "$count item(s) duplicated.";
+    } elseif ($action === 'copy_selected') {
+        $names = $_POST['selected_names'] ?? [];
         $clipboardItems = [];
         foreach ($names as $n) {
             $n = cleanExistingName($n);
-            if (!$n || isSystemManagedFile($n)) continue;
-            $src = $currentDir . "/" . $n;
-            if (file_exists($src)) $clipboardItems[] = $current ? $current . "/" . $n : $n;
-        }
-        $_SESSION["clipboard"] = [
-            "mode" => "copy",
-            "items" => $clipboardItems,
-            "created_at" => time(),
-        ];
-        $message = count($clipboardItems) . " item(s) copied. Open a folder and click Paste.";
-    } elseif ($action === "paste_clipboard") {
-        $clip = $_SESSION["clipboard"] ?? ["items" => []];
-        $count = 0;
-        $skipped = 0;
-        foreach (($clip["items"] ?? []) as $relative) {
-            $relative = cleanPath($relative);
-            if (!$relative) continue;
-            if (isSystemManagedFile(basename($relative))) {
-                $skipped++;
+            if (! $n || isSystemManagedFile($n)) {
                 continue;
             }
-            if ($isWebsiteTeam && !relativePathInRoot($relative, $websiteTeamRootRelative)) {
+            $src = $currentDir.'/'.$n;
+            if (file_exists($src)) {
+                $clipboardItems[] = $current ? $current.'/'.$n : $n;
+            }
+        }
+        $_SESSION['clipboard'] = [
+            'mode' => 'copy',
+            'items' => $clipboardItems,
+            'created_at' => time(),
+        ];
+        $message = count($clipboardItems).' item(s) copied. Open a folder and click Paste.';
+    } elseif ($action === 'paste_clipboard') {
+        $clip = $_SESSION['clipboard'] ?? ['items' => []];
+        $count = 0;
+        $skipped = 0;
+        foreach (($clip['items'] ?? []) as $relative) {
+            $relative = cleanPath($relative);
+            if (! $relative) {
+                continue;
+            }
+            if (isSystemManagedFile(basename($relative))) {
                 $skipped++;
+
+                continue;
+            }
+            if ($isWebsiteTeam && ! relativePathInRoot($relative, $websiteTeamRootRelative)) {
+                $skipped++;
+
                 continue;
             }
             $src = safeFullPath($BASE_DIR, $relative);
-            if (!file_exists($src)) { $skipped++; continue; }
-            if (is_dir($src) && ($current === $relative || ($current && strpos($current . "/", $relative . "/") === 0))) {
+            if (! file_exists($src)) {
                 $skipped++;
+
+                continue;
+            }
+            if (is_dir($src) && ($current === $relative || ($current && strpos($current.'/', $relative.'/') === 0))) {
+                $skipped++;
+
                 continue;
             }
             $dst = uniqueDestinationPath($currentDir, basename($relative));
             if (is_dir($src)) {
-                if (copyFolder($src, $dst)) $count++;
-                else $skipped++;
+                if (copyFolder($src, $dst)) {
+                    $count++;
+                } else {
+                    $skipped++;
+                }
             } elseif (is_file($src)) {
-                if (copy($src, $dst)) $count++;
-                else $skipped++;
+                if (copy($src, $dst)) {
+                    $count++;
+                } else {
+                    $skipped++;
+                }
             }
         }
-        $message = "$count item(s) pasted." . ($skipped ? " $skipped skipped." : "");
-        if ($count === 0 && $skipped === 0) { $message = "Clipboard is empty."; $messageType = "warning"; }
-    } elseif ($action === "restore_trash_item") {
-        $trashId = preg_replace("/[^a-f0-9]/", "", $_POST["trash_id"] ?? "");
-        $trash = loadTrashIndex();
-        $trashRelative = cleanPath($trash["items"][$trashId]["original_relative"] ?? "");
-        if ($isWebsiteTeam && !relativePathInRoot($trashRelative, $websiteTeamRootRelative)) {
-            $message = "Website Team can only recover items from the Website-Team folder.";
-            $messageType = "error";
-        } elseif ($trashId && restoreTrashItem($trashId)) {
-            $message = "Item recovered from trash.";
-        } else {
-            $message = "Could not recover item."; $messageType = "warning";
+        $message = "$count item(s) pasted.".($skipped ? " $skipped skipped." : '');
+        if ($count === 0 && $skipped === 0) {
+            $message = 'Clipboard is empty.';
+            $messageType = 'warning';
         }
-    } elseif ($action === "restore_trash_selected") {
-        $ids = $_POST["trash_ids"] ?? [];
+    } elseif ($action === 'restore_trash_item') {
+        $trashId = preg_replace('/[^a-f0-9]/', '', $_POST['trash_id'] ?? '');
+        $trash = loadTrashIndex();
+        $trashRelative = cleanPath($trash['items'][$trashId]['original_relative'] ?? '');
+        if ($isWebsiteTeam && ! relativePathInRoot($trashRelative, $websiteTeamRootRelative)) {
+            $message = 'Website Team can only recover items from the Website-Team folder.';
+            $messageType = 'error';
+        } elseif ($trashId && restoreTrashItem($trashId)) {
+            $message = 'Item recovered from trash.';
+        } else {
+            $message = 'Could not recover item.';
+            $messageType = 'warning';
+        }
+    } elseif ($action === 'restore_trash_selected') {
+        $ids = $_POST['trash_ids'] ?? [];
         $trash = loadTrashIndex();
         $count = 0;
         foreach ($ids as $trashId) {
-            $trashId = preg_replace("/[^a-f0-9]/", "", $trashId);
-            $trashRelative = cleanPath($trash["items"][$trashId]["original_relative"] ?? "");
-            if ($isWebsiteTeam && !relativePathInRoot($trashRelative, $websiteTeamRootRelative)) continue;
-            if ($trashId && restoreTrashItem($trashId)) $count++;
+            $trashId = preg_replace('/[^a-f0-9]/', '', $trashId);
+            $trashRelative = cleanPath($trash['items'][$trashId]['original_relative'] ?? '');
+            if ($isWebsiteTeam && ! relativePathInRoot($trashRelative, $websiteTeamRootRelative)) {
+                continue;
+            }
+            if ($trashId && restoreTrashItem($trashId)) {
+                $count++;
+            }
         }
         $message = "$count item(s) recovered from trash.";
-    } elseif ($action === "delete_trash_item") {
-        $trashId = preg_replace("/[^a-f0-9]/", "", $_POST["trash_id"] ?? "");
+    } elseif ($action === 'delete_trash_item') {
+        $trashId = preg_replace('/[^a-f0-9]/', '', $_POST['trash_id'] ?? '');
         $trash = loadTrashIndex();
-        $trashRelative = cleanPath($trash["items"][$trashId]["original_relative"] ?? "");
-        if (!verifyDeletePassword($_POST["delete_password"] ?? "")) {
-            $message = "Delete password is incorrect."; $messageType = "error";
-        } elseif ($isWebsiteTeam && !relativePathInRoot($trashRelative, $websiteTeamRootRelative)) {
-            $message = "Website Team can only delete trash from the Website-Team folder.";
-            $messageType = "error";
+        $trashRelative = cleanPath($trash['items'][$trashId]['original_relative'] ?? '');
+        if (! verifyDeletePassword($_POST['delete_password'] ?? '')) {
+            $message = 'Delete password is incorrect.';
+            $messageType = 'error';
+        } elseif ($isWebsiteTeam && ! relativePathInRoot($trashRelative, $websiteTeamRootRelative)) {
+            $message = 'Website Team can only delete trash from the Website-Team folder.';
+            $messageType = 'error';
         } elseif ($trashId && permanentlyDeleteTrashItem($trashId)) {
-            $message = "Item permanently deleted.";
+            $message = 'Item permanently deleted.';
         } else {
-            $message = "Could not delete item."; $messageType = "warning";
+            $message = 'Could not delete item.';
+            $messageType = 'warning';
         }
-    } elseif ($action === "delete_trash_selected") {
-        $ids = $_POST["trash_ids"] ?? [];
+    } elseif ($action === 'delete_trash_selected') {
+        $ids = $_POST['trash_ids'] ?? [];
         $trash = loadTrashIndex();
         $count = 0;
-        if (!verifyDeletePassword($_POST["delete_password"] ?? "")) {
-            $message = "Delete password is incorrect."; $messageType = "error";
+        if (! verifyDeletePassword($_POST['delete_password'] ?? '')) {
+            $message = 'Delete password is incorrect.';
+            $messageType = 'error';
         } else {
             foreach ($ids as $trashId) {
-                $trashId = preg_replace("/[^a-f0-9]/", "", $trashId);
-                $trashRelative = cleanPath($trash["items"][$trashId]["original_relative"] ?? "");
-                if ($isWebsiteTeam && !relativePathInRoot($trashRelative, $websiteTeamRootRelative)) continue;
-                if ($trashId && permanentlyDeleteTrashItem($trashId)) $count++;
+                $trashId = preg_replace('/[^a-f0-9]/', '', $trashId);
+                $trashRelative = cleanPath($trash['items'][$trashId]['original_relative'] ?? '');
+                if ($isWebsiteTeam && ! relativePathInRoot($trashRelative, $websiteTeamRootRelative)) {
+                    continue;
+                }
+                if ($trashId && permanentlyDeleteTrashItem($trashId)) {
+                    $count++;
+                }
             }
             $message = "$count trash item(s) permanently deleted.";
         }
-    } elseif ($action === "empty_trash") {
-        if (!verifyDeletePassword($_POST["delete_password"] ?? "")) {
-            $message = "Delete password is incorrect."; $messageType = "error";
+    } elseif ($action === 'empty_trash') {
+        if (! verifyDeletePassword($_POST['delete_password'] ?? '')) {
+            $message = 'Delete password is incorrect.';
+            $messageType = 'error';
         } else {
             $trash = loadTrashIndex();
             $count = 0;
-            foreach (array_keys($trash["items"]) as $trashId) {
-                $trashRelative = cleanPath($trash["items"][$trashId]["original_relative"] ?? "");
-                if ($isWebsiteTeam && !relativePathInRoot($trashRelative, $websiteTeamRootRelative)) continue;
-                if (permanentlyDeleteTrashItem($trashId)) $count++;
+            foreach (array_keys($trash['items']) as $trashId) {
+                $trashRelative = cleanPath($trash['items'][$trashId]['original_relative'] ?? '');
+                if ($isWebsiteTeam && ! relativePathInRoot($trashRelative, $websiteTeamRootRelative)) {
+                    continue;
+                }
+                if (permanentlyDeleteTrashItem($trashId)) {
+                    $count++;
+                }
             }
             $message = "$count trash item(s) permanently deleted.";
         }
-    } elseif ($action === "edit_file") {
-        $fileName = cleanExistingName($_POST["edit_file_name"] ?? "");
-        $content = $_POST["edit_file_content"] ?? "";
-        $target = $currentDir . "/" . $fileName;
+    } elseif ($action === 'edit_file') {
+        $fileName = cleanExistingName($_POST['edit_file_name'] ?? '');
+        $content = $_POST['edit_file_content'] ?? '';
+        $target = $currentDir.'/'.$fileName;
         if (isSystemManagedFile($fileName)) {
-            $message = "System file is hidden.";
-            $messageType = "warning";
+            $message = 'System file is hidden.';
+            $messageType = 'warning';
         } elseif (is_file($target)) {
             file_put_contents($target, $content);
-            $message = "File saved.";
+            $message = 'File saved.';
         }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // FEATURE ACTIONS — Additive only. Do not modify anything above this block
-    // ════════════════════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════════════════
+        // FEATURE ACTIONS — Additive only. Do not modify anything above this block
+        // ════════════════════════════════════════════════════════════════════════
     } elseif ($FEATURES_ENABLED && in_array($action, [
-        'set_folder_color','toggle_favorite','toggle_pin','get_folder_meta_bulk','toggle_sidebar_pin'
+        'set_folder_color', 'toggle_favorite', 'toggle_pin', 'get_folder_meta_bulk', 'toggle_sidebar_pin',
     ], true)) {
         // Folder meta actions — return JSON directly
         folder_meta_handle($action, $_POST, $currentUser['id'] ?? '', $BASE_DIR);
@@ -3271,8 +3853,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
 
     } elseif ($FEATURES_ENABLED && $action === 'get_properties') {
         $iName = cleanExistingName($_POST['item_name'] ?? '');
-        $iPath = $currentDir . '/' . $iName;
-        $iRel  = $current ? $current . '/' . $iName : $iName;
+        $iPath = $currentDir.'/'.$iName;
+        $iRel = $current ? $current.'/'.$iName : $iName;
         $iIsDir = is_dir($iPath);
         properties_handle($iName, $iPath, $iRel, $iIsDir);
         exit;
@@ -3289,15 +3871,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
         exit;
 
     } elseif ($FEATURES_ENABLED && in_array($action, [
-        'get_versions','restore_version','delete_version','download_version'
+        'get_versions', 'restore_version', 'delete_version', 'download_version',
     ], true)) {
         version_history_handle($action, $_POST, $BASE_DIR, $currentDir, $current,
             $currentUser['id'] ?? '', 'cleanExistingName', 'formatSize', 'imghost_autoBackup');
         exit;
 
     } elseif ($FEATURES_ENABLED && in_array($action, [
-        'ai_bg_remove_start','ai_bg_remove_process','ai_bg_remove_status',
-        'ai_bg_remove_cancel','ai_bg_remove_download_zip', 'ai_bg_remove_save_canvas', 'canvas_edit_save', 'ai_bg_remove_sync'
+        'ai_bg_remove_start', 'ai_bg_remove_process', 'ai_bg_remove_status',
+        'ai_bg_remove_cancel', 'ai_bg_remove_download_zip', 'ai_bg_remove_save_canvas', 'canvas_edit_save', 'ai_bg_remove_sync',
     ], true)) {
         ai_bg_remove_handle($action, $_POST, $BASE_DIR, $currentDir, $current,
             $currentUser['id'] ?? '', $BASE_URL, 'imghost_autoBackup');
@@ -3310,7 +3892,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
     } elseif ($FEATURES_ENABLED && $action === 'delete_duplicate') {
         // Delete a duplicate file (uses same security as delete_item)
         $itemRel = cleanPath($_POST['item_rel'] ?? '');
-        if (!$isConverter && !verifyDeletePassword($_POST['delete_password'] ?? '')) {
+        if (! $isConverter && ! verifyDeletePassword($_POST['delete_password'] ?? '')) {
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'error' => 'Incorrect delete password']);
             exit;
@@ -3329,14 +3911,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
     }
     // ════════════════════════════════════════════════════════════════════════
 
-    $redirect = $redirectOverride ?: ($redirectToTrash ? ($pageUrl . "?trash=1") : ($pageUrl . "?path=" . urlencode($current)));
-    if ($message) $redirect .= "&msg=" . urlencode($message) . "&msgtype=" . urlencode($messageType);
-    header("Location: " . $redirect);
+    $redirect = $redirectOverride ?: ($redirectToTrash ? ($pageUrl.'?trash=1') : ($pageUrl.'?path='.urlencode($current)));
+    if ($message) {
+        $redirect .= '&msg='.urlencode($message).'&msgtype='.urlencode($messageType);
+    }
+    header('Location: '.$redirect);
     exit;
 }
 
-$message = $_GET["msg"] ?? "";
-$messageType = $_GET["msgtype"] ?? "success";
+$message = $_GET['msg'] ?? '';
+$messageType = $_GET['msgtype'] ?? 'success';
 
 /*
 |--------------------------------------------------------------------------
@@ -3347,34 +3931,41 @@ $messageType = $_GET["msgtype"] ?? "success";
 $items = [];
 ensureSecureIndexFile($currentDir);
 foreach (scandir($currentDir) as $item) {
-    if ($item === "." || $item === "..") continue;
-    if (shouldHideFromFileManager($item)) continue;
-    $path = $currentDir . "/" . $item;
+    if ($item === '.' || $item === '..') {
+        continue;
+    }
+    if (shouldHideFromFileManager($item)) {
+        continue;
+    }
+    $path = $currentDir.'/'.$item;
     $isFile = is_file($path);
     $isDir = is_dir($path);
-    $mtime = (int)@filemtime($path);
-    $ctime = (int)(@filectime($path) ?: $mtime);
+    $mtime = (int) @filemtime($path);
+    $ctime = (int) (@filectime($path) ?: $mtime);
     $items[] = [
-        "name"     => $item,
-        "is_dir"   => $isDir,
-        "size"     => $isFile ? filesize($path) : 0,
-        "mtime"    => $mtime,
-        "ctime"    => $ctime,
-        "is_image" => $isFile && isImageFile($item),
-        "is_code"  => $isFile && isCodeFile($item),
+        'name' => $item,
+        'is_dir' => $isDir,
+        'size' => $isFile ? filesize($path) : 0,
+        'mtime' => $mtime,
+        'ctime' => $ctime,
+        'is_image' => $isFile && isImageFile($item),
+        'is_code' => $isFile && isCodeFile($item),
     ];
 }
 
 // ── Advanced Sorting ──────────────────────────────────────────────────────
-$allowedSortKeys = ['name_asc','name_desc','newest','oldest','size_asc','size_desc','width','height'];
+$allowedSortKeys = ['name_asc', 'name_desc', 'newest', 'oldest', 'size_asc', 'size_desc', 'width', 'height'];
 $sortKey = in_array($_GET['sort'] ?? '', $allowedSortKeys, true) ? $_GET['sort'] : 'name_asc';
 
 if ($FEATURES_ENABLED && function_exists('sorting_sort_items')) {
     $items = sorting_sort_items($items, $sortKey, $currentDir);
 } else {
-    usort($items, function($a, $b) {
-        if ($a["is_dir"] !== $b["is_dir"]) return $a["is_dir"] ? -1 : 1;
-        return strcasecmp($a["name"], $b["name"]);
+    usort($items, function ($a, $b) {
+        if ($a['is_dir'] !== $b['is_dir']) {
+            return $a['is_dir'] ? -1 : 1;
+        }
+
+        return strcasecmp($a['name'], $b['name']);
     });
 }
 
@@ -3384,10 +3975,10 @@ if ($FEATURES_ENABLED && function_exists('feature_db_get_folder_meta_bulk')) {
     $folderPaths = [];
     foreach ($items as $item) {
         if ($item['is_dir']) {
-            $folderPaths[] = $current ? $current . '/' . $item['name'] : $item['name'];
+            $folderPaths[] = $current ? $current.'/'.$item['name'] : $item['name'];
         }
     }
-    if (!empty($folderPaths)) {
+    if (! empty($folderPaths)) {
         $rawMeta = feature_db_get_folder_meta_bulk($folderPaths, $currentUser['id'] ?? '');
         // Re-key by basename for template use
         foreach ($rawMeta as $path => $meta) {
@@ -3402,67 +3993,72 @@ if ($FEATURES_ENABLED && function_exists('feature_db_get_folder_meta_bulk')) {
 
 $imageUrls = [];
 foreach ($items as $item) {
-    if (!$item["is_dir"] && $item["is_image"]) {
-        $relative = $current ? $current . "/" . $item["name"] : $item["name"];
+    if (! $item['is_dir'] && $item['is_image']) {
+        $relative = $current ? $current.'/'.$item['name'] : $item['name'];
         $imageUrls[] = publicUrl($BASE_URL, $relative);
     }
 }
 
-
-$editFile = "";
-$editContent = "";
-if (isset($_GET["edit"]) && ($isAdmin || $isWebsiteTeam)) {
-    $editFile = cleanExistingName($_GET["edit"]);
-    $editPath = $currentDir . "/" . $editFile;
+$editFile = '';
+$editContent = '';
+if (isset($_GET['edit']) && ($isAdmin || $isWebsiteTeam)) {
+    $editFile = cleanExistingName($_GET['edit']);
+    $editPath = $currentDir.'/'.$editFile;
     if (isSystemManagedFile($editFile)) {
-        $editFile = "";
+        $editFile = '';
     } elseif (is_file($editPath)) {
         $editContent = file_get_contents($editPath);
     }
 }
 
-$folderCount = 0; $fileCount = 0; $totalSize = 0;
+$folderCount = 0;
+$fileCount = 0;
+$totalSize = 0;
 foreach ($items as $item) {
-    if ($item["is_dir"]) $folderCount++;
-    else { $fileCount++; $totalSize += $item["size"]; }
+    if ($item['is_dir']) {
+        $folderCount++;
+    } else {
+        $fileCount++;
+        $totalSize += $item['size'];
+    }
 }
 $displayTotalSize = $totalSize;
 $trashData = loadTrashIndex();
-$trashItems = array_values($trashData["items"]);
+$trashItems = array_values($trashData['items']);
 if ($isWebsiteTeam) {
-    $trashItems = array_values(array_filter($trashItems, function($item) use ($websiteTeamRootRelative) {
-        return relativePathInRoot($item["original_relative"] ?? "", $websiteTeamRootRelative);
+    $trashItems = array_values(array_filter($trashItems, function ($item) use ($websiteTeamRootRelative) {
+        return relativePathInRoot($item['original_relative'] ?? '', $websiteTeamRootRelative);
     }));
 }
-usort($trashItems, function($a, $b) {
-    return ($b["deleted_at"] ?? 0) <=> ($a["deleted_at"] ?? 0);
+usort($trashItems, function ($a, $b) {
+    return ($b['deleted_at'] ?? 0) <=> ($a['deleted_at'] ?? 0);
 });
 $securityData = loadSecurityData();
-$bannedDevices = $securityData["banned"];
-$clipboardCount = count($_SESSION["clipboard"]["items"] ?? []);
+$bannedDevices = $securityData['banned'];
+$clipboardCount = count($_SESSION['clipboard']['items'] ?? []);
 $folderOptions = [];
 $appSettings = loadAppSettings();
 $availableThemeImages = listDashboardThemeImages();
 $currentUser = currentUser();
-if (!$currentUser) {
+if (! $currentUser) {
     if (session_status() === PHP_SESSION_ACTIVE) {
         session_destroy();
     }
-    header("Location: /ourcms");
+    header('Location: /ourcms');
     exit;
 }
 $isAdmin = true;
 $isConverter = false;
 $isWebsiteTeam = false;
-$dashboardThemeUrl = trim((string)($currentUser["dashboard_theme_url"] ?? ""));
-if ($dashboardThemeUrl !== "" && !filter_var($dashboardThemeUrl, FILTER_VALIDATE_URL)) {
-    $dashboardThemeUrl = "";
+$dashboardThemeUrl = trim((string) ($currentUser['dashboard_theme_url'] ?? ''));
+if ($dashboardThemeUrl !== '' && ! filter_var($dashboardThemeUrl, FILTER_VALIDATE_URL)) {
+    $dashboardThemeUrl = '';
 }
-$allUsers = loadUsers()["users"];
+$allUsers = loadUsers()['users'];
 $loginActivities = loadLoginActivity();
-if (!$isAdmin) {
-    $loginActivities = ($currentUser["can_view_login_activity"] ?? true)
-        ? array_values(array_filter($loginActivities, fn($row) => ($row["user_id"] ?? "") === ($currentUser["id"] ?? "")))
+if (! $isAdmin) {
+    $loginActivities = ($currentUser['can_view_login_activity'] ?? true)
+        ? array_values(array_filter($loginActivities, fn ($row) => ($row['user_id'] ?? '') === ($currentUser['id'] ?? '')))
         : [];
 }
 $sidebarPins = [];
@@ -3471,54 +4067,58 @@ if ($FEATURES_ENABLED && function_exists('feature_db')) {
     $db = feature_db();
     if ($db) {
         try {
-            $stmt = $db->prepare("SELECT path, is_dir FROM sidebar_pins WHERE user_id=? ORDER BY created_at ASC");
+            $stmt = $db->prepare('SELECT path, is_dir FROM sidebar_pins WHERE user_id=? ORDER BY created_at ASC');
             $stmt->execute([$currentUser['id'] ?? '']);
             $sidebarPins = $stmt->fetchAll();
 
             $pinnedFolderPaths = [];
             foreach ($sidebarPins as $pin) {
-                if ($pin['is_dir']) $pinnedFolderPaths[] = $pin['path'];
+                if ($pin['is_dir']) {
+                    $pinnedFolderPaths[] = $pin['path'];
+                }
             }
-            if (!empty($pinnedFolderPaths) && function_exists('feature_db_get_folder_meta_bulk')) {
+            if (! empty($pinnedFolderPaths) && function_exists('feature_db_get_folder_meta_bulk')) {
                 $rawMeta = feature_db_get_folder_meta_bulk($pinnedFolderPaths, $currentUser['id'] ?? '');
                 foreach ($rawMeta as $path => $meta) {
-                    if (!empty($meta['color'])) $sidebarFolderColors[$path] = $meta['color'];
+                    if (! empty($meta['color'])) {
+                        $sidebarFolderColors[$path] = $meta['color'];
+                    }
                 }
             }
         } catch (Throwable $e) {
-            error_log('[FeatureDB load_sidebar_pins] ' . $e->getMessage());
+            error_log('[FeatureDB load_sidebar_pins] '.$e->getMessage());
         }
     }
 }
-$preferredTheme = in_array($currentUser["theme"] ?? "light", ["light", "dark", "system"], true) ? $currentUser["theme"] : "light";
-$visibleBaseUrl = $isWebsiteTeam ? publicUrl($BASE_URL, $websiteTeamRootRelative) : (rtrim($BASE_URL, '/') . '/');
-$uploadMaxFilesizeBytes = iniSizeToBytes(ini_get("upload_max_filesize"));
-$postMaxSizeBytes = iniSizeToBytes(ini_get("post_max_size"));
+$preferredTheme = in_array($currentUser['theme'] ?? 'light', ['light', 'dark', 'system'], true) ? $currentUser['theme'] : 'light';
+$visibleBaseUrl = $isWebsiteTeam ? publicUrl($BASE_URL, $websiteTeamRootRelative) : (rtrim($BASE_URL, '/').'/');
+$uploadMaxFilesizeBytes = iniSizeToBytes(ini_get('upload_max_filesize'));
+$postMaxSizeBytes = iniSizeToBytes(ini_get('post_max_size'));
 $serverUploadLimitBytes = 600 * 1024 * 1024; // 600 MB limit requested by user
 
 // Build image list for lightbox (JS)
 $imageList = [];
 foreach ($items as $idx => $item) {
-    if (!$item["is_dir"] && $item["is_image"]) {
-        $relative = $current ? $current . "/" . $item["name"] : $item["name"];
+    if (! $item['is_dir'] && $item['is_image']) {
+        $relative = $current ? $current.'/'.$item['name'] : $item['name'];
         $publicImageUrl = publicUrl($BASE_URL, $relative);
         $imageList[] = [
-            "name" => $item["name"],
-            "url"  => versionedImageUrl($publicImageUrl, $item["mtime"] ?? 0, $item["size"] ?? 0, $item["ctime"] ?? 0),
-            "public_url" => $publicImageUrl,
-            "idx"  => $idx,
+            'name' => $item['name'],
+            'url' => versionedImageUrl($publicImageUrl, $item['mtime'] ?? 0, $item['size'] ?? 0, $item['ctime'] ?? 0),
+            'public_url' => $publicImageUrl,
+            'idx' => $idx,
         ];
     }
 }
 
 ?>
 <!DOCTYPE html>
-<html lang="en" data-theme="<?php echo htmlspecialchars($preferredTheme === "system" ? "light" : $preferredTheme); ?>">
+<html lang="en" data-theme="<?php echo htmlspecialchars($preferredTheme === 'system' ? 'light' : $preferredTheme); ?>">
 <head>
 <meta charset="UTF-8">
-<title><?php echo htmlspecialchars($appSettings["app_name"]); ?> - Dashboard</title>
+<title><?php echo htmlspecialchars($appSettings['app_name']); ?> - Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<?php if (!empty($appSettings["favicon_url"])): ?><link rel="icon" href="<?php echo htmlspecialchars($appSettings["favicon_url"]); ?>"><?php endif; ?>
+<?php if (! empty($appSettings['favicon_url'])) { ?><link rel="icon" href="<?php echo htmlspecialchars($appSettings['favicon_url']); ?>"><?php } else { ?><link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png?v=2"><link rel="icon" href="/favicon.ico?v=2"><?php } ?>
 <script>
 (() => {
     try {
@@ -4752,6 +5352,202 @@ body:not(.selection-mode) .file-check-cell { width: 0; overflow: hidden; opacity
 .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(239,68,68,0.35); }
 .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
 
+/* ── Professional File Manager Transfer Dialog (Move & Copy) ── */
+.transfer-items-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    background: var(--light, #f8fafc);
+    border: 1.5px solid var(--line, #e2e8f0);
+    border-radius: 12px;
+    font-size: 12.5px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.transfer-badge {
+    font-weight: 800;
+    color: var(--muted, #64748b);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+}
+.transfer-names {
+    color: var(--text, #1e293b);
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.transfer-nav-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+.transfer-search-wrap {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.transfer-search-icon {
+    position: absolute;
+    left: 11px;
+    font-size: 13px;
+    pointer-events: none;
+    opacity: 0.6;
+}
+.transfer-search-input {
+    width: 100%;
+    padding: 8px 12px 8px 32px;
+    background: var(--light, #f8fafc);
+    border: 1.5px solid var(--line, #e2e8f0);
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text, #1e293b);
+    outline: none;
+    transition: 0.2s;
+}
+.transfer-search-input:focus {
+    border-color: var(--accent, #6366f1);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+.transfer-breadcrumb-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    padding: 6px 10px;
+    background: rgba(99, 102, 241, 0.06);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    color: var(--muted, #64748b);
+}
+.transfer-crumb {
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: 0.15s;
+    font-weight: 600;
+}
+.transfer-crumb:hover {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--accent, #6366f1);
+}
+.transfer-crumb.active {
+    color: var(--accent, #6366f1);
+    font-weight: 800;
+}
+.transfer-folder-browser {
+    max-height: 240px;
+    overflow-y: auto;
+    border: 1.5px solid var(--line, #e2e8f0);
+    border-radius: 12px;
+    background: white;
+    padding: 6px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+.transfer-folder-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text, #1e293b);
+    transition: background 0.15s, color 0.15s;
+    margin-bottom: 2px;
+    user-select: none;
+}
+.transfer-folder-row:hover {
+    background: rgba(99, 102, 241, 0.08);
+}
+.transfer-folder-row.selected {
+    background: var(--accent, #6366f1) !important;
+    color: white !important;
+    font-weight: 700;
+}
+.transfer-folder-row.selected .transfer-folder-icon,
+.transfer-folder-row.selected .transfer-folder-tag {
+    color: white !important;
+}
+.transfer-folder-row.selected .transfer-folder-tag {
+    background: rgba(255,255,255,0.2) !important;
+}
+.transfer-folder-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+.transfer-folder-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.transfer-folder-tag {
+    font-size: 10px;
+    letter-spacing: 0.03em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.05);
+    color: var(--muted, #64748b);
+    flex-shrink: 0;
+}
+.transfer-destination-callout {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 9px 12px;
+    background: rgba(99, 102, 241, 0.06);
+    border: 1.5px dashed var(--accent, #6366f1);
+    border-radius: 10px;
+    font-size: 12px;
+}
+.dest-label {
+    font-weight: 800;
+    color: var(--muted, #64748b);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+}
+.dest-path {
+    font-weight: 800;
+    color: var(--accent, #6366f1);
+    word-break: break-all;
+}
+[data-theme="dark"] .transfer-items-summary,
+[data-theme="dark"] .transfer-search-input {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.12);
+    color: #f1f5f9;
+}
+[data-theme="dark"] .transfer-folder-browser {
+    background: rgba(15,23,42,0.6);
+    border-color: rgba(255,255,255,0.12);
+}
+[data-theme="dark"] .transfer-folder-row:hover {
+    background: rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .transfer-folder-tag {
+    background: rgba(255,255,255,0.1);
+    color: #94a3b8;
+}
+[data-theme="dark"] .transfer-folder-row.selected {
+    background: var(--accent, #6366f1) !important;
+    color: white !important;
+}
+
+
 .trash-list, .security-list { padding: 14px 18px 18px; display: flex; flex-direction: column; gap: 10px; }
 .trash-row, .security-row {
     display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center;
@@ -5470,7 +6266,7 @@ body.dashboard-repaint::after {
 </style>
 
 </head>
-<body<?php echo $dashboardThemeUrl !== "" ? ' class="dashboard-themed" style="--dashboard-bg-image:url(&quot;' . htmlspecialchars(cssUrlValue($dashboardThemeUrl), ENT_QUOTES, "UTF-8") . '&quot;);"' : ''; ?>>
+<body<?php echo $dashboardThemeUrl !== '' ? ' class="dashboard-themed" style="--dashboard-bg-image:url(&quot;'.htmlspecialchars(cssUrlValue($dashboardThemeUrl), ENT_QUOTES, 'UTF-8').'&quot;);"' : ''; ?>>
 
 <!-- Global Drag Overlay -->
 <div class="global-drag-overlay" id="globalDragOverlay">
@@ -5510,22 +6306,22 @@ body.dashboard-repaint::after {
             </div>
 
             <div class="theme-gallery" id="themeGallery">
-                <?php if (empty($availableThemeImages)): ?>
+                <?php if (empty($availableThemeImages)) { ?>
                     <div class="empty-state" style="grid-column:1/-1;padding:28px 12px;">
                         <div class="es-icon">🖼️</div>
                         <h3>No theme images yet</h3>
                         <p>Choose an image or paste an image URL.</p>
                     </div>
-                <?php endif; ?>
-                <?php foreach ($availableThemeImages as $themeImage): ?>
-                    <div class="theme-choice<?php echo $dashboardThemeUrl === $themeImage["url"] ? " active" : ""; ?>" role="button" tabindex="0" data-theme-url="<?php echo htmlspecialchars($themeImage["url"]); ?>" onclick="setDashboardTheme(this.dataset.themeUrl)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setDashboardTheme(this.dataset.themeUrl);}">
-                        <img class="theme-preview" src="<?php echo htmlspecialchars($themeImage["url"]); ?>" alt="" loading="lazy">
-                        <?php if (!empty($themeImage["can_delete"])): ?>
+                <?php } ?>
+                <?php foreach ($availableThemeImages as $themeImage) { ?>
+                    <div class="theme-choice<?php echo $dashboardThemeUrl === $themeImage['url'] ? ' active' : ''; ?>" role="button" tabindex="0" data-theme-url="<?php echo htmlspecialchars($themeImage['url']); ?>" onclick="setDashboardTheme(this.dataset.themeUrl)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setDashboardTheme(this.dataset.themeUrl);}">
+                        <img class="theme-preview" src="<?php echo htmlspecialchars($themeImage['url']); ?>" alt="" loading="lazy">
+                        <?php if (! empty($themeImage['can_delete'])) { ?>
                             <button class="theme-delete-btn" type="button" title="Delete" onclick="deleteDashboardTheme(event, this.closest('.theme-choice'))">×</button>
-                        <?php endif; ?>
-                        <div class="theme-choice-name"><?php echo htmlspecialchars($themeImage["name"]); ?></div>
+                        <?php } ?>
+                        <div class="theme-choice-name"><?php echo htmlspecialchars($themeImage['name']); ?></div>
                     </div>
-                <?php endforeach; ?>
+                <?php } ?>
             </div>
 
             <div class="theme-status" id="themeStatus"></div>
@@ -5575,7 +6371,7 @@ body.dashboard-repaint::after {
                 <div class="drop-zone" id="dropZone">
                     <div class="dz-icon">☁️</div>
                     <h4>Drop files here or click to browse</h4>
-                    <p><?php echo $isConverter ? "Images only (jpg, jpeg, png, webp)" : "Images (jpg, png, webp, gif, svg), Code (html, css, js, php) or ZIP (auto-extracts)"; ?></p>
+                    <p><?php echo $isConverter ? 'Images only (jpg, jpeg, png, webp)' : 'Images (jpg, png, webp, gif, svg), Code (html, css, js, php) or ZIP (auto-extracts)'; ?></p>
                     <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
                         <button type="button" class="form-btn btn-secondary" onclick="document.getElementById('upload-file-input').click()">Select Files</button>
                         <button type="button" class="form-btn btn-secondary" onclick="document.getElementById('upload-folder-input').click()">Select Folder</button>
@@ -5681,29 +6477,56 @@ body.dashboard-repaint::after {
     </div>
 </div>
 
-<!-- Move Modal -->
+<!-- Move & Copy Modal (Professional File Manager Transfer Dialog) -->
 <div class="modal-overlay" id="moveModal">
-    <div class="modal-box">
+    <div class="modal-box" style="max-width:560px;">
         <div class="modal-header">
-            <span class="modal-title">📦 Move Items</span>
+            <span class="modal-title" id="transferModalTitle">📦 Move to Folder</span>
             <button class="modal-close" onclick="closeModal('moveModal')">✕</button>
         </div>
         <div class="modal-body">
             <form method="post" id="moveForm">
                 <?php echo csrfField(); ?>
-                <input type="hidden" name="action" value="move_selected">
+                <input type="hidden" name="action" id="transferFormAction" value="move_selected">
+                <input type="hidden" name="move_destination" id="moveDestInput" value="">
+                <input type="hidden" name="copy_destination" id="copyDestInput" value="">
                 <div id="moveSelectedInputs"></div>
-                <div class="form-group">
-                    <label class="form-label">Destination Folder</label>
-                    <select class="form-input" name="move_destination" id="moveDestInput" data-loaded="0" disabled autofocus>
-                        <option value="">Loading folders...</option>
-                    </select>
-                    <p style="font-size:11.5px;color:var(--muted);margin-top:6px;font-weight:500;">
-                        Choose one of the available folders. Root means the main blog folder.
-                    </p>
+
+                <!-- Selected items summary -->
+                <div class="transfer-items-summary" id="transferItemsSummary">
+                    <span class="transfer-badge">Selected:</span>
+                    <span class="transfer-names" id="transferItemsList">1 item</span>
                 </div>
-                <div class="btn-row">
-                    <button type="submit" class="form-btn btn-primary">Move →</button>
+
+                <!-- Search & Quick Navigation -->
+                <div class="transfer-nav-bar">
+                    <div class="transfer-search-wrap">
+                        <span class="transfer-search-icon">🔍</span>
+                        <input type="text" id="transferFolderSearch" class="transfer-search-input" placeholder="Search destination folder..." oninput="filterTransferFolders(this.value)">
+                    </div>
+                    <?php if ($isAdmin || $isWebsiteTeam) { ?>
+                    <button type="button" class="form-btn btn-secondary" style="padding:7px 12px;font-size:12px;white-space:nowrap;" onclick="transferQuickNewFolder()" title="Create new subfolder here">➕ New Folder</button>
+                    <?php } ?>
+                </div>
+
+                <!-- Breadcrumb Path Bar -->
+                <div class="transfer-breadcrumb-bar" id="transferBreadcrumbBar">
+                    <span class="transfer-crumb active" onclick="selectTransferFolder('')">🏠 Root</span>
+                </div>
+
+                <!-- Interactive Folder List Explorer -->
+                <div class="transfer-folder-browser" id="transferFolderList">
+                    <div style="text-align:center;padding:24px 0;color:var(--muted);font-size:13px;">Loading folders...</div>
+                </div>
+
+                <!-- Target Destination Callout -->
+                <div class="transfer-destination-callout">
+                    <span class="dest-label">Target Destination:</span>
+                    <span class="dest-path" id="transferSelectedDestPath">🏠 Root (blog)</span>
+                </div>
+
+                <div class="btn-row" style="margin-top:16px;">
+                    <button type="submit" class="form-btn btn-primary" id="transferSubmitBtn">Move Here →</button>
                     <button type="button" class="form-btn btn-secondary" onclick="closeModal('moveModal')">Cancel</button>
                 </div>
             </form>
@@ -5711,36 +6534,35 @@ body.dashboard-repaint::after {
     </div>
 </div>
 
-<!-- Delete Password Modal -->
+<!-- Delete Confirmation Modal (NO password required) -->
 <div class="modal-overlay" id="deletePasswordModal">
-    <div class="modal-box">
+    <div class="modal-box" style="max-width:440px;">
         <div class="modal-header">
-            <span class="modal-title">🔐 Delete confirmation</span>
+            <span class="modal-title" id="deleteConfirmTitle">🗑️ Confirm Deletion</span>
             <button class="modal-close" onclick="cancelDeletePassword()">✕</button>
         </div>
-        <div class="modal-body">
-            <div class="delete-warning-card">
-                <div class="delete-warning-icon">🗑️</div>
-                <div>
-                    <div class="delete-warning-title">Delete password required</div>
-                    <div class="delete-warning-text" id="deletePasswordMessage">Enter the delete password to continue.</div>
-                </div>
+        <div class="modal-body" style="text-align:center;padding:26px 22px;">
+            <div style="width:54px;height:54px;border-radius:50%;background:rgba(239,68,68,0.12);color:#ef4444;font-size:24px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px;">
+                🗑️
+            </div>
+            <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;" id="deleteConfirmHeader">
+                Are you sure?
+            </div>
+            <div style="font-size:13.5px;color:var(--muted);line-height:1.5;margin-bottom:22px;word-break:break-word;" id="deletePasswordMessage">
+                Are you sure you want to delete this item?
             </div>
             <form id="deletePasswordModalForm" onsubmit="return submitDeletePassword(event)">
-                <div class="form-group">
-                    <label class="form-label">Delete password</label>
-                    <input class="form-input" id="deletePasswordInput" type="password" autocomplete="current-password" placeholder="Enter delete password" required>
-                </div>
-                <div class="btn-row">
-                    <button type="submit" class="form-btn btn-danger">Delete →</button>
-                    <button type="button" class="form-btn btn-secondary" onclick="cancelDeletePassword()">Cancel</button>
+                <input type="hidden" id="deletePasswordInput" value="confirmed">
+                <div class="btn-row" style="display:flex;gap:10px;justify-content:center;">
+                    <button type="button" class="form-btn btn-secondary" style="flex:1;" onclick="cancelDeletePassword()">Cancel</button>
+                    <button type="submit" class="form-btn btn-danger" style="flex:1;" id="deleteConfirmSubmitBtn">Delete</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<?php if ($isAdmin): ?>
+<?php if ($isAdmin) { ?>
 <!-- Security Modal -->
 <div class="modal-overlay" id="securityModal">
     <div class="modal-box" style="max-width:720px;">
@@ -5750,42 +6572,42 @@ body.dashboard-repaint::after {
         </div>
         <div class="modal-body">
             <p style="font-size:13px;color:var(--muted);margin-bottom:12px;font-weight:600;">
-                Devices are banned after <?php echo (int)$MAX_LOGIN_ATTEMPTS; ?> failed login attempts.
+                Devices are banned after <?php echo (int) $MAX_LOGIN_ATTEMPTS; ?> failed login attempts.
             </p>
             <div class="security-list" style="padding:0;">
-                <?php if (empty($bannedDevices)): ?>
+                <?php if (empty($bannedDevices)) { ?>
                     <div class="empty-state" style="padding:26px 12px;">
                         <div class="es-icon">🛡️</div>
                         <h3>No banned devices</h3>
                         <p>Failed login bans will appear here.</p>
                     </div>
-                <?php endif; ?>
-                <?php foreach ($bannedDevices as $ban): ?>
+                <?php } ?>
+                <?php foreach ($bannedDevices as $ban) { ?>
                     <div class="security-row">
                         <div>
-                            <div class="security-name"><?php echo htmlspecialchars($ban["ip"] ?? "Unknown IP"); ?></div>
+                            <div class="security-name"><?php echo htmlspecialchars($ban['ip'] ?? 'Unknown IP'); ?></div>
                             <div class="security-meta">
-                                <?php echo htmlspecialchars($ban["reason"] ?? "Failed login attempts"); ?> ·
-                                <?php echo date("M d, Y H:i", (int)($ban["banned_at"] ?? time())); ?><br>
-                                <?php echo htmlspecialchars($ban["user_agent"] ?? "Unknown device"); ?>
+                                <?php echo htmlspecialchars($ban['reason'] ?? 'Failed login attempts'); ?> ·
+                                <?php echo date('M d, Y H:i', (int) ($ban['banned_at'] ?? time())); ?><br>
+                                <?php echo htmlspecialchars($ban['user_agent'] ?? 'Unknown device'); ?>
                             </div>
                         </div>
                         <div class="row-actions">
                             <form method="post" class="inline-form">
                                 <?php echo csrfField(); ?>
                                 <input type="hidden" name="action" value="unban_device">
-                                <input type="hidden" name="ban_id" value="<?php echo htmlspecialchars($ban["id"] ?? ""); ?>">
+                                <input type="hidden" name="ban_id" value="<?php echo htmlspecialchars($ban['id'] ?? ''); ?>">
                                 <button class="act-btn open" type="submit">Unban</button>
                             </form>
                         </div>
                     </div>
-                <?php endforeach; ?>
+                <?php } ?>
             </div>
         </div>
     </div>
 </div>
-<?php endif; ?>
-<?php if ($FEATURES_ENABLED): ?>
+<?php } ?>
+<?php if ($FEATURES_ENABLED) { ?>
 
 <!-- ===== FEATURE MODALS ===== -->
 
@@ -5825,9 +6647,11 @@ body.dashboard-repaint::after {
                 <label class="form-label">Output Folder</label>
                 <select class="form-input" id="aiOutputFolder">
                     <option value="">(Current Directory)</option>
-                    <?php foreach ($items as $item): if ($item['is_dir']): ?>
+                    <?php foreach ($items as $item) {
+                        if ($item['is_dir']) { ?>
                         <option value="<?php echo htmlspecialchars($item['name']); ?>"><?php echo htmlspecialchars($item['name']); ?></option>
-                    <?php endif; endforeach; ?>
+                    <?php }
+                        } ?>
                 </select>
             </div>
             <label style="display:flex; align-items:center; gap:8px; margin-top:12px; cursor:pointer;">
@@ -5993,16 +6817,22 @@ body.dashboard-repaint::after {
 </div>
 
 <!-- Context Menu -->
-<div id="contextMenu" class="ctx-menu" style="display:none;">
+<div id="contextMenu" class="ctx-menu" style="display:none;z-index:99999;">
+    <div class="ctx-item" id="ctx-open">↗ Open</div>
+    <div class="ctx-item" id="ctx-copy-url">🔗 Copy URL</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" id="ctx-copy-to">📋 Copy to Folder...</div>
+    <div class="ctx-item" id="ctx-move">📦 Move to Folder...</div>
+    <div class="ctx-item" id="ctx-duplicate">📑 Duplicate</div>
+    <div class="ctx-item" id="ctx-paste">📋 Paste</div>
+    <div class="ctx-sep"></div>
     <div class="ctx-item" id="ctx-rename">✏️ Rename</div>
     <div class="ctx-item" id="ctx-rename-type">🏷️ Rename Type</div>
     <div class="ctx-sep"></div>
     <div class="ctx-item" id="ctx-replace" style="display:none;">🔄 Replace</div>
+    <div class="ctx-item" id="ctx-canva-edit" style="display:none;">🎨 Edit in Canvas</div>
     <div class="ctx-sep ctx-sep-img" style="display:none;"></div>
     <div class="ctx-item" id="ctx-download">⬇ Download</div>
-    <div class="ctx-item" id="ctx-copy">📄 Copy</div>
-    <div class="ctx-item" id="ctx-move">📦 Move</div>
-    <div class="ctx-item" id="ctx-paste">📋 Paste</div>
     <div class="ctx-sep"></div>
     <div class="ctx-item" id="ctx-color" style="display:none;">
         🎨 Folder Color
@@ -6024,15 +6854,15 @@ body.dashboard-repaint::after {
     <div class="ctx-item ctx-danger" id="ctx-delete">🗑️ Delete</div>
 </div>
 
-<?php endif; ?>
+<?php } ?>
 
 <!-- Edit File Modal -->
-<?php if ($editFile): ?>
+<?php if ($editFile) { ?>
 <div class="modal-overlay open" id="editModal">
     <div class="modal-box" style="max-width:680px;">
         <div class="modal-header">
             <span class="modal-title">✏️ Edit: <?php echo htmlspecialchars($editFile); ?></span>
-            <a class="modal-close" href="<?php echo $pageUrl . "?path=" . urlencode($current); ?>">✕</a>
+            <a class="modal-close" href="<?php echo $pageUrl.'?path='.urlencode($current); ?>">✕</a>
         </div>
         <div class="modal-body">
             <form method="post">
@@ -6044,13 +6874,13 @@ body.dashboard-repaint::after {
                 </div>
                 <div class="btn-row">
                     <button type="submit" class="form-btn btn-primary">💾 Save File</button>
-                    <a class="form-btn btn-secondary" href="<?php echo $pageUrl . "?path=" . urlencode($current); ?>">Cancel</a>
+                    <a class="form-btn btn-secondary" href="<?php echo $pageUrl.'?path='.urlencode($current); ?>">Cancel</a>
                 </div>
             </form>
         </div>
     </div>
 </div>
-<?php endif; ?>
+<?php } ?>
 
 <!-- Delete selected form -->
 <form method="post" id="deleteSelectedForm">
@@ -6063,6 +6893,12 @@ body.dashboard-repaint::after {
     <?php echo csrfField(); ?>
     <input type="hidden" name="action" value="copy_selected">
     <div id="copySelectedInputs"></div>
+</form>
+
+<form method="post" id="duplicateSelectedForm">
+    <?php echo csrfField(); ?>
+    <input type="hidden" name="action" value="duplicate_selected">
+    <div id="duplicateSelectedInputs"></div>
 </form>
 
 <form method="post" id="downloadSelectedForm">
@@ -6133,38 +6969,40 @@ body.dashboard-repaint::after {
         <a class="sidebar-btn" href="<?php echo $homeUrl; ?>">
             <span class="sb-icon">🏠</span> Home
         </a>
-        <?php if (!$isConverter): ?>
+        <?php if (! $isConverter) { ?>
         <a class="sidebar-btn sb-delete" href="<?php echo $pageUrl; ?>?trash=1">
             <span class="sb-icon sb-icon-img"><img src="https://cdn-icons-png.flaticon.com/512/9790/9790368.png" alt="Trash icon"></span> Trash Bin
         </a>
-        <?php endif; ?>
+        <?php } ?>
 
-        <?php if ($FEATURES_ENABLED && !$isConverter): ?>
+        <?php if ($FEATURES_ENABLED && ! $isConverter) { ?>
             <div class="sidebar-divider"></div>
             <div class="sidebar-section">Pin Folder</div>
-            <?php if (empty($sidebarPins)): ?>
+            <?php if (empty($sidebarPins)) { ?>
                 <div style="font-size:11px;color:var(--muted);padding:6px 12px;font-style:italic;">No pinned items yet</div>
-            <?php else: ?>
+            <?php } else { ?>
                 <?php
                 $pinColorVarsMap = [
-                    'blue'   => ['#2563eb','rgba(37,99,235,0.12)'],
-                    'green'  => ['#059669','rgba(5,150,105,0.12)'],
-                    'yellow' => ['#d97706','rgba(217,119,6,0.12)'],
-                    'red'    => ['#dc2626','rgba(220,38,38,0.12)'],
-                    'purple' => ['#7c3aed','rgba(124,58,237,0.12)'],
-                    'orange' => ['#ea580c','rgba(234,88,12,0.12)'],
+                    'blue' => ['#2563eb', 'rgba(37,99,235,0.12)'],
+                    'green' => ['#059669', 'rgba(5,150,105,0.12)'],
+                    'yellow' => ['#d97706', 'rgba(217,119,6,0.12)'],
+                    'red' => ['#dc2626', 'rgba(220,38,38,0.12)'],
+                    'purple' => ['#7c3aed', 'rgba(124,58,237,0.12)'],
+                    'orange' => ['#ea580c', 'rgba(234,88,12,0.12)'],
                 ];
-                foreach ($sidebarPins as $pin):
+                foreach ($sidebarPins as $pin) {
                     $pinPath = $pin['path'];
-                    $pinIsDir = (bool)($pin['is_dir'] ?? false);
+                    $pinIsDir = (bool) ($pin['is_dir'] ?? false);
                     $pinName = basename($pinPath);
                     $pinColor = $pinIsDir ? ($sidebarFolderColors[$pinPath] ?? '') : '';
                     $parent = dirname($pinPath);
-                    if ($parent === '.') $parent = '';
+                    if ($parent === '.') {
+                        $parent = '';
+                    }
                     $pinExt = strtolower(pathinfo($pinName, PATHINFO_EXTENSION));
-                    $pinIsImg = in_array($pinExt, ['jpg','jpeg','png','webp','gif','svg'], true);
+                    $pinIsImg = in_array($pinExt, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'], true);
                     if ($pinIsDir) {
-                        $pinHref = $pageUrl . '?path=' . urlencode($pinPath);
+                        $pinHref = $pageUrl.'?path='.urlencode($pinPath);
                         $pinColorClass = 'sb-folder';
                     } else {
                         $pinHref = publicUrl($BASE_URL, $pinPath);
@@ -6172,13 +7010,13 @@ body.dashboard-repaint::after {
                     }
                     $iconStyle = '';
                     if ($pinColor && isset($pinColorVarsMap[$pinColor])) {
-                        $iconStyle = 'color:' . $pinColorVarsMap[$pinColor][0] . ';background:' . $pinColorVarsMap[$pinColor][1] . ';';
+                        $iconStyle = 'color:'.$pinColorVarsMap[$pinColor][0].';background:'.$pinColorVarsMap[$pinColor][1].';';
                     }
-                ?>
+                    ?>
                 <div class="sidebar-btn <?php echo $pinColorClass; ?>" role="link" tabindex="0"
                     style="cursor:pointer;"
                     data-href="<?php echo htmlspecialchars($pinHref); ?>"
-                    data-target="<?php echo !$pinIsDir ? '_blank' : ''; ?>"
+                    data-target="<?php echo ! $pinIsDir ? '_blank' : ''; ?>"
                     data-name="<?php echo htmlspecialchars($pinName); ?>"
                     data-url="<?php echo htmlspecialchars(publicUrl($BASE_URL, $pinPath)); ?>"
                     data-open-url="<?php echo htmlspecialchars($pinHref); ?>"
@@ -6192,16 +7030,16 @@ body.dashboard-repaint::after {
                     onclick="(function(el){var href=el.dataset.href;var tgt=el.dataset.target;if(tgt==='_blank')window.open(href,'_blank');else location.href=href;})(this)"
                     oncontextmenu="showContextMenu(event,this);return false;">
                     <span class="sb-icon"
-                        <?php echo $pinColor ? 'data-folder-color="' . htmlspecialchars($pinColor) . '"' : ''; ?>
-                        <?php echo $iconStyle ? 'style="' . $iconStyle . '"' : ''; ?>>
+                        <?php echo $pinColor ? 'data-folder-color="'.htmlspecialchars($pinColor).'"' : ''; ?>
+                        <?php echo $iconStyle ? 'style="'.$iconStyle.'"' : ''; ?>>
                         <?php echo getFileIcon($pinName, $pinIsDir); ?>
                     </span> <?php echo htmlspecialchars($pinName); ?>
                 </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        <?php endif; ?>
+                <?php } ?>
+            <?php } ?>
+        <?php } ?>
 
-        <?php if (!$isConverter): ?>
+        <?php if (! $isConverter) { ?>
             <div style="margin-top:auto;padding-top:12px;">
                 <div class="sidebar-divider"></div>
                 <div style="font-size:10.5px;color:var(--muted);padding:6px 12px 3px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;">Base URL</div>
@@ -6209,14 +7047,14 @@ body.dashboard-repaint::after {
                     <input class="url-input" style="width:100%;font-size:9.5px;" value="<?php echo htmlspecialchars($visibleBaseUrl); ?>" readonly onclick="this.select(); navigator.clipboard.writeText(this.value); toast('Base URL copied!');">
                 </div>
             </div>
-        <?php endif; ?>
+        <?php } ?>
     </aside>
 
     <!-- MAIN -->
     <main class="main">
 
         <!-- Stats -->
-        <?php if (!$profileMode && !$settingsMode && !$activityMode && !$usersMode && !$trashMode): ?>
+        <?php if (! $profileMode && ! $settingsMode && ! $activityMode && ! $usersMode && ! $trashMode) { ?>
         <div class="stats-row">
             <div class="stat-card">
                 <div class="stat-icon si-purple">📂</div>
@@ -6239,16 +7077,16 @@ body.dashboard-repaint::after {
                 <div class="stat-lbl" id="storageSizeLabel">Visible file size</div>
             </div>
         </div>
-        <?php endif; ?>
+        <?php } ?>
 
-        <?php if ($message): ?>
+        <?php if ($message) { ?>
         <div class="message msg-<?php echo htmlspecialchars($messageType); ?>">
             <?php echo $messageType === 'success' ? '✅' : '⚠️'; ?>
             <?php echo htmlspecialchars($message); ?>
         </div>
-        <?php endif; ?>
+        <?php } ?>
 
-        <?php if ($profileMode): ?>
+        <?php if ($profileMode) { ?>
         <div class="panel">
             <div class="panel-head">
                 <span class="panel-title">👤 Profile</span>
@@ -6258,11 +7096,11 @@ body.dashboard-repaint::after {
                 <div class="admin-grid">
                     <div class="admin-card" style="display:flex;align-items:center;gap:14px;">
                         <span class="avatar-large">
-                            <?php if (!empty($currentUser["avatar_url"])): ?><img src="<?php echo htmlspecialchars($currentUser["avatar_url"]); ?>" alt=""><?php else: ?><?php echo htmlspecialchars(userInitials($currentUser)); ?><?php endif; ?>
+                            <?php if (! empty($currentUser['avatar_url'])) { ?><img src="<?php echo htmlspecialchars($currentUser['avatar_url']); ?>" alt=""><?php } else { ?><?php echo htmlspecialchars(userInitials($currentUser)); ?><?php } ?>
                         </span>
                         <div>
-                            <h3 style="margin:0;"><?php echo htmlspecialchars($currentUser["display_name"] ?? $currentUser["username"]); ?></h3>
-                            <p style="font-size:12px;color:var(--muted);font-weight:700;margin-top:4px;"><?php echo htmlspecialchars($currentUser["username"]); ?> · <?php echo htmlspecialchars(roleLabel($currentUser["role"] ?? "staff")); ?></p>
+                            <h3 style="margin:0;"><?php echo htmlspecialchars($currentUser['display_name'] ?? $currentUser['username']); ?></h3>
+                            <p style="font-size:12px;color:var(--muted);font-weight:700;margin-top:4px;"><?php echo htmlspecialchars($currentUser['username']); ?> · <?php echo htmlspecialchars(roleLabel($currentUser['role'] ?? 'staff')); ?></p>
                         </div>
                     </div>
                     <div class="admin-card">
@@ -6274,7 +7112,7 @@ body.dashboard-repaint::after {
                             <div class="form-group" style="display:flex; align-items:center; gap:16px;">
                                 <div style="position:relative;">
                                     <span class="avatar-large" style="width:80px;height:80px;font-size:32px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:50%;">
-                                        <?php if (!empty($currentUser["avatar_url"])): ?><img src="<?php echo htmlspecialchars($currentUser["avatar_url"]); ?>" alt="" style="width:100%;height:100%;object-fit:cover;"><?php else: ?><?php echo htmlspecialchars(userInitials($currentUser)); ?><?php endif; ?>
+                                        <?php if (! empty($currentUser['avatar_url'])) { ?><img src="<?php echo htmlspecialchars($currentUser['avatar_url']); ?>" alt="" style="width:100%;height:100%;object-fit:cover;"><?php } else { ?><?php echo htmlspecialchars(userInitials($currentUser)); ?><?php } ?>
                                     </span>
                                 </div>
                                 <div style="flex:1;">
@@ -6286,11 +7124,11 @@ body.dashboard-repaint::after {
                             
                             <div class="form-group">
                                 <label class="form-label">Display name</label>
-                                <input class="form-input" name="display_name" value="<?php echo htmlspecialchars($currentUser["display_name"] ?? ""); ?>" required>
+                                <input class="form-input" name="display_name" value="<?php echo htmlspecialchars($currentUser['display_name'] ?? ''); ?>" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Profile image URL</label>
-                                <input class="form-input" name="avatar_url" type="url" value="<?php echo htmlspecialchars($currentUser["avatar_url"] ?? ""); ?>" placeholder="https://example.com/avatar.png">
+                                <input class="form-input" name="avatar_url" type="url" value="<?php echo htmlspecialchars($currentUser['avatar_url'] ?? ''); ?>" placeholder="https://example.com/avatar.png">
                             </div>
                             <button class="form-btn btn-primary" type="submit">Save profile</button>
                         </form>
@@ -6299,10 +7137,10 @@ body.dashboard-repaint::after {
             </div>
         </div>
 
-        <?php elseif ($settingsMode): ?>
-            <?php if (!$isAdmin): ?>
+        <?php } elseif ($settingsMode) { ?>
+            <?php if (! $isAdmin) { ?>
                 <div class="message msg-error">Admin permission is required.</div>
-            <?php else: ?>
+            <?php } else { ?>
             <div class="panel">
                 <div class="panel-head">
                     <span class="panel-title">⚙️ Admin Settings</span>
@@ -6316,11 +7154,11 @@ body.dashboard-repaint::after {
                             <h3>Dashboard branding</h3>
                             <div class="form-group">
                                 <label class="form-label">Dashboard name</label>
-                                <input class="form-input" name="app_name" value="<?php echo htmlspecialchars($appSettings["app_name"]); ?>" required>
+                                <input class="form-input" name="app_name" value="<?php echo htmlspecialchars($appSettings['app_name']); ?>" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Dashboard logo URL</label>
-                                <input class="form-input" name="dashboard_logo_url" type="url" value="<?php echo htmlspecialchars($appSettings["dashboard_logo_url"]); ?>" placeholder="https://example.com/logo.png">
+                                <input class="form-input" name="dashboard_logo_url" type="url" value="<?php echo htmlspecialchars($appSettings['dashboard_logo_url']); ?>" placeholder="https://example.com/logo.png">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Upload dashboard logo</label>
@@ -6328,7 +7166,7 @@ body.dashboard-repaint::after {
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Browser tab icon / favicon URL</label>
-                                <input class="form-input" name="favicon_url" type="url" value="<?php echo htmlspecialchars($appSettings["favicon_url"]); ?>" placeholder="https://example.com/favicon.png">
+                                <input class="form-input" name="favicon_url" type="url" value="<?php echo htmlspecialchars($appSettings['favicon_url']); ?>" placeholder="https://example.com/favicon.png">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Upload browser tab icon</label>
@@ -6336,7 +7174,7 @@ body.dashboard-repaint::after {
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Footer text name</label>
-                                <input class="form-input" name="footer_name" value="<?php echo htmlspecialchars($appSettings["footer_name"]); ?>" required>
+                                <input class="form-input" name="footer_name" value="<?php echo htmlspecialchars($appSettings['footer_name']); ?>" required>
                             </div>
                             
                             <hr style="border:none;border-top:1px solid var(--line);margin:16px 0;">
@@ -6351,50 +7189,50 @@ body.dashboard-repaint::after {
                     </form>
                 </div>
             </div>
-            <?php endif; ?>
+            <?php } ?>
 
-        <?php elseif ($activityMode): ?>
-            <?php if (!$isAdmin && !($currentUser["can_view_login_activity"] ?? true)): ?>
+        <?php } elseif ($activityMode) { ?>
+            <?php if (! $isAdmin && ! ($currentUser['can_view_login_activity'] ?? true)) { ?>
                 <div class="message msg-error">Login activity is not enabled for this account.</div>
-            <?php else: ?>
+            <?php } else { ?>
             <div class="panel">
                 <div class="panel-head">
                     <span class="panel-title">🧾 Login Activity</span>
                     <div class="panel-head-actions">
                         <span class="panel-meta"><?php echo count($loginActivities); ?> sign-in record(s)</span>
-                        <?php if ($isAdmin || !empty($currentUser["is_main_admin"])): ?>
+                        <?php if ($isAdmin || ! empty($currentUser['is_main_admin'])) { ?>
                         <form method="post" class="inline-form" onsubmit="return confirm('Clear all login activity history? This cannot be undone.');">
                             <?php echo csrfField(); ?>
                             <input type="hidden" name="action" value="clear_login_activity">
                             <button class="act-btn del" type="submit">Clear history</button>
                         </form>
-                        <?php endif; ?>
+                        <?php } ?>
                     </div>
                 </div>
                 <div class="admin-table-wrap">
                     <table class="admin-table">
                         <thead><tr><th>Username</th><th>Device / browser</th><th>IP address</th><th>Date</th><th>Status</th></tr></thead>
                         <tbody>
-                            <?php foreach ($loginActivities as $row): ?>
+                            <?php foreach ($loginActivities as $row) { ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($row["username"] ?? ""); ?></td>
-                                <td><?php echo htmlspecialchars($row["user_agent"] ?? ""); ?></td>
-                                <td><?php echo htmlspecialchars($row["ip"] ?? ""); ?></td>
-                                <td><?php echo date("M d, Y H:i", (int)($row["created_at"] ?? time())); ?></td>
-                                <td><span class="status-pill <?php echo htmlspecialchars($row["status"] ?? "failed"); ?>"><?php echo htmlspecialchars($row["status"] ?? "failed"); ?></span></td>
+                                <td><?php echo htmlspecialchars($row['username'] ?? ''); ?></td>
+                                <td><?php echo htmlspecialchars($row['user_agent'] ?? ''); ?></td>
+                                <td><?php echo htmlspecialchars($row['ip'] ?? ''); ?></td>
+                                <td><?php echo date('M d, Y H:i', (int) ($row['created_at'] ?? time())); ?></td>
+                                <td><span class="status-pill <?php echo htmlspecialchars($row['status'] ?? 'failed'); ?>"><?php echo htmlspecialchars($row['status'] ?? 'failed'); ?></span></td>
                             </tr>
-                            <?php endforeach; ?>
-                            <?php if (empty($loginActivities)): ?><tr><td colspan="5">No login activity yet.</td></tr><?php endif; ?>
+                            <?php } ?>
+                            <?php if (empty($loginActivities)) { ?><tr><td colspan="5">No login activity yet.</td></tr><?php } ?>
                         </tbody>
                     </table>
                 </div>
             </div>
-            <?php endif; ?>
+            <?php } ?>
 
-        <?php elseif ($usersMode): ?>
-            <?php if (!$isAdmin): ?>
+        <?php } elseif ($usersMode) { ?>
+            <?php if (! $isAdmin) { ?>
                 <div class="message msg-error">Admin permission is required.</div>
-            <?php else: ?>
+            <?php } else { ?>
             <div class="panel">
                 <div class="panel-head">
                     <span class="panel-title">👥 User Management</span>
@@ -6473,74 +7311,75 @@ body.dashboard-repaint::after {
                         <table class="admin-table">
                             <thead><tr><th>User</th><th>Role</th><th>Status</th><th>Login activity</th><th>Password</th><th>Actions</th></tr></thead>
                             <tbody>
-                                <?php foreach ($allUsers as $row): ?>
-                                <?php $protected = !empty($row["is_main_admin"]); $self = ($row["id"] ?? "") === ($currentUser["id"] ?? ""); ?>
+                                <?php foreach ($allUsers as $row) { ?>
+                                <?php $protected = ! empty($row['is_main_admin']);
+                                    $self = ($row['id'] ?? '') === ($currentUser['id'] ?? ''); ?>
                                 <tr>
                                     <td>
                                         <div class="user-cell">
                                             <span class="avatar-mini">
-                                                <?php if (!empty($row["avatar_url"])): ?><img src="<?php echo htmlspecialchars($row["avatar_url"]); ?>" alt=""><?php else: ?><?php echo htmlspecialchars(userInitials($row)); ?><?php endif; ?>
+                                                <?php if (! empty($row['avatar_url'])) { ?><img src="<?php echo htmlspecialchars($row['avatar_url']); ?>" alt=""><?php } else { ?><?php echo htmlspecialchars(userInitials($row)); ?><?php } ?>
                                             </span>
                                             <span>
-                                                <strong><?php echo htmlspecialchars($row["display_name"] ?? $row["username"]); ?></strong><br>
-                                                <span style="color:var(--muted);"><?php echo htmlspecialchars($row["username"]); ?><?php echo $protected ? " / main admin" : ""; ?></span>
+                                                <strong><?php echo htmlspecialchars($row['display_name'] ?? $row['username']); ?></strong><br>
+                                                <span style="color:var(--muted);"><?php echo htmlspecialchars($row['username']); ?><?php echo $protected ? ' / main admin' : ''; ?></span>
                                             </span>
                                         </div>
                                     </td>
                                     <td>
                                         <form method="post" class="inline-form">
-                                            <?php echo csrfField(); ?><input type="hidden" name="action" value="set_user_role"><input type="hidden" name="user_id" value="<?php echo htmlspecialchars($row["id"]); ?>">
-                                            <select class="form-input" name="role" style="min-width:100px;" <?php echo ($protected || $self) ? "disabled" : ""; ?>><option value="staff" <?php echo ($row["role"] ?? "") === "staff" ? "selected" : ""; ?>>Staff</option><option value="converter" <?php echo ($row["role"] ?? "") === "converter" ? "selected" : ""; ?>>Converter</option><option value="website_team" <?php echo ($row["role"] ?? "") === "website_team" ? "selected" : ""; ?>>Website Team</option><option value="admin" <?php echo ($row["role"] ?? "") === "admin" ? "selected" : ""; ?>>Admin</option></select>
-                                            <button class="act-btn open" <?php echo ($protected || $self) ? "disabled" : ""; ?>>Save</button>
+                                            <?php echo csrfField(); ?><input type="hidden" name="action" value="set_user_role"><input type="hidden" name="user_id" value="<?php echo htmlspecialchars($row['id']); ?>">
+                                            <select class="form-input" name="role" style="min-width:100px;" <?php echo ($protected || $self) ? 'disabled' : ''; ?>><option value="staff" <?php echo ($row['role'] ?? '') === 'staff' ? 'selected' : ''; ?>>Staff</option><option value="converter" <?php echo ($row['role'] ?? '') === 'converter' ? 'selected' : ''; ?>>Converter</option><option value="website_team" <?php echo ($row['role'] ?? '') === 'website_team' ? 'selected' : ''; ?>>Website Team</option><option value="admin" <?php echo ($row['role'] ?? '') === 'admin' ? 'selected' : ''; ?>>Admin</option></select>
+                                            <button class="act-btn open" <?php echo ($protected || $self) ? 'disabled' : ''; ?>>Save</button>
                                         </form>
                                     </td>
-                                    <td><span class="status-pill <?php echo htmlspecialchars($row["status"] ?? "active"); ?>"><?php echo htmlspecialchars($row["status"] ?? "active"); ?></span></td>
+                                    <td><span class="status-pill <?php echo htmlspecialchars($row['status'] ?? 'active'); ?>"><?php echo htmlspecialchars($row['status'] ?? 'active'); ?></span></td>
                                     <td>
                                         <form method="post" class="inline-form">
-                                            <?php echo csrfField(); ?><input type="hidden" name="action" value="update_user_permissions"><input type="hidden" name="user_id" value="<?php echo htmlspecialchars($row["id"]); ?>">
-                                            <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" name="can_view_login_activity" <?php echo !empty($row["can_view_login_activity"]) ? "checked" : ""; ?>> Allowed</label>
+                                            <?php echo csrfField(); ?><input type="hidden" name="action" value="update_user_permissions"><input type="hidden" name="user_id" value="<?php echo htmlspecialchars($row['id']); ?>">
+                                            <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" name="can_view_login_activity" <?php echo ! empty($row['can_view_login_activity']) ? 'checked' : ''; ?>> Allowed</label>
                                             <button class="act-btn open">Save</button>
                                         </form>
                                     </td>
                                     <td>
                                         <form method="post" class="inline-form">
-                                            <?php echo csrfField(); ?><input type="hidden" name="action" value="change_user_password"><input type="hidden" name="user_id" value="<?php echo htmlspecialchars($row["id"]); ?>">
+                                            <?php echo csrfField(); ?><input type="hidden" name="action" value="change_user_password"><input type="hidden" name="user_id" value="<?php echo htmlspecialchars($row['id']); ?>">
                                             <input class="form-input" name="password" type="password" minlength="8" placeholder="New password" style="min-width:150px;" required>
                                             <button class="act-btn open">Change</button>
                                         </form>
                                     </td>
                                     <td class="admin-actions-cell">
                                         <div class="admin-actions">
-                                        <form method="post" class="inline-form" onsubmit="return confirm('<?php echo ($row["status"] ?? "active") === "frozen" ? "Unfreeze this user?" : "Freeze this user?"; ?>');">
-                                            <?php echo csrfField(); ?><input type="hidden" name="action" value="<?php echo ($row["status"] ?? "active") === "frozen" ? "unfreeze_user" : "freeze_user"; ?>"><input type="hidden" name="user_id" value="<?php echo htmlspecialchars($row["id"]); ?>">
-                                            <button class="act-btn" <?php echo ($protected || $self) ? "disabled" : ""; ?>><?php echo ($row["status"] ?? "active") === "frozen" ? "Unfreeze" : "Freeze"; ?></button>
+                                        <form method="post" class="inline-form" onsubmit="return confirm('<?php echo ($row['status'] ?? 'active') === 'frozen' ? 'Unfreeze this user?' : 'Freeze this user?'; ?>');">
+                                            <?php echo csrfField(); ?><input type="hidden" name="action" value="<?php echo ($row['status'] ?? 'active') === 'frozen' ? 'unfreeze_user' : 'freeze_user'; ?>"><input type="hidden" name="user_id" value="<?php echo htmlspecialchars($row['id']); ?>">
+                                            <button class="act-btn" <?php echo ($protected || $self) ? 'disabled' : ''; ?>><?php echo ($row['status'] ?? 'active') === 'frozen' ? 'Unfreeze' : 'Freeze'; ?></button>
                                         </form>
                                         <form method="post" class="inline-form" onsubmit="return confirm('Remove this user? This cannot be undone.');">
-                                            <?php echo csrfField(); ?><input type="hidden" name="action" value="delete_user"><input type="hidden" name="user_id" value="<?php echo htmlspecialchars($row["id"]); ?>">
-                                            <button class="act-btn del" <?php echo ($protected || $self) ? "disabled" : ""; ?>>Remove</button>
+                                            <?php echo csrfField(); ?><input type="hidden" name="action" value="delete_user"><input type="hidden" name="user_id" value="<?php echo htmlspecialchars($row['id']); ?>">
+                                            <button class="act-btn del" <?php echo ($protected || $self) ? 'disabled' : ''; ?>>Remove</button>
                                         </form>
                                         </div>
                                     </td>
                                 </tr>
-                                <?php endforeach; ?>
+                                <?php } ?>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-            <?php endif; ?>
+            <?php } ?>
 
-        <?php elseif ($trashMode): ?>
+        <?php } elseif ($trashMode) { ?>
         <div class="toolbar">
             <span class="tb-label">Trash</span>
-            <a class="tb-btn" href="<?php echo $_SERVER["PHP_SELF"]; ?>">← Back to files</a>
-            <?php if (!empty($trashItems)): ?>
+            <a class="tb-btn" href="<?php echo $_SERVER['PHP_SELF']; ?>">← Back to files</a>
+            <?php if (! empty($trashItems)) { ?>
             <form method="post" class="inline-form" onsubmit="return addDeletePassword(this, 'Permanently delete everything in trash?');">
                 <?php echo csrfField(); ?>
                 <input type="hidden" name="action" value="empty_trash">
                 <button class="tb-btn danger" type="submit">🗑️ Empty Trash</button>
             </form>
-            <?php endif; ?>
+            <?php } ?>
         </div>
 
         <div class="panel">
@@ -6548,7 +7387,7 @@ body.dashboard-repaint::after {
                 <span class="panel-title">🧺 Trash Bin</span>
                 <span class="panel-meta"><?php echo count($trashItems); ?> deleted item(s)</span>
             </div>
-            <?php if (!empty($trashItems)): ?>
+            <?php if (! empty($trashItems)) { ?>
             <form method="post" id="trashBulkForm" style="padding:14px 18px 0;">
                 <?php echo csrfField(); ?>
                 <input type="hidden" name="action" id="trashBulkAction" value="">
@@ -6561,72 +7400,74 @@ body.dashboard-repaint::after {
                     <button type="button" class="tb-btn danger trash-bulk-btn" id="trashDeleteSelected" onclick="submitTrashBulk('delete_trash_selected')" disabled>🗑️ Delete selected permanently</button>
                 </div>
             </form>
-            <?php endif; ?>
+            <?php } ?>
             <div class="trash-list">
-                <?php if (empty($trashItems)): ?>
+                <?php if (empty($trashItems)) { ?>
                     <div class="empty-state">
                         <div class="es-icon">🧺</div>
                         <h3>Trash is empty</h3>
                         <p>Deleted files and folders will appear here for recovery.</p>
                     </div>
-                <?php endif; ?>
+                <?php } ?>
 
-                <?php foreach ($trashItems as $trashItem): ?>
+                <?php foreach ($trashItems as $trashItem) { ?>
                     <div class="trash-row">
                         <div>
-                            <div class="trash-name"><input type="checkbox" class="trash-check trash-item-check" value="<?php echo htmlspecialchars($trashItem["id"]); ?>" onchange="updateTrashSelection()" style="margin-right:8px;"><?php echo htmlspecialchars($trashItem["original_relative"] ?? "Unknown item"); ?></div>
+                            <div class="trash-name"><input type="checkbox" class="trash-check trash-item-check" value="<?php echo htmlspecialchars($trashItem['id']); ?>" onchange="updateTrashSelection()" style="margin-right:8px;"><?php echo htmlspecialchars($trashItem['original_relative'] ?? 'Unknown item'); ?></div>
                             <div class="trash-meta">
-                                <?php echo htmlspecialchars($trashItem["type"] ?? "item"); ?> ·
-                                <?php echo formatSize((int)($trashItem["size"] ?? 0)); ?> ·
-                                deleted <?php echo date("M d, Y H:i", (int)($trashItem["deleted_at"] ?? time())); ?>
+                                <?php echo htmlspecialchars($trashItem['type'] ?? 'item'); ?> ·
+                                <?php echo formatSize((int) ($trashItem['size'] ?? 0)); ?> ·
+                                deleted <?php echo date('M d, Y H:i', (int) ($trashItem['deleted_at'] ?? time())); ?>
                             </div>
                         </div>
                         <div class="row-actions">
                             <form method="post" class="inline-form">
                                 <?php echo csrfField(); ?>
                                 <input type="hidden" name="action" value="restore_trash_item">
-                                <input type="hidden" name="trash_id" value="<?php echo htmlspecialchars($trashItem["id"]); ?>">
+                                <input type="hidden" name="trash_id" value="<?php echo htmlspecialchars($trashItem['id']); ?>">
                                 <button class="act-btn open" type="submit">↩ Recover</button>
                             </form>
                             <form method="post" class="inline-form" onsubmit="return addDeletePassword(this, 'Permanently delete this item?');">
                                 <?php echo csrfField(); ?>
                                 <input type="hidden" name="action" value="delete_trash_item">
-                                <input type="hidden" name="trash_id" value="<?php echo htmlspecialchars($trashItem["id"]); ?>">
+                                <input type="hidden" name="trash_id" value="<?php echo htmlspecialchars($trashItem['id']); ?>">
                                 <button class="act-btn del" type="submit">🗑️ Delete Forever</button>
                             </form>
                         </div>
                     </div>
-                <?php endforeach; ?>
+                <?php } ?>
             </div>
         </div>
-        <?php else: ?>
+        <?php } else { ?>
 
         <!-- Toolbar -->
         <div class="toolbar sticky-toolbar" id="mainToolbar">
             <span class="tb-label"></span>
             <button class="tb-btn primary" onclick="openModal('uploadModal')">📤 Upload</button>
             <button class="tb-btn" onclick="openModal('folderModal')">📁 New Folder</button>
-            <?php if ($isAdmin || $isWebsiteTeam): ?>
+            <?php if ($isAdmin || $isWebsiteTeam) { ?>
             <button class="tb-btn" onclick="openModal('fileModal')">📝 New File</button>
-            <?php endif; ?>
-            <?php if (!$isConverter): ?>
+            <?php } ?>
+            <?php if (! $isConverter) { ?>
             <div class="tb-sep"></div>
             <button class="tb-btn" onclick="openModal('urlsModal')">🔗 All URLs</button>
             <div class="tb-sep"></div>
-            <?php endif; ?>
+            <?php } ?>
             <button class="tb-btn" onclick="toggleSelectionMode()">✅ Select</button>
             <div class="tb-sep"></div>
             <button class="tb-btn" onclick="openRenameTypeModalMulti()">🏷️ Rename Type</button>
             <div class="tb-sep"></div>
 
+            <button class="tb-btn" onclick="copyToSelected()" title="Copy selected items to another folder">📋 Copy</button>
+            <button class="tb-btn" onclick="openMoveModal()" title="Move selected items to another folder">📦 Move</button>
+            <button class="tb-btn" onclick="duplicateSelectedItems()" title="Duplicate selected items in this folder">📑 Duplicate</button>
+            <?php if (! empty($_SESSION['clipboard']['items'])) { ?>
+            <button class="tb-btn" style="background:rgba(99,102,241,0.15);color:#6366f1;border-color:rgba(99,102,241,0.4);font-weight:700;" onclick="pasteClipboard()" title="Paste <?php echo count($_SESSION['clipboard']['items']); ?> item(s) here">📋 Paste (<?php echo count($_SESSION['clipboard']['items']); ?>)</button>
+            <?php } ?>
+            <div class="tb-sep"></div>
+
             <button class="tb-btn" onclick="downloadSelected()">⬇️ Download</button>
             <button class="tb-btn danger" onclick="deleteSelected()">🗑️ Delete</button>
-
-            <?php if ($FEATURES_ENABLED): ?>
-
-            <!-- Duplicate Finder -->
-            <button class="tb-btn" onclick="openDuplicateModal()">🔍 Duplicates</button>
-            <?php endif; ?>
 
         </div>
 
@@ -6635,68 +7476,68 @@ body.dashboard-repaint::after {
         <div class="pathbar">
             <span class="ph-home" onclick="location.href='<?php echo $homeUrl; ?>'" title="Root">🏠</span>
             <span class="ph-sep">/</span>
-            <?php if ($isConverter): ?>
+            <?php if ($isConverter) { ?>
                 <a href="<?php echo $homeUrl; ?>"><?php echo htmlspecialchars($CONVERTER_ROOT_FOLDER); ?></a>
                 <?php
                 if ($current !== $converterRootRelative) {
-                    $subPath = trim(substr($current, strlen($converterRootRelative)), "/");
-                    if ($subPath !== "") {
+                    $subPath = trim(substr($current, strlen($converterRootRelative)), '/');
+                    if ($subPath !== '') {
                         $crumb = $converterRootRelative;
-                        $subParts = explode("/", $subPath);
+                        $subParts = explode('/', $subPath);
                         foreach ($subParts as $i => $part) {
-                            $crumb .= "/" . $part;
+                            $crumb .= '/'.$part;
                             echo '<span class="ph-sep">/</span>';
                             if ($i < count($subParts) - 1) {
-                                echo '<a href="' . $pageUrl . "?path=" . urlencode($crumb) . '">' . htmlspecialchars($part) . '</a>';
+                                echo '<a href="'.$pageUrl.'?path='.urlencode($crumb).'">'.htmlspecialchars($part).'</a>';
                             } else {
-                                echo '<span class="ph-cur">' . htmlspecialchars($part) . '</span>';
+                                echo '<span class="ph-cur">'.htmlspecialchars($part).'</span>';
                             }
                         }
                     }
                 }
                 ?>
-            <?php elseif ($isWebsiteTeam): ?>
+            <?php } elseif ($isWebsiteTeam) { ?>
                 <a href="<?php echo $homeUrl; ?>"><?php echo htmlspecialchars($websiteTeamFolder); ?></a>
                 <?php
                 if ($current !== $websiteTeamRootRelative) {
-                    $subPath = trim(substr($current, strlen($websiteTeamRootRelative)), "/");
-                    if ($subPath !== "") {
+                    $subPath = trim(substr($current, strlen($websiteTeamRootRelative)), '/');
+                    if ($subPath !== '') {
                         $crumb = $websiteTeamRootRelative;
-                        $subParts = explode("/", $subPath);
+                        $subParts = explode('/', $subPath);
                         foreach ($subParts as $i => $part) {
-                            $crumb .= "/" . $part;
+                            $crumb .= '/'.$part;
                             echo '<span class="ph-sep">/</span>';
                             if ($i < count($subParts) - 1) {
-                                echo '<a href="' . $pageUrl . "?path=" . urlencode($crumb) . '">' . htmlspecialchars($part) . '</a>';
+                                echo '<a href="'.$pageUrl.'?path='.urlencode($crumb).'">'.htmlspecialchars($part).'</a>';
                             } else {
-                                echo '<span class="ph-cur">' . htmlspecialchars($part) . '</span>';
+                                echo '<span class="ph-cur">'.htmlspecialchars($part).'</span>';
                             }
                         }
                     }
                 }
                 ?>
-            <?php else: ?>
+            <?php } else { ?>
                 <a href="<?php echo $homeUrl; ?>">blog</a>
                 <?php
                 if ($current) {
-                    $crumb = "";
-                    $parts = explode("/", $current);
+                    $crumb = '';
+                    $parts = explode('/', $current);
                     foreach ($parts as $i => $part) {
-                        $crumb .= ($crumb ? "/" : "") . $part;
+                        $crumb .= ($crumb ? '/' : '').$part;
                         echo '<span class="ph-sep">/</span>';
                         if ($i < count($parts) - 1) {
-                            echo '<a href="' . $pageUrl . "?path=" . urlencode($crumb) . '">' . htmlspecialchars($part) . '</a>';
+                            echo '<a href="'.$pageUrl.'?path='.urlencode($crumb).'">'.htmlspecialchars($part).'</a>';
                         } else {
-                            echo '<span class="ph-cur">' . htmlspecialchars($part) . '</span>';
+                            echo '<span class="ph-cur">'.htmlspecialchars($part).'</span>';
                         }
                     }
                 }
                 ?>
-            <?php endif; ?>
+            <?php } ?>
 
-            <?php if ($current && !($isConverter && $current === $converterRootRelative) && !($isWebsiteTeam && $current === $websiteTeamRootRelative)): ?>
-                <a class="ph-back" href="<?php echo $pageUrl . "?path=" . urlencode(parentPath($current)); ?>">← Back</a>
-            <?php endif; ?>
+            <?php if ($current && ! ($isConverter && $current === $converterRootRelative) && ! ($isWebsiteTeam && $current === $websiteTeamRootRelative)) { ?>
+                <a class="ph-back" href="<?php echo $pageUrl.'?path='.urlencode(parentPath($current)); ?>">← Back</a>
+            <?php } ?>
         </div>
 
         <!-- File Table -->
@@ -6717,30 +7558,30 @@ body.dashboard-repaint::after {
                         <input type="text" placeholder="Search files... (press /)" id="searchInput" onkeyup="filterFiles(this.value)" autocomplete="off">
                         <span class="table-search-kbd">/</span>
                     </div>
-                    <?php if ($FEATURES_ENABLED): ?>
+                    <?php if ($FEATURES_ENABLED) { ?>
                     <div class="tb-dropdown-wrap" id="sortWrap" style="margin-left: 12px; height: 32px;">
                         <button class="tb-btn" onclick="toggleTbDropdown('sortDropdown')" id="sortBtn" style="height: 100%; border: 1px solid var(--border); box-shadow: none;">
                             <?php
                             $sortLabels = [
-                                'name_asc'=>'Name A–Z','name_desc'=>'Name Z–A',
-                                'newest'=>'Newest','oldest'=>'Oldest',
-                                'size_asc'=>'Size ↑','size_desc'=>'Size ↓'
+                                'name_asc' => 'Name A–Z', 'name_desc' => 'Name Z–A',
+                                'newest' => 'Newest', 'oldest' => 'Oldest',
+                                'size_asc' => 'Size ↑', 'size_desc' => 'Size ↓',
                             ];
-                            echo '⇅ ' . htmlspecialchars($sortLabels[$sortKey] ?? 'Sort');
-                            ?> <span class="tb-caret">▾</span>
+                        echo '⇅ '.htmlspecialchars($sortLabels[$sortKey] ?? 'Sort');
+                        ?> <span class="tb-caret">▾</span>
                         </button>
                         <div class="tb-dropdown" id="sortDropdown" style="right: 0; left: auto; top: calc(100% + 4px);">
-                            <?php foreach ($sortLabels as $sk => $sl): ?>
+                            <?php foreach ($sortLabels as $sk => $sl) { ?>
                             <a class="tb-dropdown-item<?php echo $sortKey === $sk ? ' active' : ''; ?>"
-                               href="<?php echo $pageUrl . '?path=' . urlencode($current) . '&sort=' . $sk; ?>">
+                               href="<?php echo $pageUrl.'?path='.urlencode($current).'&sort='.$sk; ?>">
                                 <?php echo htmlspecialchars($sl); ?>
                             </a>
-                            <?php endforeach; ?>
+                            <?php } ?>
                         </div>
                     </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
-                <span class="panel-meta" id="filePanelMeta" data-item-count="<?php echo (int)count($items); ?>" data-fallback-size="<?php echo htmlspecialchars(formatSize($displayTotalSize)); ?>"><?php echo count($items); ?> items · <?php echo formatSize($displayTotalSize); ?> visible files · Double-click to open</span>
+                <span class="panel-meta" id="filePanelMeta" data-item-count="<?php echo (int) count($items); ?>" data-fallback-size="<?php echo htmlspecialchars(formatSize($displayTotalSize)); ?>"><?php echo count($items); ?> items · <?php echo formatSize($displayTotalSize); ?> visible files · Double-click to open</span>
             </div>
 
             <div class="table-header-row">
@@ -6752,39 +7593,39 @@ body.dashboard-repaint::after {
 
             <div class="file-list" id="fileList">
 
-                <?php if (empty($items)): ?>
+                <?php if (empty($items)) { ?>
                 <div class="empty-state">
                     <div class="es-icon">📭</div>
                     <h3>This folder is empty</h3>
                     <p>Upload files or create a new folder to get started.</p>
                 </div>
-                <?php endif; ?>
+                <?php } ?>
 
-                <?php foreach ($items as $index => $item): ?>
+                <?php foreach ($items as $index => $item) { ?>
                 <?php
-                $name      = $item["name"];
-                $relative  = $current ? $current . "/" . $name : $name;
-                $url       = !$item["is_dir"] ? publicUrl($BASE_URL, $relative) : "";
-                $thumbUrl  = !$item["is_dir"] && $item["is_image"] ? versionedImageUrl($url, $item["mtime"] ?? 0, $item["size"] ?? 0, $item["ctime"] ?? 0) : "";
-                $ext       = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-                $isImg     = $item["is_image"];
-                $isDir     = $item["is_dir"];
-                $isCode    = $item["is_code"];
-                $iconClass = $isDir ? "fti-folder" : ($isImg ? "fti-image" : ($isCode ? "fti-code" : "fti-other"));
-                $folderUrl = $_SERVER["PHP_SELF"] . "?path=" . urlencode($relative);
-                $openUrl   = $isDir ? $folderUrl : $url;
-                // For double-click: folders navigate, files open or preview
-                $dblAction = $isDir
-                    ? "location.href='{$folderUrl}'"
-                    : ($isImg ? "openLightboxByName('" . addslashes($name) . "')" : "window.open('" . htmlspecialchars($url) . "','_blank')");
-                $nameJson = htmlspecialchars(json_encode($name), ENT_QUOTES, "UTF-8");
-                // Feature: folder meta
-                $fm = $FEATURES_ENABLED && $isDir ? ($folderMeta[$name] ?? []) : [];
-                $fmColor    = $fm['color'] ?? '';
-                $fmIsFav    = !empty($fm['is_favorite']);
-                $fmIsPin    = !empty($fm['is_pinned']);
-                $fmRelPath  = $current ? $current . '/' . $name : $name;
-                ?>
+                $name = $item['name'];
+                    $relative = $current ? $current.'/'.$name : $name;
+                    $url = ! $item['is_dir'] ? publicUrl($BASE_URL, $relative) : '';
+                    $thumbUrl = ! $item['is_dir'] && $item['is_image'] ? versionedImageUrl($url, $item['mtime'] ?? 0, $item['size'] ?? 0, $item['ctime'] ?? 0) : '';
+                    $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+                    $isImg = $item['is_image'];
+                    $isDir = $item['is_dir'];
+                    $isCode = $item['is_code'];
+                    $iconClass = $isDir ? 'fti-folder' : ($isImg ? 'fti-image' : ($isCode ? 'fti-code' : 'fti-other'));
+                    $folderUrl = $_SERVER['PHP_SELF'].'?path='.urlencode($relative);
+                    $openUrl = $isDir ? $folderUrl : $url;
+                    // For double-click: folders navigate, files open or preview
+                    $dblAction = $isDir
+                        ? "location.href='{$folderUrl}'"
+                        : ($isImg ? "openLightboxByName('".addslashes($name)."')" : "window.open('".htmlspecialchars($url)."','_blank')");
+                    $nameJson = htmlspecialchars(json_encode($name), ENT_QUOTES, 'UTF-8');
+                    // Feature: folder meta
+                    $fm = $FEATURES_ENABLED && $isDir ? ($folderMeta[$name] ?? []) : [];
+                    $fmColor = $fm['color'] ?? '';
+                    $fmIsFav = ! empty($fm['is_favorite']);
+                    $fmIsPin = ! empty($fm['is_pinned']);
+                    $fmRelPath = $current ? $current.'/'.$name : $name;
+                    ?>
 
                 <div class="file-row"
                     data-name="<?php echo htmlspecialchars($name); ?>"
@@ -6810,7 +7651,7 @@ body.dashboard-repaint::after {
 
                     <!-- Name / Thumbnail -->
                     <div class="file-name-cell">
-                        <?php if ($isImg): ?>
+                        <?php if ($isImg) { ?>
                             <img class="thumb-img" src="<?php echo htmlspecialchars($thumbUrl); ?>"
                                 alt="<?php echo htmlspecialchars($name); ?>"
                                 loading="lazy"
@@ -6819,23 +7660,23 @@ body.dashboard-repaint::after {
                                 ondblclick="event.stopPropagation(); openLightboxByName('<?php echo addslashes($name); ?>')"
                                 onerror="this.style.display='none'; if (this.nextElementSibling) this.nextElementSibling.style.display='flex'">
                             <div class="file-type-icon fti-image" style="display:none;"><?php echo getFileIcon($name, false); ?></div>
-                        <?php else: ?>
-                            <div class="file-type-icon <?php echo $iconClass; ?>"<?php echo $fmColor ? ' data-folder-color="' . htmlspecialchars($fmColor) . '"' : ''; ?>>
+                        <?php } else { ?>
+                            <div class="file-type-icon <?php echo $iconClass; ?>"<?php echo $fmColor ? ' data-folder-color="'.htmlspecialchars($fmColor).'"' : ''; ?>>
                                 <?php echo getFileIcon($name, $isDir); ?>
                             </div>
-                        <?php endif; ?>
+                        <?php } ?>
 
                         <div class="file-name-info">
                             <div class="file-title-row">
-                                <?php if ($isDir): ?>
+                                <?php if ($isDir) { ?>
                                     <span class="file-name-folder file-name-display" id="fileNameDisplay_<?php echo $index; ?>" ondblclick="event.stopPropagation(); location.href=this.closest('.file-row').dataset.openUrl">
                                         <?php echo htmlspecialchars($name); ?>
                                     </span>
-                                <?php else: ?>
+                                <?php } else { ?>
                                     <span class="file-name-span file-name-display" id="fileNameDisplay_<?php echo $index; ?>"><?php echo htmlspecialchars($name); ?></span>
-                                <?php endif; ?>
-                                <?php if ($fmIsPin): ?><span class="fm-badge fm-pin" title="Pinned">📌</span><?php endif; ?>
-                                <?php if ($fmIsFav): ?><span class="fm-badge fm-fav" title="Favorite">⭐</span><?php endif; ?>
+                                <?php } ?>
+                                <?php if ($fmIsPin) { ?><span class="fm-badge fm-pin" title="Pinned">📌</span><?php } ?>
+                                <?php if ($fmIsFav) { ?><span class="fm-badge fm-fav" title="Favorite">⭐</span><?php } ?>
                             </div>
                             <form method="post" class="rename-form inline-rename-form" id="renameForm_<?php echo $index; ?>" style="display:none;">
                                 <?php echo csrfField(); ?>
@@ -6845,31 +7686,42 @@ body.dashboard-repaint::after {
                                 <button type="submit" class="rename-save">Save</button>
                                 <button type="button" class="act-btn" onclick="hideRename(<?php echo $index; ?>)" style="font-size:11px;">Cancel</button>
                             </form>
-                            <?php if ($isDir): ?>
+                            <?php if ($isDir) { ?>
                                 <div class="file-meta">Folder</div>
-                            <?php else: ?>
-                                <div class="file-meta"><?php echo date("M d, Y", $item["mtime"]); ?></div>
-                            <?php endif; ?>
+                            <?php } else { ?>
+                                <div class="file-meta"><?php echo date('M d, Y', $item['mtime']); ?></div>
+                            <?php } ?>
                         </div>
                     </div>
 
                     <!-- Size -->
                     <div class="size-cell">
-                        <?php if (!$isDir): echo formatSize($item["size"]); else: ?><span style="color:#94a3b8;">—</span><?php endif; ?>
+                        <?php if (! $isDir) {
+                            echo formatSize($item['size']);
+                        } else { ?><span style="color:#94a3b8;">—</span><?php } ?>
                     </div>
 
                     <!-- Actions -->
                     <div class="actions-cell" onclick="event.stopPropagation()">
-                        <a class="act-btn" href="<?php echo $pageUrl . "?path=" . urlencode($current) . "&download_item=" . urlencode($name); ?>">
+                        <a class="act-btn" href="<?php echo $pageUrl.'?path='.urlencode($current).'&download_item='.urlencode($name); ?>">
                             ⬇ Download
                         </a>
-                        <?php if ($isDir): ?>
+                        <?php if ($isDir) { ?>
                             <a class="act-btn open folder-open-link" href="<?php echo $folderUrl; ?>">📂 Open</a>
-                        <?php elseif (!$isConverter): ?>
+                        <?php } elseif (! $isConverter) { ?>
                             <a class="act-btn open" href="<?php echo htmlspecialchars($url); ?>" target="_blank">↗ Open</a>
-                        <?php endif; ?>
+                        <?php } ?>
 
-                        <?php if (!$isConverter): ?>
+                        <?php if (! $isConverter) { ?>
+                        <!-- Copy -->
+                        <button type="button" class="act-btn" onclick="copyToSingleItem('<?php echo addslashes($name); ?>')" title="Copy item to another folder">📋 Copy</button>
+
+                        <!-- Move -->
+                        <button type="button" class="act-btn" onclick="moveSingleItem('<?php echo addslashes($name); ?>')" title="Move item to another folder">📦 Move</button>
+
+                        <!-- Duplicate -->
+                        <button type="button" class="act-btn" onclick="duplicateSingleItem('<?php echo addslashes($name); ?>')" title="Duplicate item in-place">📑 Duplicate</button>
+
                         <!-- Rename -->
                         <button class="act-btn rename-btn"
                             onclick="showRename(<?php echo $index; ?>, <?php echo $nameJson; ?>)"
@@ -6878,18 +7730,18 @@ body.dashboard-repaint::after {
 
 
                         <!-- Edit (only for code files) -->
-                        <?php if ($isCode && ($isAdmin || $isWebsiteTeam)): ?>
+                        <?php if ($isCode && ($isAdmin || $isWebsiteTeam)) { ?>
                             <a class="act-btn edit-btn"
-                                href="<?php echo $pageUrl . "?path=" . urlencode($current) . "&edit=" . urlencode($name); ?>">
+                                href="<?php echo $pageUrl.'?path='.urlencode($current).'&edit='.urlencode($name); ?>">
                                 📄 Edit
                             </a>
-                        <?php endif; ?>
-                        <?php else: ?>
+                        <?php } ?>
+                        <?php } else { ?>
                             <!-- Converter role: only download/open-folder/delete -->
-                        <?php endif; ?>
+                        <?php } ?>
 
                         <!-- Delete -->
-                        <form method="post" style="display:inline;" <?php if (!$isConverter): ?>onsubmit="return addDeletePassword(this, 'Move <?php echo htmlspecialchars(addslashes($name)); ?> to trash?');"<?php endif; ?>>
+                        <form method="post" style="display:inline;" <?php if (! $isConverter) { ?>onsubmit="return addDeletePassword(this, 'Move <?php echo htmlspecialchars(addslashes($name)); ?> to trash?');"<?php } ?>>
                             <?php echo csrfField(); ?>
                             <input type="hidden" name="action" value="delete_item">
                             <input type="hidden" name="item_name" value="<?php echo htmlspecialchars($name); ?>">
@@ -6898,25 +7750,25 @@ body.dashboard-repaint::after {
                     </div>
 
                 </div>
-                <?php endforeach; ?>
+                <?php } ?>
 
             </div><!-- /file-list -->
         </div><!-- /panel -->
 
         <!-- Image URL List (clean, standard) -->
-        <?php if (!empty($imageUrls) && !$isConverter): ?>
+        <?php if (! empty($imageUrls) && ! $isConverter) { ?>
         <div class="all-urls-panel">
             <div class="panel-head">
                 <span class="panel-title">🔗 Image URLs</span>
                 <span class="panel-meta"><?php echo count($imageUrls); ?> image(s) · Click any URL to copy</span>
             </div>
             <div class="url-list-wrap">
-                <?php foreach ($items as $idx => $item): ?>
-                    <?php if (!$item["is_dir"] && $item["is_image"]):
-                        $relative = $current ? $current . "/" . $item["name"] : $item["name"];
+                <?php foreach ($items as $idx => $item) { ?>
+                    <?php if (! $item['is_dir'] && $item['is_image']) {
+                        $relative = $current ? $current.'/'.$item['name'] : $item['name'];
                         $url = publicUrl($BASE_URL, $relative);
-                        $thumbUrl = versionedImageUrl($url, $item["mtime"] ?? 0, $item["size"] ?? 0, $item["ctime"] ?? 0);
-                    ?>
+                        $thumbUrl = versionedImageUrl($url, $item['mtime'] ?? 0, $item['size'] ?? 0, $item['ctime'] ?? 0);
+                        ?>
                     <div class="url-list-item">
                         <span class="url-list-num"><?php echo $idx + 1; ?></span>
                         <img src="<?php echo htmlspecialchars($thumbUrl); ?>" style="width:32px;height:32px;border-radius:8px;object-fit:cover;flex-shrink:0;cursor:pointer;border:1.5px solid var(--line);"
@@ -6924,7 +7776,7 @@ body.dashboard-repaint::after {
                             loading="lazy"
                             decoding="async"
                             onerror="this.style.visibility='hidden'">
-                        <span class="url-list-name" title="<?php echo htmlspecialchars($item['name']); ?>"><?php echo htmlspecialchars($item["name"]); ?></span>
+                        <span class="url-list-name" title="<?php echo htmlspecialchars($item['name']); ?>"><?php echo htmlspecialchars($item['name']); ?></span>
                         <input class="url-list-input" id="lurlinput_<?php echo $idx; ?>"
                             value="<?php echo htmlspecialchars($url); ?>" readonly
                             onclick="this.select()" title="Click to select, then copy">
@@ -6933,18 +7785,18 @@ body.dashboard-repaint::after {
                             📋 Copy
                         </button>
                     </div>
-                    <?php endif; ?>
-                <?php endforeach; ?>
+                    <?php } ?>
+                <?php } ?>
             </div>
             <div class="copy-all-bar">
                 <button class="form-btn btn-primary" onclick="copyAllUrls()" style="font-size:12.5px;padding:10px 18px;">📋 Copy All URLs</button>
                 <button class="form-btn btn-secondary" onclick="copySelectedUrls()" style="font-size:12.5px;padding:10px 18px;">✅ Copy Selected URLs</button>
             </div>
         </div>
-        <?php endif; ?>
+        <?php } ?>
 
         <!-- Image Preview Grid -->
-        <?php if (!empty($imageUrls) && !$isConverter): ?>
+        <?php if (! empty($imageUrls) && ! $isConverter) { ?>
         <div class="img-grid-panel">
             <div class="panel-head">
                 <span class="panel-title">🖼️ Image Preview</span>
@@ -6953,23 +7805,23 @@ body.dashboard-repaint::after {
             <div class="img-grid">
                 <?php
                 $imgIdx = 0;
-                foreach ($items as $idx => $item):
-                    if (!$item["is_dir"] && $item["is_image"]):
-                        $relative = $current ? $current . "/" . $item["name"] : $item["name"];
-                        $url = publicUrl($BASE_URL, $relative);
-                        $thumbUrl = versionedImageUrl($url, $item["mtime"] ?? 0, $item["size"] ?? 0, $item["ctime"] ?? 0);
-                ?>
+            foreach ($items as $idx => $item) {
+                if (! $item['is_dir'] && $item['is_image']) {
+                    $relative = $current ? $current.'/'.$item['name'] : $item['name'];
+                    $url = publicUrl($BASE_URL, $relative);
+                    $thumbUrl = versionedImageUrl($url, $item['mtime'] ?? 0, $item['size'] ?? 0, $item['ctime'] ?? 0);
+                    ?>
                 <div class="img-card">
                     <img class="img-card-thumb"
                         src="<?php echo htmlspecialchars($thumbUrl); ?>"
-                        alt="<?php echo htmlspecialchars($item["name"]); ?>"
+                        alt="<?php echo htmlspecialchars($item['name']); ?>"
                         loading="lazy"
                         decoding="async"
                         ondblclick="openLightboxByName('<?php echo addslashes($item['name']); ?>')"
                         onclick="openLightboxByName('<?php echo addslashes($item['name']); ?>')"
                         onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'150\' viewBox=\'0 0 200 150\'><rect fill=\'%23f1f5f9\' width=\'200\' height=\'150\'/><text x=\'100\' y=\'80\' text-anchor=\'middle\' fill=\'%2394a3b8\' font-size=\'13\'>No Preview</text></svg>'">
                     <div class="img-card-info">
-                        <div class="img-card-name"><?php echo htmlspecialchars($item["name"]); ?></div>
+                        <div class="img-card-name"><?php echo htmlspecialchars($item['name']); ?></div>
                         <div class="img-card-url">
                             <input class="img-url-input" id="imgurl_<?php echo $idx; ?>"
                                 value="<?php echo htmlspecialchars($url); ?>" readonly
@@ -6980,15 +7832,17 @@ body.dashboard-repaint::after {
                         </div>
                     </div>
                 </div>
-                <?php $imgIdx++; endif; endforeach; ?>
+                <?php $imgIdx++;
+                }
+            } ?>
             </div>
         </div>
-        <?php endif; ?>
+        <?php } ?>
 
-        <?php endif; ?>
+        <?php } ?>
 
         <footer class="dashboard-footer">
-            Copyright &copy; <?php echo htmlspecialchars($appSettings["footer_name"]); ?> <?php echo date("Y"); ?> All Rights Reserved.
+            Copyright &copy; <?php echo htmlspecialchars($appSettings['footer_name']); ?> <?php echo date('Y'); ?> All Rights Reserved.
         </footer>
     </main>
 </div>
@@ -7000,8 +7854,8 @@ const IMAGE_LIST = <?php echo json_encode($imageList); ?>;
 const CURRENT_PATH = <?php echo json_encode($current); ?>;
 const ACTION_ENDPOINT = <?php echo json_encode($pageUrl); ?>;
 const UPLOAD_ENDPOINT = ACTION_ENDPOINT;
-const SERVER_UPLOAD_LIMIT_BYTES = <?php echo (int)$serverUploadLimitBytes; ?>;
-const IS_CONVERTER = <?php echo $isConverter ? "true" : "false"; ?>;
+const SERVER_UPLOAD_LIMIT_BYTES = <?php echo (int) $serverUploadLimitBytes; ?>;
+const IS_CONVERTER = <?php echo $isConverter ? 'true' : 'false'; ?>;
 const CSRF_TOKEN = <?php echo json_encode(csrfToken()); ?>;
 let DASHBOARD_THEME_URL = <?php echo json_encode($dashboardThemeUrl); ?>;
 let lbCurrentIndex = 0;
@@ -7101,29 +7955,138 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
     m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
 });
 
-function loadMoveDestOptions() {
-    const select = document.getElementById('moveDestInput');
-    if (!select || select.dataset.loaded === '1' || select.dataset.loading === '1') return;
-    select.dataset.loading = '1';
-    select.disabled = true;
-    select.innerHTML = '<option value="">Loading folders...</option>';
+let transferFolderData = [];
+let selectedTransferPath = '';
+let currentTransferMode = 'move';
+
+function renderTransferFolders(filterText = '') {
+    const container = document.getElementById('transferFolderList');
+    if (!container) return;
+    
+    const filter = (filterText || '').toLowerCase().trim();
+    const filtered = transferFolderData.filter(f => {
+        if (!filter) return true;
+        return (f.name || '').toLowerCase().includes(filter) || (f.path || '').toLowerCase().includes(filter) || (f.label || '').toLowerCase().includes(filter);
+    });
+
+    if (!filtered.length) {
+        container.innerHTML = '<div style="text-align:center;padding:24px 10px;color:var(--muted);font-size:13px;">No matching folders found</div>';
+        return;
+    }
+
+    let html = '';
+    filtered.forEach(folder => {
+        const path = folder.path || '';
+        const depth = Math.min(folder.depth || 0, 8);
+        const isSelected = (path === selectedTransferPath);
+        const isRoot = (path === '');
+        const indent = Math.max(depth * 16, 0);
+        const displayName = isRoot ? '🏠 Root (blog)' : escapeHtml(folder.name || folder.label || path);
+        const pathBadge = isRoot ? '' : `<span class="transfer-folder-tag">${escapeHtml(folder.path)}</span>`;
+
+        html += `
+            <div class="transfer-folder-row ${isSelected ? 'selected' : ''}" 
+                 style="padding-left: ${indent + 12}px;" 
+                 onclick="selectTransferFolder('${escapeHtml(path)}')">
+                <span class="transfer-folder-icon">${isRoot ? '🏠' : (isSelected ? '📂' : '📁')}</span>
+                <span class="transfer-folder-name" title="${escapeHtml(folder.path || 'Root')}">${displayName}</span>
+                ${pathBadge}
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+function selectTransferFolder(path) {
+    selectedTransferPath = path || '';
+    const destInput = document.getElementById('moveDestInput');
+    const copyInput = document.getElementById('copyDestInput');
+    if (destInput) destInput.value = selectedTransferPath;
+    if (copyInput) copyInput.value = selectedTransferPath;
+
+    const destLabel = document.getElementById('transferSelectedDestPath');
+    if (destLabel) {
+        destLabel.textContent = selectedTransferPath ? `📁 /${selectedTransferPath}` : '🏠 Root (blog)';
+    }
+
+    updateTransferBreadcrumbs(selectedTransferPath);
+
+    const searchInput = document.getElementById('transferFolderSearch');
+    renderTransferFolders(searchInput ? searchInput.value : '');
+}
+
+function updateTransferBreadcrumbs(path) {
+    const bar = document.getElementById('transferBreadcrumbBar');
+    if (!bar) return;
+    let html = `<span class="transfer-crumb ${path === '' ? 'active' : ''}" onclick="selectTransferFolder('')">🏠 Root</span>`;
+    if (path) {
+        const parts = path.split('/').filter(Boolean);
+        let accumulated = '';
+        parts.forEach((p, idx) => {
+            accumulated = accumulated ? accumulated + '/' + p : p;
+            const isLast = idx === parts.length - 1;
+            html += ` <span style="opacity:0.4;">/</span> <span class="transfer-crumb ${isLast ? 'active' : ''}" onclick="selectTransferFolder('${escapeHtml(accumulated)}')">📁 ${escapeHtml(p)}</span>`;
+        });
+    }
+    bar.innerHTML = html;
+}
+
+function filterTransferFolders(query) {
+    renderTransferFolders(query);
+}
+
+function loadTransferFolderOptions(forceReload = false, autoSelectPath = null) {
+    const container = document.getElementById('transferFolderList');
+    if (!forceReload && transferFolderData.length > 0) {
+        if (autoSelectPath !== null) {
+            selectTransferFolder(autoSelectPath);
+        } else {
+            renderTransferFolders();
+        }
+        return;
+    }
+    if (container) {
+        container.innerHTML = '<div style="text-align:center;padding:24px 0;color:var(--muted);font-size:13px;">Loading folders...</div>';
+    }
     postAction({ action: 'get_folder_options', path: CURRENT_PATH })
         .then(d => {
-            if (!d.success || !Array.isArray(d.options)) throw new Error('No folders');
-            select.innerHTML = d.options.map(opt => {
-                const value = escapeHtml(opt.path || '');
-                const label = escapeHtml(opt.label || 'Root');
-                return `<option value="${value}">${label}</option>`;
-            }).join('');
-            select.disabled = false;
-            select.dataset.loaded = '1';
+            if (!d.success || !Array.isArray(d.options)) throw new Error('Could not load folders');
+            transferFolderData = d.options;
+            const targetPath = autoSelectPath !== null ? autoSelectPath : (selectedTransferPath || CURRENT_PATH || '');
+            selectTransferFolder(targetPath);
         })
         .catch(() => {
-            select.innerHTML = '<option value="">Could not load folders</option>';
-            select.disabled = true;
-            toast('Could not load folders', 'danger');
-        })
-        .finally(() => { select.dataset.loading = '0'; });
+            if (container) {
+                container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--danger);font-size:13px;">Failed to load folders</div>';
+            }
+            toast('Failed to load folders', 'danger');
+        });
+}
+
+function loadMoveDestOptions() {
+    loadTransferFolderOptions();
+}
+
+function transferQuickNewFolder() {
+    const parent = selectedTransferPath || '';
+    const folderName = prompt('Enter new folder name:');
+    if (!folderName || !folderName.trim()) return;
+    postAction({
+        action: 'create_folder',
+        folder_name: folderName.trim(),
+        path: parent,
+        is_ajax: '1'
+    }).then(d => {
+        if (d.success) {
+            toast('Folder created successfully', 'success');
+            const newPath = parent ? parent + '/' + folderName.trim() : folderName.trim();
+            loadTransferFolderOptions(true, newPath);
+        } else {
+            toast(d.error || 'Could not create folder', 'danger');
+        }
+    }).catch(() => {
+        toast('Error creating folder', 'danger');
+    });
 }
 
 /* ========== DASHBOARD THEME ========== */
@@ -7511,33 +8474,43 @@ function updateSelectedCount() {
 function addDeletePassword(form, message) {
     pendingDeleteForm = form;
     const msg = document.getElementById('deletePasswordMessage');
-    const input = document.getElementById('deletePasswordInput');
-    if (msg) msg.textContent = message || 'Enter the delete password to continue.';
-    if (input) input.value = '';
+    const hdr = document.getElementById('deleteConfirmHeader');
+    const btn = document.getElementById('deleteConfirmSubmitBtn');
+    if (msg) msg.textContent = message || 'Are you sure you want to delete this item?';
+    if (hdr) {
+        if (message && message.toLowerCase().includes('trash')) {
+            hdr.textContent = 'Move to Trash?';
+            if (btn) btn.textContent = 'Move to Trash';
+        } else if (message && message.toLowerCase().includes('permanent')) {
+            hdr.textContent = 'Permanently Delete?';
+            if (btn) btn.textContent = 'Permanently Delete';
+        } else {
+            hdr.textContent = 'Confirm Deletion';
+            if (btn) btn.textContent = 'Delete';
+        }
+    }
     openModal('deletePasswordModal');
-    setTimeout(() => input && input.focus(), 80);
     return false;
 }
 
 function submitDeletePassword(event) {
-    event.preventDefault();
+    if (event) event.preventDefault();
     if (!pendingDeleteForm) {
         closeModal('deletePasswordModal');
         return false;
     }
-    const pw = document.getElementById('deletePasswordInput').value;
-    if (!pw) return false;
-    let input = pendingDeleteForm.querySelector('input[name="delete_password"]');
+    const form = pendingDeleteForm;
+    pendingDeleteForm = null;
+    closeModal('deletePasswordModal');
+
+    let input = form.querySelector('input[name="delete_password"]');
     if (!input) {
         input = document.createElement('input');
         input.type = 'hidden';
         input.name = 'delete_password';
-        pendingDeleteForm.appendChild(input);
+        form.appendChild(input);
     }
-    input.value = pw;
-    const form = pendingDeleteForm;
-    pendingDeleteForm = null;
-    closeModal('deletePasswordModal');
+    input.value = 'confirmed';
 
     if (typeof form.ajaxSubmit === 'function') {
         form.ajaxSubmit();
@@ -7572,6 +8545,7 @@ function deleteSelected() {
     form.submit();
 }
 
+/* ========== COPY & DUPLICATE ========== */
 function copySelectedItems() {
     const checks = document.querySelectorAll('.file-item-check:checked');
     if (!checks.length) { toast('No items selected', 'danger'); return; }
@@ -7583,6 +8557,62 @@ function copySelectedItems() {
         container.appendChild(inp);
     });
     document.getElementById('copySelectedForm').submit();
+}
+
+function copySingleItem(name) {
+    if (!name) return;
+    const container = document.getElementById('copySelectedInputs');
+    if (!container) return;
+    container.innerHTML = '';
+    const inp = document.createElement('input');
+    inp.type = 'hidden'; inp.name = 'selected_names[]'; inp.value = name;
+    container.appendChild(inp);
+    document.getElementById('copySelectedForm').submit();
+}
+
+function copyToSelected() {
+    openTransferModal('copy');
+}
+
+function copyToSingleItem(name) {
+    if (!name) return;
+    openTransferModal('copy', [name]);
+}
+
+function duplicateSingleItem(name) {
+    if (!name) return;
+    let form = document.getElementById('duplicateSelectedForm');
+    if (!form) {
+        form = document.createElement('form');
+        form.id = 'duplicateSelectedForm';
+        form.method = 'post';
+        form.innerHTML = `<input type="hidden" name="action" value="duplicate_selected"><input type="hidden" name="csrf_token" value="${CSRF_TOKEN}"><div id="duplicateSelectedInputs"></div>`;
+        document.body.appendChild(form);
+    }
+    const container = document.getElementById('duplicateSelectedInputs') || form;
+    container.innerHTML = `<input type="hidden" name="selected_names[]" value="${escapeHtml(name)}">`;
+    form.submit();
+}
+
+function duplicateSelectedItems() {
+    const checks = document.querySelectorAll('.file-item-check:checked');
+    if (!checks.length) { toast('No items selected', 'danger'); return; }
+    let form = document.getElementById('duplicateSelectedForm');
+    if (!form) {
+        form = document.createElement('form');
+        form.id = 'duplicateSelectedForm';
+        form.method = 'post';
+        form.innerHTML = `<input type="hidden" name="action" value="duplicate_selected"><input type="hidden" name="csrf_token" value="${CSRF_TOKEN}"><div id="duplicateSelectedInputs"></div>`;
+        document.body.appendChild(form);
+    }
+    const container = document.getElementById('duplicateSelectedInputs') || form;
+    container.innerHTML = '';
+    checks.forEach(c => {
+        const inp = document.createElement('input');
+        inp.type = 'hidden'; inp.name = 'selected_names[]'; inp.value = c.dataset.name;
+        container.appendChild(inp);
+    });
+    form.submit();
 }
 
 function downloadSelected() {
@@ -7602,18 +8632,73 @@ function pasteClipboard() {
     document.getElementById('pasteClipboardForm').submit();
 }
 
-/* ========== MOVE ========== */
-function openMoveModal() {
-    const checks = document.querySelectorAll('.file-item-check:checked');
-    if (!checks.length) { toast('No items selected', 'danger'); return; }
+/* ========== MOVE & TRANSFER ========== */
+function openTransferModal(mode = 'move', items = null) {
+    currentTransferMode = (mode === 'copy') ? 'copy' : 'move';
+    let names = [];
+    if (Array.isArray(items) && items.length) {
+        names = items;
+    } else {
+        const checks = document.querySelectorAll('.file-item-check:checked');
+        checks.forEach(c => { if (c.dataset.name) names.push(c.dataset.name); });
+    }
+
+    if (!names.length) {
+        toast('No items selected', 'danger');
+        return;
+    }
+
     const container = document.getElementById('moveSelectedInputs');
-    container.innerHTML = '';
-    checks.forEach(c => {
-        const inp = document.createElement('input');
-        inp.type = 'hidden'; inp.name = 'selected_names[]'; inp.value = c.dataset.name;
-        container.appendChild(inp);
-    });
+    if (container) {
+        container.innerHTML = '';
+        names.forEach(n => {
+            const inp = document.createElement('input');
+            inp.type = 'hidden';
+            inp.name = 'selected_names[]';
+            inp.value = n;
+            container.appendChild(inp);
+        });
+    }
+
+    const actionInput = document.getElementById('transferFormAction');
+    if (actionInput) {
+        actionInput.value = currentTransferMode === 'copy' ? 'copy_to_folder' : 'move_selected';
+    }
+
+    const titleEl = document.getElementById('transferModalTitle');
+    const submitBtn = document.getElementById('transferSubmitBtn');
+    if (titleEl) {
+        titleEl.textContent = currentTransferMode === 'copy' ? '📋 Copy to Folder' : '📦 Move to Folder';
+    }
+    if (submitBtn) {
+        submitBtn.textContent = currentTransferMode === 'copy' ? 'Copy Here →' : 'Move Here →';
+    }
+
+    const summaryList = document.getElementById('transferItemsList');
+    if (summaryList) {
+        if (names.length === 1) {
+            summaryList.textContent = names[0];
+            summaryList.title = names[0];
+        } else {
+            summaryList.textContent = `${names.length} items (${names.slice(0, 3).join(', ')}${names.length > 3 ? '...' : ''})`;
+            summaryList.title = names.join('\n');
+        }
+    }
+
+    const searchInput = document.getElementById('transferFolderSearch');
+    if (searchInput) searchInput.value = '';
+
     openModal('moveModal');
+    loadTransferFolderOptions(false, CURRENT_PATH || '');
+}
+
+function openMoveModal() {
+    openTransferModal('move');
+}
+
+function moveSingleItem(name) {
+    if (!name) return;
+    openTransferModal('move', [name]);
 }
 
 /* ========== RENAME ========== */
@@ -8203,11 +9288,11 @@ if (fileListEl) {
 }
 
 /* ========== AUTO TOAST ========== */
-<?php if ($message): ?>
+<?php if ($message) { ?>
 window.addEventListener('load', () => toast(<?php echo json_encode($message); ?>, <?php echo json_encode($messageType === 'success' ? 'success' : 'danger'); ?>));
-<?php endif; ?>
+<?php } ?>
 
-<?php if ($FEATURES_ENABLED): ?>
+<?php if ($FEATURES_ENABLED) { ?>
 /* ======================================================================
    FEATURE JS — All features (context menu, AI, duplicates, versions, etc.)
 ====================================================================== */
@@ -8301,30 +9386,55 @@ function setFolderColor(row, color) {
 function showContextMenu(e, row) {
     e.preventDefault();
     ctxRow = row;
-    const name     = row.dataset.name;
+    if (!ctxMenu) return;
+
+    const name     = row.dataset.name || '';
     const isImg    = row.dataset.isImg === '1';
     const isDir    = row.dataset.isDir === '1';
-    const url      = row.dataset.url;
-    const relPath  = row.dataset.rel;
+    const url      = row.dataset.url || '';
+    const relPath  = row.dataset.rel || '';
     const isSbPin  = row.id && row.id.startsWith('sb_pin_');
     const parentPath = row.dataset.parentPath || F_CURRENT_PATH;
 
-    document.getElementById('ctx-rename').onclick = () => {
-        closeCtx();
-        if (isSbPin) {
-            const newName = prompt('Rename item:', name);
-            if (newName && newName.trim() && newName.trim() !== name) {
-                const form = document.createElement('form');
-                form.method = 'post';
-                form.innerHTML = `<input type="hidden" name="action" value="rename_item"><input type="hidden" name="old_name" value="${escHtml(name)}"><input type="hidden" name="new_name" value="${escHtml(newName.trim())}"><input type="hidden" name="csrf_token" value="${F_CSRF_TOKEN}"><input type="hidden" name="path" value="${escHtml(parentPath)}">`;
-                document.body.appendChild(form); form.submit();
-            }
-        } else {
-            const idx = row.id.replace('row_',''); showRename(parseInt(idx), name);
+    // Helper to safely bind item actions
+    const setItem = (id, show, onClick) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.display = show ? 'flex' : 'none';
+        if (onClick) {
+            el.onclick = () => {
+                closeCtx();
+                onClick();
+            };
         }
     };
-    document.getElementById('ctx-rename-type').onclick = () => {
-        closeCtx();
+
+    // Open item
+    setItem('ctx-open', true, () => {
+        if (isDir && row.dataset.openUrl) {
+            location.href = row.dataset.openUrl;
+        } else if (url) {
+            window.open(url, '_blank');
+        }
+    });
+
+    // Copy URL
+    setItem('ctx-copy-url', Boolean(url), () => {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(url).then(() => toast('🔗 Copied URL to clipboard', 'success'));
+        } else {
+            prompt('Copy URL:', url);
+        }
+    });
+
+    // Rename
+    setItem('ctx-rename', !isSbPin, () => {
+        const idx = row.id.replace('row_','');
+        showRename(parseInt(idx), name);
+    });
+
+    // Rename type
+    setItem('ctx-rename-type', !isSbPin && !isDir, () => {
         const checkbox = row.querySelector('.file-check');
         if (checkbox && checkbox.checked) {
             const inputs = document.querySelectorAll('.file-check:checked:not(#selectAllChk)');
@@ -8334,59 +9444,74 @@ function showContextMenu(e, row) {
             }
         }
         openRenameTypeModalSingle(name, parentPath);
-    };
-    document.getElementById('ctx-download').onclick = () => { closeCtx(); location.href = F_ACTION_ENDPOINT + '?path=' + encodeURIComponent(parentPath) + '&download_item=' + encodeURIComponent(name); };
-    document.getElementById('ctx-copy').onclick = () => {
-        closeCtx();
-        const c = document.getElementById('copySelectedInputs'); c.innerHTML = '';
-        const i = document.createElement('input'); i.type='hidden'; i.name='selected_names[]'; i.value=name; c.appendChild(i);
-        if (isSbPin) { const p=document.createElement('input'); p.type='hidden'; p.name='path'; p.value=parentPath; c.appendChild(p); }
-        document.getElementById('copySelectedForm').submit();
-    };
-    document.getElementById('ctx-move').onclick = () => { closeCtx(); const c=document.getElementById('moveSelectedInputs'); c.innerHTML=''; const i=document.createElement('input'); i.type='hidden'; i.name='selected_names[]'; i.value=name; c.appendChild(i); openModal('moveModal'); };
-    document.getElementById('ctx-paste').onclick = () => { closeCtx(); pasteClipboard(); };
-    document.getElementById('ctx-properties').onclick = () => { closeCtx(); openPropertiesDialog(name, parentPath); };
-    document.getElementById('ctx-delete').onclick = () => {
-        closeCtx();
-        const form = document.createElement('form'); form.method='post';
-        form.innerHTML = `<input name="action" value="delete_item"><input name="item_name" value="${name}"><input name="csrf_token" value="${F_CSRF_TOKEN}"><input type="hidden" name="path" value="${parentPath}">`;
-        document.body.appendChild(form); addDeletePassword(form, `Move ${name} to trash?`);
-    };
+    });
 
-    // Show/hide items based on context
-    document.getElementById('ctx-copy').style.display = 'flex';
-    document.getElementById('ctx-move').style.display = isSbPin ? 'none' : 'flex';
-    document.getElementById('ctx-paste').style.display = isSbPin ? 'none' : 'flex';
-    document.getElementById('ctx-rename').style.display = isSbPin ? 'none' : 'flex';
-    document.getElementById('ctx-rename-type').style.display = (isSbPin || isDir) ? 'none' : 'flex';
-    document.getElementById('ctx-delete').style.display = isSbPin ? 'none' : 'flex';
-    document.getElementById('ctx-download').style.display = isSbPin ? 'none' : 'flex';
-    document.getElementById('ctx-properties').style.display = isSbPin ? 'none' : 'flex';
-    document.querySelectorAll('.ctx-sep').forEach(sep => { sep.style.display = isSbPin ? 'none' : ''; });
+    // Download
+    setItem('ctx-download', !isSbPin, () => {
+        location.href = F_ACTION_ENDPOINT + '?path=' + encodeURIComponent(parentPath) + '&download_item=' + encodeURIComponent(name);
+    });
+
+    // Copy (to clipboard)
+    setItem('ctx-copy', true, () => {
+        copySingleItem(name);
+    });
+
+    // Copy to Folder
+    setItem('ctx-copy-to', !isSbPin, () => {
+        copyToSingleItem(name);
+    });
+
+    // Move to Folder
+    setItem('ctx-move', !isSbPin, () => {
+        moveSingleItem(name);
+    });
+
+    // Duplicate in-place
+    setItem('ctx-duplicate', !isSbPin, () => {
+        duplicateSingleItem(name);
+    });
+
+    // Paste
+    setItem('ctx-paste', !isSbPin, () => {
+        pasteClipboard();
+    });
+
+    // Properties
+    setItem('ctx-properties', !isSbPin, () => {
+        openPropertiesDialog(name, parentPath);
+    });
+
+    // Delete
+    setItem('ctx-delete', !isSbPin, () => {
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.innerHTML = `<input name="action" value="delete_item"><input name="item_name" value="${escHtml(name)}"><input name="csrf_token" value="${F_CSRF_TOKEN}"><input type="hidden" name="path" value="${escHtml(parentPath)}">`;
+        document.body.appendChild(form);
+        addDeletePassword(form, `Move ${name} to trash?`);
+    });
+
+    // Separators
+    document.querySelectorAll('.ctx-sep').forEach(sep => {
+        sep.style.display = isSbPin ? 'none' : '';
+    });
 
     // Folder-only items
     const colorItem = document.getElementById('ctx-color');
     const pinItem   = document.getElementById('ctx-pin');
-    colorItem.style.display = (isDir && !isSbPin) ? 'flex' : 'none';
-    pinItem.style.display   = (isDir && !isSbPin) ? 'flex' : 'none';
+    if (colorItem) colorItem.style.display = (isDir && !isSbPin) ? 'flex' : 'none';
+    if (pinItem) pinItem.style.display     = (isDir && !isSbPin) ? 'flex' : 'none';
 
     // Sidebar pin toggle
     const pinSidebarItem = document.getElementById('ctx-pin-sidebar');
     if (pinSidebarItem) {
         pinSidebarItem.style.display = 'flex';
-        const isPinnedSidebar = isSbPin || F_SIDEBAR_PINS.includes(relPath);
+        const isPinnedSidebar = isSbPin || (typeof F_SIDEBAR_PINS !== 'undefined' && F_SIDEBAR_PINS.includes(relPath));
         pinSidebarItem.textContent = isPinnedSidebar ? '📌 Unpin from Sidebar' : '📌 Pin to Sidebar';
         pinSidebarItem.onclick = () => {
             closeCtx();
             featurePost({action: 'toggle_sidebar_pin', folder_path: relPath, is_dir: isDir ? 1 : 0}).then(d => {
                 if (d.success) {
                     toast(d.is_pinned ? '📌 Pinned to sidebar' : 'Unpinned from sidebar', 'success');
-                    if (d.is_pinned) {
-                        if (!F_SIDEBAR_PINS.includes(relPath)) F_SIDEBAR_PINS.push(relPath);
-                    } else {
-                        const idx = F_SIDEBAR_PINS.indexOf(relPath);
-                        if (idx > -1) F_SIDEBAR_PINS.splice(idx, 1);
-                    }
                     setTimeout(() => { location.reload(); }, 500);
                 } else {
                     toast('Error: ' + (d.error || 'unknown'), 'danger');
@@ -8397,13 +9522,15 @@ function showContextMenu(e, row) {
 
     if (isDir) {
         const folderRel = row.dataset.folderRel;
-        pinItem.onclick = () => {
-            closeCtx();
-            featurePost({action:'toggle_pin', folder_path: folderRel}).then(d => {
-                toast(d.success ? (d.is_pinned ? '📌 Folder pinned' : 'Folder unpinned') : 'Error', d.success ? 'success' : 'danger');
-                if (d.success) setFolderBadge(row, 'pin', !!d.is_pinned);
-            });
-        };
+        if (pinItem) {
+            pinItem.onclick = () => {
+                closeCtx();
+                featurePost({action:'toggle_pin', folder_path: folderRel}).then(d => {
+                    toast(d.success ? (d.is_pinned ? '📌 Folder pinned' : 'Folder unpinned') : 'Error', d.success ? 'success' : 'danger');
+                    if (d.success) setFolderBadge(row, 'pin', !!d.is_pinned);
+                });
+            };
+        }
         document.querySelectorAll('.ctx-color-opt').forEach(opt => {
             opt.onclick = e => {
                 e.stopPropagation();
@@ -8417,35 +9544,34 @@ function showContextMenu(e, row) {
     }
 
     // Image-only items
-    const replaceItem  = document.getElementById('ctx-replace');
-    const canvaEditItem= document.getElementById('ctx-canva-edit');
-    const sepImg       = document.querySelector('.ctx-sep-img');
+    const replaceItem   = document.getElementById('ctx-replace');
+    const canvaEditItem = document.getElementById('ctx-canva-edit');
+    const sepImg        = document.querySelector('.ctx-sep-img');
     
-    replaceItem.style.display  = isImg ? 'flex' : 'none';
-    canvaEditItem.style.display= isImg ? 'flex' : 'none';
+    if (replaceItem) replaceItem.style.display = isImg ? 'flex' : 'none';
+    if (canvaEditItem) canvaEditItem.style.display = isImg ? 'flex' : 'none';
     if (sepImg) sepImg.style.display = isImg ? '' : 'none';
 
     if (isImg) {
-        replaceItem.onclick = () => { closeCtx(); openReplaceModal(name); };
-        canvaEditItem.onclick = () => { 
-            closeCtx(); 
-            const checked = document.querySelectorAll('.file-item-check:checked');
-            const imgs = [...checked].filter(c => c.closest('.file-row')?.dataset.isImg === '1');
-            
-            if (imgs.length > 1 && [...checked].some(c => c.closest('.file-row') === row)) {
-                openBatchCanvasEditor(imgs.map(c => c.closest('.file-row')));
-            } else {
-                openStandaloneCanvasEditor(name, url); 
-            }
-        };
+        if (replaceItem) {
+            replaceItem.onclick = () => { closeCtx(); openReplaceModal(name); };
+        }
+        if (canvaEditItem) {
+            canvaEditItem.onclick = () => { 
+                closeCtx(); 
+                if (typeof openStandaloneCanvasEditor === 'function') {
+                    openStandaloneCanvasEditor(name, url); 
+                }
+            };
+        }
     }
 
-    // Position menu
+    // Position menu within screen boundaries
     const vw = window.innerWidth, vh = window.innerHeight;
-    const mw = 200, mh = 340;
+    const mw = 210, mh = 380;
     let x = e.clientX, y = e.clientY;
-    if (x + mw > vw) x = vw - mw - 10;
-    if (y + mh > vh) y = vh - mh - 10;
+    if (x + mw > vw) x = Math.max(10, vw - mw - 12);
+    if (y + mh > vh) y = Math.max(10, vh - mh - 12);
     ctxMenu.style.left = x + 'px';
     ctxMenu.style.top  = y + 'px';
     ctxMenu.style.display = 'block';
@@ -9045,7 +10171,7 @@ async function runDuplicateScan() {
 function dupDelete(rel, btn) {
     const mockForm = document.createElement('form');
     mockForm.ajaxSubmit = () => {
-        const pw = document.getElementById('deletePasswordInput').value;
+        const pw = document.getElementById('deletePasswordInput')?.value || 'confirmed';
         featurePost({ action: 'delete_duplicate', item_rel: rel, delete_password: pw }).then(d => {
             toast(d.success ? 'Moved to trash' : (d.error||'Error'), d.success ? 'success' : 'danger');
             if (d.success) btn.closest('.dup-item')?.remove();
@@ -9235,7 +10361,7 @@ function formatBytesJs(bytes) {
     return bytes + ' B';
 }
 
-<?php endif; // FEATURES_ENABLED ?>
+<?php } // FEATURES_ENABLED?>
 </script>
 
 

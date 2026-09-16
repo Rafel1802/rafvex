@@ -3,18 +3,21 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         @php
             try {
                 $siteName = \App\Models\Setting::where('key', 'site_name')->value('value') ?? config('app.name', 'Rafvex');
                 $siteTagline = \App\Models\Setting::where('key', 'site_tagline')->value('value');
                 $siteDescription = \App\Models\Setting::where('key', 'site_description')->value('value');
                 $siteLogoSetting = \App\Models\Setting::where('key', 'logo')->value('value');
+                $siteFaviconSetting = \App\Models\Setting::where('key', 'favicon')->value('value');
                 $analyticsId = \App\Models\Setting::where('key', 'analytics_id')->value('value');
             } catch (\Throwable $e) {
                 $siteName = config('app.name', 'Rafvex');
                 $siteTagline = null;
                 $siteDescription = null;
                 $siteLogoSetting = null;
+                $siteFaviconSetting = null;
                 $analyticsId = null;
             }
 
@@ -77,22 +80,19 @@
         <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
         <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
 
-        {{-- Favicons & Brand Theme (Strict Google Search Central Compliance: Multiple of 48px, Square 1:1, Stable URL) --}}
+        {{-- Favicons & Brand Theme (Strict Google Search Central Compliance: Multiple of 48px, Square 1:1, Stable PNG & ICO with Cache-Busting) --}}
         <meta name="theme-color" content="#dc2626">
 
-        <link rel="icon" type="image/png" sizes="48x48" href="{{ url('/favicon-48x48.png') }}">
-        <link rel="icon" type="image/png" sizes="96x96" href="{{ url('/favicon-96x96.png') }}">
-        <link rel="icon" type="image/png" sizes="144x144" href="{{ url('/favicon-144x144.png') }}">
-        <link rel="icon" type="image/png" sizes="192x192" href="{{ url('/android-chrome-192x192.png') }}">
-        <link rel="icon" type="image/png" sizes="512x512" href="{{ url('/android-chrome-512x512.png') }}">
-        <link rel="icon" type="image/png" sizes="576x576" href="{{ url('/favicon.png') }}">
-        <link rel="icon" href="{{ url('/favicon.ico') }}" sizes="any">
-        <link rel="shortcut icon" href="{{ url('/favicon.ico') }}">
-        <link rel="icon" type="image/svg+xml" href="{{ url('/favicon.svg') }}">
+        <link rel="icon" type="image/png" sizes="48x48" href="{{ url('/favicon-48x48.png') }}?v=2">
+        <link rel="icon" type="image/png" sizes="96x96" href="{{ url('/favicon-96x96.png') }}?v=2">
+        <link rel="icon" type="image/png" sizes="192x192" href="{{ url('/android-chrome-192x192.png') }}?v=2">
+        <link rel="icon" type="image/png" sizes="512x512" href="{{ url('/android-chrome-512x512.png') }}?v=2">
+        <link rel="icon" href="{{ url('/favicon.ico') }}?v=2" sizes="48x48 32x32 16x16">
+        <link rel="shortcut icon" href="{{ url('/favicon.ico') }}?v=2">
 
         {{-- Apple Touch & Web Manifest --}}
-        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
-        <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v=2">
+        <link rel="manifest" href="{{ asset('site.webmanifest') }}?v=2">
         <link rel="image_src" href="{{ $siteLogoUrl }}">
 
         {{-- Fonts --}}
