@@ -33,8 +33,11 @@ use App\Http\Controllers\Public\SitemapController;
 use App\Http\Controllers\Public\UserInteractionController;
 use App\Http\Middleware\CheckMaintenance;
 use App\Http\Middleware\EnsureStaff;
+use App\Models\Article;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/debug-ping', fn () => 'PONG_OK');
 
 /* ══════════════════════════════════════════
    Media Library Direct Image Route
@@ -81,6 +84,18 @@ Route::get('/blog/{path}', function ($path) {
    Public Routes (with maintenance check)
 ══════════════════════════════════════════ */
 Route::middleware([CheckMaintenance::class])->group(function () {
+    Route::get('/debug-story', function () {
+        $article = Article::where('slug', 'the-lost-wallet-inspiring-english-story')->first();
+        $all = Article::where('slug', 'like', '%wallet%')->get(['id', 'title', 'slug', 'status']);
+        $jsonExists = file_exists(base_path('content/articles/the_lost_wallet.json'));
+
+        return response()->json([
+            'found_article' => $article,
+            'wallet_articles' => $all,
+            'json_exists' => $jsonExists,
+            'json_path' => base_path('content/articles/the_lost_wallet.json'),
+        ]);
+    });
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/article/the-lantern-maker-inspiring-english-story', fn () => redirect()->route('article.show', ['slug' => 'the-lantern-maker-inspiring-english-reading-story'], 301));
     Route::get('/article/the-mountain-and-the-seed-daily-habits', fn () => redirect()->route('article.show', ['slug' => 'the-mountain-and-the-seed-lesson-daily-habits'], 301));

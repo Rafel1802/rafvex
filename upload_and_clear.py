@@ -63,15 +63,21 @@ def deploy_via_ftp(host, user, password, remote_base_path):
     except Exception as e:
         print_error(f"FTP connection failed: {e}")
 
+    created_dirs = set()
+
     def make_dirs(rem_dir):
+        if not rem_dir or rem_dir in created_dirs:
+            return
         parts = rem_dir.strip('/').split('/')
         cur = ''
         for p in parts:
             cur += '/' + p if cur else p
-            try:
-                ftp.mkd(cur)
-            except Exception:
-                pass
+            if cur not in created_dirs:
+                try:
+                    ftp.mkd(cur)
+                except Exception:
+                    pass
+                created_dirs.add(cur)
 
     def upload(local_p, rem_p):
         make_dirs(os.path.dirname(rem_p))
@@ -85,6 +91,30 @@ def deploy_via_ftp(host, user, password, remote_base_path):
         path = line[3:].strip().strip('"')
         if os.path.isfile(path) and not any(skip in path for skip in ['.git', 'node_modules', 'vendor', '.tar.gz', '.zip', '.DS_Store', '._', 'scratch']):
             files.append(path)
+
+    # 1b. Always ensure crucial article, story, and route files are synced
+    essential_files = [
+        'routes/web.php',
+        'routes/api.php',
+        'app/Http/Controllers/Public/ArticleController.php',
+        'content/articles/the_lost_wallet.json',
+        'content/articles_manifest.json',
+        'content/compiled_articles_cache.json',
+        'post_the_lost_wallet_story.php',
+    ]
+    for ef in essential_files:
+        if os.path.isfile(ef):
+            files.append(ef)
+
+    # 1c. Add committed files ahead of origin/main
+    try:
+        p2 = subprocess.run(['git', 'diff', '--name-only', 'origin/main', 'HEAD'], capture_output=True, text=True)
+        for path in p2.stdout.splitlines():
+            path = path.strip().strip('"')
+            if os.path.isfile(path) and not any(skip in path for skip in ['.git', 'node_modules', 'vendor', '.tar.gz', '.zip', '.DS_Store', '._', 'scratch']):
+                files.append(path)
+    except Exception:
+        pass
 
     # 2. Add public/build manifest and assets
     if os.path.exists('public/build/manifest.json'):
@@ -141,9 +171,10 @@ def deploy_via_ftp(host, user, password, remote_base_path):
 def main():
     parser = argparse.ArgumentParser(description='Upload code to Hostinger via Rsync/SSH or FTP and clear caches')
     parser.add_argument('--user', default='u881038410', help='SSH/FTP username')
-    parser.add_argument('--host', default='145.79.25.215', help='SSH/FTP host')
+    parser.add_argument('--host', default='82.29.199.147', help='SSH/FTP host')
     parser.add_argument('--port', default='65002', help='SSH port (Hostinger is usually 2124 or 22 or 65002)')
     parser.add_argument('--path', default='/home/u881038410/domains/rafvex.com/public_html', help='Remote path')
+    parser.add_argument('--no-build', action='store_true', help='Skip npm run build')
     args = parser.parse_args()
 
     ssh_target = f"{args.user}@{args.host}"
@@ -151,9 +182,10 @@ def main():
     if not remote_dir.endswith('/'):
         remote_dir += '/'
 
-    print_step("Building front-end assets...")
-    run_cmd("npm run build")
-    print_success("Front-end built.")
+    if not args.no_build:
+        print_step("Building front-end assets...")
+        run_cmd("npm run build")
+        print_success("Front-end built.")
 
     print_step("Checking SSH connection to Hostinger...")
     try:
@@ -195,6 +227,7 @@ def main():
             "rm -rf public/storage && ln -sfn ../storage/app/public public/storage",
             "/opt/alt/php84/usr/bin/php create_media_category_folders.php",
             "/opt/alt/php84/usr/bin/php sync_and_repair_all_articles.php",
+            "/opt/alt/php84/usr/bin/php post_the_lost_wallet_story.php",
             "/opt/alt/php84/usr/bin/php seed_wrldu_speedtest_blogs.php",
             "/opt/alt/php84/usr/bin/php clean_all_article_markdown.php",
             "/opt/alt/php84/usr/bin/php update_settings.php",
