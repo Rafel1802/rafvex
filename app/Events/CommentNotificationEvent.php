@@ -13,6 +13,7 @@ class CommentNotificationEvent implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public int $userId;
+
     public array $notification;
 
     public function __construct(int $userId, array $notification)
@@ -25,8 +26,8 @@ class CommentNotificationEvent implements ShouldBroadcastNow
     {
         // Broadcast on both private and user-specific channel for maximum compatibility
         return [
-            new PrivateChannel('user.' . $this->userId),
-            'user-notif-' . $this->userId,
+            new PrivateChannel('user.'.$this->userId),
+            'user-notif-'.$this->userId,
         ];
     }
 

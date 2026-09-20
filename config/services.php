@@ -37,7 +37,7 @@ return [
 
     'pusher_beams' => [
         'instance_id' => env('PUSHER_BEAMS_INSTANCE_ID', '282c56a0-960e-404f-bf35-647dbc68722b'),
-        'secret_key'  => env('PUSHER_BEAMS_SECRET_KEY'),
+        'secret_key' => env('PUSHER_BEAMS_SECRET_KEY'),
     ],
 
 ];

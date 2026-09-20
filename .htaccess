@@ -1,14 +1,41 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Force HTTPS and Non-WWW Canonical Domain
-    RewriteCond %{HTTPS} off [OR]
-    RewriteCond %{HTTP_HOST} ^www\. [NC]
-    RewriteCond %{HTTP_HOST} ^(?:www\.)?(.+)$ [NC]
+    # Force HTTPS
+    RewriteCond %{HTTPS} off
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,NE,R=301]
+
+    # Allow favicons, touch icons, manifest, and robots.txt to be served directly from root without redirect
+    RewriteCond %{REQUEST_URI} ^/(favicon.*|apple-touch-icon.*|android-chrome.*|site\.webmanifest|logo.*|robots\.txt) [NC]
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # If the favicon exists in public, rewrite to public without triggering www redirect
+    RewriteCond %{REQUEST_URI} ^/(favicon.*|apple-touch-icon.*|android-chrome.*|site\.webmanifest|logo.*|robots\.txt) [NC]
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # Force Non-WWW Canonical Domain for all other pages
+    RewriteCond %{ENV:REDIRECT_STATUS} ^$
+    RewriteCond %{REQUEST_URI} !^/(favicon.*|apple-touch-icon.*|android-chrome.*|site\.webmanifest|logo.*|robots\.txt|public) [NC]
+    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
     RewriteRule ^ https://%1%{REQUEST_URI} [L,NE,R=301]
 
+    RewriteCond %{REQUEST_URI} !^/public/
     RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
+
+<FilesMatch "^(favicon.*|apple-touch-icon.*|android-chrome.*|logo.*)\.(ico|png)$">
+    <IfModule mod_headers.c>
+        Header always set Cache-Control "public, max-age=2592000, stale-while-revalidate=86400"
+        Header always unset Pragma
+        Header always unset Expires
+        Header always set Access-Control-Allow-Origin "*"
+    </IfModule>
+    <IfModule mod_expires.c>
+        ExpiresActive On
+        ExpiresDefault "access plus 30 days"
+    </IfModule>
+</FilesMatch>
 
 # Disable ModSecurity false positives on rich text CMS article posts
 <IfModule mod_security.c>

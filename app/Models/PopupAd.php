@@ -51,12 +51,13 @@ class PopupAd extends Model
         if ($this->impressions_count > 0) {
             return round(($this->clicks_count / $this->impressions_count) * 100, 1);
         }
+
         return 0.0;
     }
 
     public function getIsCurrentlyRunningAttribute(): bool
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return false;
         }
 
@@ -75,7 +76,7 @@ class PopupAd extends Model
 
     public function getStatusLabelAttribute(): string
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return 'Paused';
         }
 
@@ -95,6 +96,7 @@ class PopupAd extends Model
     public function scopeActive($query)
     {
         $now = now();
+
         return $query->where('is_active', true)
             ->where(function ($q) use ($now) {
                 $q->whereNull('start_at')->orWhere('start_at', '<=', $now);

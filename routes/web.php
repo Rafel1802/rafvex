@@ -9,7 +9,8 @@ use App\Http\Controllers\Admin\HomeAdController;
 use App\Http\Controllers\Admin\HomeSectionsController;
 use App\Http\Controllers\Admin\MaintenanceController;
 use App\Http\Controllers\Admin\MediaController;
-use App\Http\Controllers\Admin\PinnedStoriesController;
+use App\Http\Controllers\Admin\PlaylistController;
+use App\Http\Controllers\Admin\PodcastCategoryController;
 use App\Http\Controllers\Admin\PopupAdController;
 use App\Http\Controllers\Admin\SecurityController;
 use App\Http\Controllers\Admin\SettingsController;
@@ -23,6 +24,7 @@ use App\Http\Controllers\Public\HomeAdTrackerController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\NewsController;
 use App\Http\Controllers\Public\NotificationController;
+use App\Http\Controllers\Public\PodcastController;
 use App\Http\Controllers\Public\PopularController;
 use App\Http\Controllers\Public\PopupAdTrackerController;
 use App\Http\Controllers\Public\ProfileController;
@@ -44,9 +46,30 @@ Route::get('/blog/{path}', function ($path) {
     }
     $filePath = public_path('medialibrary/blog/'.$path);
     if (! file_exists($filePath) || ! is_file($filePath)) {
-        abort(404);
+        // Resilient fallback: locate image by filename and folder
+        $filename = basename($path);
+        $parts = explode('/', trim($path, '/'));
+        $slugFolder = count($parts) >= 2 ? $parts[count($parts) - 2] : '';
+        $found = null;
+        if ($slugFolder !== '') {
+            $candidates = glob(public_path('medialibrary/blog/*/*/'.$slugFolder.'/'.$filename));
+            if (! empty($candidates) && is_file($candidates[0])) {
+                $found = $candidates[0];
+            }
+        }
+        if (! $found) {
+            $candidates = glob(public_path('medialibrary/blog/*/*/*/'.$filename));
+            if (! empty($candidates) && is_file($candidates[0])) {
+                $found = $candidates[0];
+            }
+        }
+        if ($found) {
+            $filePath = $found;
+        } else {
+            abort(404);
+        }
     }
-    $mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
+    $mimeType = mime_content_type($filePath) ?: 'image/webp';
 
     return response()->file($filePath, [
         'Content-Type' => $mimeType,
@@ -59,6 +82,10 @@ Route::get('/blog/{path}', function ($path) {
 ══════════════════════════════════════════ */
 Route::middleware([CheckMaintenance::class])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/article/the-lantern-maker-inspiring-english-story', fn () => redirect()->route('article.show', ['slug' => 'the-lantern-maker-inspiring-english-reading-story'], 301));
+    Route::get('/article/the-mountain-and-the-seed-daily-habits', fn () => redirect()->route('article.show', ['slug' => 'the-mountain-and-the-seed-lesson-daily-habits'], 301));
+    Route::get('/article/the-lost-wallet', fn () => redirect()->route('article.show', ['slug' => 'the-lost-wallet-inspiring-english-story'], 301));
+    Route::get('/article/the-lost-wallet-story', fn () => redirect()->route('article.show', ['slug' => 'the-lost-wallet-inspiring-english-story'], 301));
     Route::get('/article/{slug}', [ArticleController::class, 'show'])->name('article.show');
     Route::get('/articles/{slug}', fn ($slug) => redirect()->route('article.show', ['slug' => $slug], 301));
     Route::get('/articles', fn () => redirect()->route('home', [], 301));
@@ -67,9 +94,9 @@ Route::middleware([CheckMaintenance::class])->group(function () {
     Route::get('/popular', [PopularController::class, 'index'])->name('popular.index');
     Route::get('/news', [NewsController::class, 'index'])->name('news.index');
     Route::get('/news/{slug}', [NewsController::class, 'show'])->name('news.show');
-    Route::get('/podcasts', [App\Http\Controllers\Public\PodcastController::class, 'index'])->name('podcasts.index');
-    Route::get('/podcast/{slug}', [App\Http\Controllers\Public\PodcastController::class, 'show'])->name('podcast.show');
-    Route::post('/api/podcast/{podcast}/play', [App\Http\Controllers\Public\PodcastController::class, 'trackPlay'])->name('podcast.track-play');
+    Route::get('/podcasts', [PodcastController::class, 'index'])->name('podcasts.index');
+    Route::get('/podcast/{slug}', [PodcastController::class, 'show'])->name('podcast.show');
+    Route::post('/api/podcast/{podcast}/play', [PodcastController::class, 'trackPlay'])->name('podcast.track-play');
     Route::get('/search', [SearchController::class, 'index'])->name('search');
     Route::get('/api/search/live', [SearchController::class, 'live'])->name('api.search.live');
     Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.xml');
@@ -89,6 +116,18 @@ Route::middleware([CheckMaintenance::class])->group(function () {
             'Content-Type' => 'text/plain',
         ]);
     })->name('ads.txt');
+
+    // IndexNow Verification Key Route (Bing, Copilot AI, Yahoo, Yandex)
+    Route::get('/{key}.txt', function ($key) {
+        $savedKey = Setting::where('key', 'indexnow_key')->value('value');
+        if (! empty($savedKey) && strcasecmp(trim($savedKey), trim($key)) === 0) {
+            return response($savedKey, 200, [
+                'Content-Type' => 'text/plain; charset=utf-8',
+                'Cache-Control' => 'public, max-age=86400',
+            ]);
+        }
+        abort(404);
+    })->where('key', '[a-f0-9]{16,64}')->name('indexnow.verify');
     Route::get('/terms-of-service', function () {
         return Inertia\Inertia::render('Public/Terms');
     })->name('terms');
@@ -100,6 +139,9 @@ Route::middleware([CheckMaintenance::class])->group(function () {
     })->name('about');
     Route::get('/contact', [ContactController::class, 'index'])->name('contact');
     Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+    Route::get('/disclaimer', function () {
+        return Inertia\Inertia::render('Public/Disclaimer');
+    })->name('disclaimer');
 
     // Member Authentication Routes
     Route::post('/auth/register', [App\Http\Controllers\Public\AuthController::class, 'register'])->name('public.register');
@@ -159,12 +201,12 @@ Route::middleware(['auth', 'active', EnsureStaff::class])->prefix('ourcms')->nam
     // Articles & Playlists
     Route::resource('articles', App\Http\Controllers\Admin\ArticleController::class);
     Route::post('articles/{article}/toggle-breaking', [App\Http\Controllers\Admin\ArticleController::class, 'toggleBreaking'])->name('articles.toggle-breaking');
-    Route::resource('playlists', App\Http\Controllers\Admin\PlaylistController::class);
+    Route::resource('playlists', PlaylistController::class);
 
     // Podcasts & Categories
     Route::resource('podcasts', App\Http\Controllers\Admin\PodcastController::class);
     Route::post('podcasts/{podcast}/toggle-live', [App\Http\Controllers\Admin\PodcastController::class, 'toggleLive'])->name('podcasts.toggle-live');
-    Route::resource('podcast-categories', App\Http\Controllers\Admin\PodcastCategoryController::class);
+    Route::resource('podcast-categories', PodcastCategoryController::class);
 
     // Newsroom
     Route::resource('news', App\Http\Controllers\Admin\NewsController::class);
@@ -206,10 +248,11 @@ Route::middleware(['auth', 'active', EnsureStaff::class])->prefix('ourcms')->nam
     Route::delete('/security/unblock-ip/{id}', [SecurityController::class, 'unblockIp'])->name('security.unblock-ip');
     Route::post('/security/clear-logs', [SecurityController::class, 'clearLogs'])->name('security.clear-logs');
 
-    // Settings (favicon, logo, site identity, pusher beams)
+    // Settings (favicon, logo, site identity, pusher beams, instant search indexing)
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::post('/settings/test-notification', [SettingsController::class, 'testNotification'])->name('settings.test-notification');
+    Route::post('/settings/instant-index', [SettingsController::class, 'instantIndex'])->name('settings.instant-index');
 
     // Maintenance Mode
     Route::get('/maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');
@@ -217,7 +260,7 @@ Route::middleware(['auth', 'active', EnsureStaff::class])->prefix('ourcms')->nam
     Route::post('/maintenance/toggle', [MaintenanceController::class, 'toggle'])->name('maintenance.toggle');
 
     // Pinned Stories (Redirected to Unified Home Sections Manager)
-    Route::get('/pinned', fn() => redirect()->route('admin.home-sections.index'))->name('pinned.index');
+    Route::get('/pinned', fn () => redirect()->route('admin.home-sections.index'))->name('pinned.index');
     Route::get('/pinned/search', [HomeSectionsController::class, 'search'])->name('pinned.search');
     Route::post('/pinned', [HomeSectionsController::class, 'update'])->name('pinned.update');
 

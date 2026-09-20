@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('podcast_categories')) {
+        if (! Schema::hasTable('podcast_categories')) {
             Schema::create('podcast_categories', function (Blueprint $table) {
                 $table->id();
                 $table->string('name');
@@ -24,7 +24,7 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasTable('podcasts')) {
+        if (! Schema::hasTable('podcasts')) {
             Schema::create('podcasts', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('category_id')->nullable();

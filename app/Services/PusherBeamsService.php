@@ -44,15 +44,17 @@ class PusherBeamsService
 
         if (empty($instanceId)) {
             Log::warning('[PusherBeams] Cannot publish notification: Missing instance ID.');
+
             return false;
         }
 
         if (empty($secretKey)) {
-            Log::info('[PusherBeams] Secret key not yet configured. Simulated push notification: ' . $title, [
+            Log::info('[PusherBeams] Secret key not yet configured. Simulated push notification: '.$title, [
                 'interests' => $interests,
                 'body' => $body,
                 'deep_link' => $deepLink,
             ]);
+
             return false;
         }
 
@@ -82,15 +84,18 @@ class PusherBeamsService
                     'interests' => $interests,
                     'title' => $title,
                 ]);
+
                 return true;
             } else {
-                Log::error('[PusherBeams] Publish API error: ' . $response->status(), [
+                Log::error('[PusherBeams] Publish API error: '.$response->status(), [
                     'response' => $response->body(),
                 ]);
+
                 return false;
             }
         } catch (\Throwable $e) {
-            Log::error('[PusherBeams] Connection error: ' . $e->getMessage());
+            Log::error('[PusherBeams] Connection error: '.$e->getMessage());
+
             return false;
         }
     }
@@ -106,7 +111,7 @@ class PusherBeamsService
 
         return self::publishToInterests(
             ['hello', 'admin', 'comments'],
-            "💬 New Comment on Rafvex",
+            '💬 New Comment on Rafvex',
             "{$author} on \"{$articleTitle}\": \"{$excerpt}\"",
             url('/ourcms/comments')
         );

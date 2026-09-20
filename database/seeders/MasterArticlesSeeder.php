@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Category;
 use App\Models\Article;
+use App\Models\Category;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
 class MasterArticlesSeeder extends Seeder
@@ -13,10 +13,10 @@ class MasterArticlesSeeder extends Seeder
     public function run(): void
     {
         $author = User::first();
-        if (!$author) {
+        if (! $author) {
             $author = User::create([
-                'name' => 'Dr. Elena Vance',
-                'email' => 'editor@rafvex.com',
+                'name' => 'Mr. Soporadara Rin',
+                'email' => 'rafvexofficial@gmail.com',
                 'password' => bcrypt('RafvexResearch2026!'),
                 'email_verified_at' => now(),
             ]);
@@ -77,6 +77,16 @@ class MasterArticlesSeeder extends Seeder
             51 => 'on-device-ai',
             52 => 'lantern-maker-study',
             53 => 'mountain-seed-study',
+            54 => 'top-5-speed-test-websites',
+            55 => 'speedtest-fast-games-lag',
+            56 => 'dns-speed-lookup-guide',
+            57 => 'diagnose-network-tech-questions',
+            58 => 'isp-throttling-tests',
+            59 => 'wifi-7-vs-wifi-6e-testing',
+            60 => 'eliminate-zoom-audio-jitter',
+            61 => '5g-vs-fiber-speed-test',
+            62 => 'eliminate-wifi-dead-zones',
+            63 => 'speed-test-privacy-breakdown',
         ];
 
         $batchFiles = glob(base_path('content/articles/batch_*.json'));
@@ -87,7 +97,7 @@ class MasterArticlesSeeder extends Seeder
                 $articles = array_merge($articles, $batchData);
             }
         }
-        usort($articles, fn($a, $b) => $a['id'] <=> $b['id']);
+        usort($articles, fn ($a, $b) => $a['id'] <=> $b['id']);
 
         $categoryCache = [];
 
@@ -100,7 +110,7 @@ class MasterArticlesSeeder extends Seeder
             $title = $art['title'];
 
             $parentSlug = Str::slug($catName);
-            if (!isset($categoryCache[$parentSlug])) {
+            if (! isset($categoryCache[$parentSlug])) {
                 $parentCat = Category::firstOrCreate(
                     ['slug' => $parentSlug],
                     [
@@ -116,7 +126,7 @@ class MasterArticlesSeeder extends Seeder
             }
 
             $subcatSlug = Str::slug($subcatName);
-            if (!isset($categoryCache[$subcatSlug])) {
+            if (! isset($categoryCache[$subcatSlug])) {
                 $subCat = Category::firstOrCreate(
                     ['slug' => $subcatSlug],
                     [
@@ -147,14 +157,17 @@ class MasterArticlesSeeder extends Seeder
             $markdown = trim($markdown);
 
             // Convert Tables
-            $markdown = preg_replace_callback('/((?:\|[^\n]+\|\r?\n)+)/', function($match) {
+            $markdown = preg_replace_callback('/((?:\|[^\n]+\|\r?\n)+)/', function ($match) {
                 $lines = array_filter(array_map('trim', explode("\n", trim($match[1]))));
-                if (count($lines) < 2) return $match[0];
+                if (count($lines) < 2) {
+                    return $match[0];
+                }
                 $html = '<div class="overflow-x-auto my-6"><table class="min-w-full text-left border-collapse border border-slate-200 shadow-xs rounded-lg overflow-hidden">';
                 $isHeader = true;
                 foreach ($lines as $line) {
                     if (preg_match('/^\|(?:\s*:?-+:?\s*\|)+$/', $line)) {
                         $isHeader = false;
+
                         continue;
                     }
                     $cells = array_slice(explode('|', $line), 1, -1);
@@ -164,11 +177,12 @@ class MasterArticlesSeeder extends Seeder
                     foreach ($cells as $cell) {
                         $cellContent = trim($cell);
                         $cellContent = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $cellContent);
-                        $html .= "<{$tag} class=\"{$cls}\">" . $cellContent . "</{$tag}>";
+                        $html .= "<{$tag} class=\"{$cls}\">".$cellContent."</{$tag}>";
                     }
                     $html .= '</tr>';
                 }
                 $html .= '</table></div>';
+
                 return $html;
             }, $markdown);
 
@@ -176,42 +190,74 @@ class MasterArticlesSeeder extends Seeder
             $content = preg_replace('/^### (.*?)$/m', '<h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mt-6 mb-3">$1</h3>', $markdown);
             $content = preg_replace('/^## (.*?)$/m', '<h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-8 mb-4">$1</h2>', $content);
             $content = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $content);
-            $content = preg_replace('/```(bash|powershell|text|python|json)?\n(.*?)```/s', '<pre class="bg-slate-900 text-slate-100 p-4 rounded-xl overflow-x-auto my-4 text-sm font-mono leading-relaxed"><code>$2</code></pre>', $content);
+            // Protect and format Code Blocks before splitting into paragraphs
+            $codeBlocks = [];
+            $content = preg_replace_callback('/```([a-zA-Z0-9_-]*)\r?\n([\s\S]*?)```/s', function ($m) use (&$codeBlocks) {
+                $lang = ! empty($m[1]) ? htmlspecialchars(trim($m[1]), ENT_QUOTES, 'UTF-8') : 'terminal';
+                $code = htmlspecialchars(trim($m[2]), ENT_QUOTES, 'UTF-8');
+                $encoded = rawurlencode(trim($m[2]));
+                $html = <<<HTML
+<div class="code-terminal-block my-6 rounded-2xl overflow-hidden border border-slate-800 bg-[#0f172a] shadow-xl">
+  <div class="flex items-center justify-between px-4 py-2.5 bg-[#1e293b] border-b border-slate-700/60">
+    <div class="flex items-center gap-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+      <span class="text-xs font-mono text-slate-400 ml-2 font-medium">{$lang}</span>
+    </div>
+    <button class="copy-code-btn" data-code="{$encoded}">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+      <span>Copy</span>
+    </button>
+  </div>
+  <pre class="p-4 text-xs sm:text-sm font-mono text-slate-100 overflow-x-auto leading-relaxed"><code>{$code}</code></pre>
+</div>
+HTML;
+                $idx = count($codeBlocks);
+                $codeBlocks[$idx] = $html;
+
+                return "\n\n___CODE_BLOCK_{$idx}___\n\n";
+            }, $content);
+
             $content = preg_replace('/\[([^\]]+)\]\(([^)]+)\)/', '<a href="$2" class="text-red-600 hover:text-red-700 underline font-semibold">$1</a>', $content);
 
             $paragraphs = explode("\n\n", $content);
             $formattedParagraphs = [];
             foreach ($paragraphs as $para) {
                 $para = trim($para);
-                if (empty($para)) continue;
-                if (str_starts_with($para, '<h') || str_starts_with($para, '<pre') || str_starts_with($para, '<div') || str_starts_with($para, '<table') || str_starts_with($para, '<figure')) {
+                if (empty($para)) {
+                    continue;
+                }
+                if (preg_match('/^___CODE_BLOCK_(\d+)___$/', $para, $cm)) {
+                    $formattedParagraphs[] = $codeBlocks[(int) $cm[1]] ?? '';
+                } elseif (str_starts_with($para, '<h') || str_starts_with($para, '<pre') || str_starts_with($para, '<div') || str_starts_with($para, '<table') || str_starts_with($para, '<figure')) {
                     $formattedParagraphs[] = $para;
                 } elseif (preg_match('/^(\*|-)\s/', $para)) {
                     $listItems = explode("\n", $para);
                     $listHtml = '<ul class="list-disc list-inside space-y-2 my-4 text-slate-700 dark:text-slate-300 leading-relaxed">';
                     foreach ($listItems as $item) {
                         $item = trim(preg_replace('/^(\*|-)\s+/', '', $item));
-                        if (!empty($item)) {
-                            $listHtml .= '<li>' . $item . '</li>';
+                        if (! empty($item)) {
+                            $listHtml .= '<li>'.$item.'</li>';
                         }
                     }
                     $listHtml .= '</ul>';
                     $formattedParagraphs[] = $listHtml;
                 } else {
-                    $formattedParagraphs[] = '<p class="text-slate-700 dark:text-slate-300 leading-relaxed my-4">' . nl2br($para) . '</p>';
+                    $formattedParagraphs[] = '<p class="text-slate-700 dark:text-slate-300 leading-relaxed my-4">'.nl2br($para).'</p>';
                 }
             }
 
             // In-body images 2, 3, and 4
-            $img2 = "<figure class=\"my-8\"><img src=\"/blog/{$catSlug}/{$subSlug}/{$shortSlug}/{$shortSlug}-2.webp?v=6\" alt=\"" . htmlspecialchars($title) . " - Section Overview\" class=\"rounded-2xl shadow-lg w-full object-cover\" loading=\"lazy\" /></figure>";
-            $img3 = "<figure class=\"my-8\"><img src=\"/blog/{$catSlug}/{$subSlug}/{$shortSlug}/{$shortSlug}-3.webp?v=6\" alt=\"" . htmlspecialchars($title) . " - Analysis and Insights\" class=\"rounded-2xl shadow-lg w-full object-cover\" loading=\"lazy\" /></figure>";
-            $img4 = "<figure class=\"my-8\"><img src=\"/blog/{$catSlug}/{$subSlug}/{$shortSlug}/{$shortSlug}-4.webp?v=6\" alt=\"" . htmlspecialchars($title) . " - Practical Takeaways\" class=\"rounded-2xl shadow-lg w-full object-cover\" loading=\"lazy\" /></figure>";
+            $img2 = "<figure class=\"my-8\"><img src=\"/blog/{$catSlug}/{$subSlug}/{$shortSlug}/{$shortSlug}-2.webp?v=6\" alt=\"".htmlspecialchars($title).' - Section Overview" class="rounded-2xl shadow-lg w-full object-cover" loading="lazy" /></figure>';
+            $img3 = "<figure class=\"my-8\"><img src=\"/blog/{$catSlug}/{$subSlug}/{$shortSlug}/{$shortSlug}-3.webp?v=6\" alt=\"".htmlspecialchars($title).' - Analysis and Insights" class="rounded-2xl shadow-lg w-full object-cover" loading="lazy" /></figure>';
+            $img4 = "<figure class=\"my-8\"><img src=\"/blog/{$catSlug}/{$subSlug}/{$shortSlug}/{$shortSlug}-4.webp?v=6\" alt=\"".htmlspecialchars($title).' - Practical Takeaways" class="rounded-2xl shadow-lg w-full object-cover" loading="lazy" /></figure>';
 
             $totalParas = count($formattedParagraphs);
             if ($totalParas >= 6) {
-                $pos1 = (int)($totalParas * 0.25);
-                $pos2 = (int)($totalParas * 0.55) + 1;
-                $pos3 = (int)($totalParas * 0.85) + 2;
+                $pos1 = (int) ($totalParas * 0.25);
+                $pos2 = (int) ($totalParas * 0.55) + 1;
+                $pos3 = (int) ($totalParas * 0.85) + 2;
                 array_splice($formattedParagraphs, $pos1, 0, [$img2]);
                 array_splice($formattedParagraphs, $pos2, 0, [$img3]);
                 array_splice($formattedParagraphs, $pos3, 0, [$img4]);
@@ -225,9 +271,12 @@ class MasterArticlesSeeder extends Seeder
                 $formattedParagraphs[] = $img4;
             }
 
-            $editorialH1 = "<h1 class=\"text-3xl sm:text-4xl font-black text-slate-950 mb-4 tracking-tight\">" . htmlspecialchars($title) . "</h1>";
-            $editorialIntro = "<p class=\"lead text-lg sm:text-xl font-medium text-slate-700 leading-relaxed mb-6\">" . htmlspecialchars($art['meta_description']) . "</p>";
-            $finalHtml = $editorialH1 . "\n" . $editorialIntro . "\n" . implode("\n\n", $formattedParagraphs);
+            $metaDesc = $art['meta_description'] ?? $art['excerpt'] ?? Str::limit(strip_tags($art['content'] ?? ''), 160);
+            $seoTitle = $art['seo_meta_title'] ?? $title;
+
+            $editorialH1 = '<h1 class="text-3xl sm:text-4xl font-black text-slate-950 mb-4 tracking-tight">'.htmlspecialchars($title).'</h1>';
+            $editorialIntro = '<p class="lead text-lg sm:text-xl font-medium text-slate-700 leading-relaxed mb-6">'.htmlspecialchars($metaDesc).'</p>';
+            $finalHtml = $editorialH1."\n".$editorialIntro."\n".implode("\n\n", $formattedParagraphs);
 
             $coverImageUrl = "/blog/{$catSlug}/{$subSlug}/{$shortSlug}/{$shortSlug}-1.webp?v=6";
 
@@ -237,19 +286,19 @@ class MasterArticlesSeeder extends Seeder
                     'user_id' => $authorId,
                     'category_id' => $subCat->id,
                     'title' => $title,
-                    'excerpt' => $art['meta_description'],
+                    'excerpt' => $metaDesc,
                     'content' => $finalHtml,
                     'content_raw' => null,
                     'status' => 'published',
-                    'published_at' => now()->subDays(53 - $art['id']),
+                    'published_at' => now()->subDays(max(0, 63 - (int) $art['id'])),
                     'cover_image_url' => $coverImageUrl,
                     'cover_image_alt' => $title,
-                    'meta_title' => $art['seo_meta_title'],
-                    'meta_description' => $art['meta_description'],
-                    'reading_time' => max(5, (int)(str_word_count(strip_tags($art['content'])) / 200)),
-                    'featured' => in_array($art['id'], [1, 2, 6, 9, 14, 16, 22, 28, 35, 44]),
+                    'meta_title' => $seoTitle,
+                    'meta_description' => $metaDesc,
+                    'reading_time' => max(5, (int) (str_word_count(strip_tags($art['content'] ?? '')) / 200)),
+                    'featured' => in_array($art['id'], [1, 2, 6, 9, 14, 16, 22, 28, 35, 44, 54, 55, 58]),
                     'allow_comments' => true,
-                    'ai_assisted' => true,
+                    'ai_assisted' => ($art['id'] <= 53),
                 ]
             );
         }

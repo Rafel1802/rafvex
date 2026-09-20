@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Services\SearchIndexingService;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class Article extends Model
 {
@@ -88,8 +91,8 @@ class Article extends Model
     public function relatedArticles(): BelongsToMany
     {
         return $this->belongsToMany(Article::class, 'article_related', 'article_id', 'related_article_id')
-                    ->withPivot('sort_order')
-                    ->orderBy('article_related.sort_order');
+            ->withPivot('sort_order')
+            ->orderBy('article_related.sort_order');
     }
 
     public function comments(): HasMany
@@ -131,11 +134,11 @@ class Article extends Model
 
         return $query->where(function ($q) {
             $q->where('status', 'published')
-              ->orWhere(function ($sq) {
-                  $sq->where('status', 'scheduled')
-                     ->whereNotNull('scheduled_at')
-                     ->where('scheduled_at', '<=', now());
-              });
+                ->orWhere(function ($sq) {
+                    $sq->where('status', 'scheduled')
+                        ->whereNotNull('scheduled_at')
+                        ->where('scheduled_at', '<=', now());
+                });
         });
     }
 
@@ -147,7 +150,7 @@ class Article extends Model
                 ->where('scheduled_at', '<=', now())
                 ->update([
                     'status' => 'published',
-                    'published_at' => \Illuminate\Support\Facades\DB::raw('COALESCE(published_at, scheduled_at, NOW())'),
+                    'published_at' => DB::raw('COALESCE(published_at, scheduled_at, NOW())'),
                 ]);
         } catch (\Throwable $e) {
             return 0;
@@ -159,19 +162,34 @@ class Article extends Model
         return $query->where('is_breaking', true)
             ->where(function ($q) {
                 try {
-                    if (\Illuminate\Support\Facades\Schema::hasColumn('articles', 'breaking_until')) {
+                    if (Schema::hasColumn('articles', 'breaking_until')) {
                         $q->whereNull('breaking_until')
-                          ->orWhere('breaking_until', '>=', now());
+                            ->orWhere('breaking_until', '>=', now());
                     }
-                } catch (\Throwable $e) {}
+                } catch (\Throwable $e) {
+                }
             });
     }
 
     protected static function booted()
     {
-        static::saved(function () {
+        static::saved(function ($article) {
             cache()->forget('active_breaking_news');
             cache()->forget('active_breaking_items');
+
+            // Automatically submit published articles to IndexNow after HTTP response
+            if ($article->status === 'published' && ! $article->noindex && ! empty($article->slug)) {
+                try {
+                    $articleUrl = url('/article/'.$article->slug);
+                    dispatch(function () use ($articleUrl) {
+                        try {
+                            app(SearchIndexingService::class)->submitSingleUrl($articleUrl);
+                        } catch (\Throwable $e) {
+                        }
+                    })->afterResponse();
+                } catch (\Throwable $e) {
+                }
+            }
         });
         static::deleted(function () {
             cache()->forget('active_breaking_news');

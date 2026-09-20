@@ -24,7 +24,7 @@ class NewsController extends Controller
 
         // 3. News Wire Grid
         $wireNews = News::published()
-            ->when($leadStory, fn($q) => $q->where('id', '!=', $leadStory->id))
+            ->when($leadStory, fn ($q) => $q->where('id', '!=', $leadStory->id))
             ->latest('published_at')
             ->paginate(18);
 
@@ -41,8 +41,8 @@ class NewsController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
-        $sessionKey = 'viewed_news_' . $news->id;
-        if (!session()->has($sessionKey)) {
+        $sessionKey = 'viewed_news_'.$news->id;
+        if (! session()->has($sessionKey)) {
             $news->increment('views_count');
             session()->put($sessionKey, now()->timestamp);
         }

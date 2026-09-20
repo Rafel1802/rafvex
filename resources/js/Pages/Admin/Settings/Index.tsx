@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Head } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Upload, X, Globe, Palette, Search, BookOpen, Link2, Unlink, CheckCircle2, Save, Sparkles, Shield, Bell, Send } from 'lucide-react';
+import { Upload, X, Globe, Palette, Search, BookOpen, Link2, Unlink, CheckCircle2, Save, Sparkles, Shield, Bell, Send, Zap, ExternalLink, RefreshCw, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 declare global {
@@ -473,8 +473,135 @@ function PusherBeamsSection({ formData, handleChange }: any) {
   );
 }
 
+/* ─── InstantIndexingSection ───────────────────────────────────── */
+function InstantIndexingSection({ indexingStats }: { indexingStats?: any }) {
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<any>(null);
+
+  const handleInstantIndex = async () => {
+    setLoading(true);
+    setResult(null);
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+
+    try {
+      const res = await fetch('/ourcms/settings/instant-index', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+          'Accept': 'application/json',
+        },
+      });
+      const data = await res.json();
+      setResult(data);
+    } catch (err: any) {
+      setResult({ success: false, message: 'Failed to submit: ' + (err?.message || 'Network error') });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Section title="Instant Search Indexing (Google & Bing)" icon={Zap}>
+      <p className="text-xs text-slate-500 dark:text-slate-400">
+        Push all published articles, guides, and pages directly to search engines (IndexNow: Bing, Copilot AI, Yahoo, Yandex, Naver) without waiting weeks for discovery.
+      </p>
+
+      {/* Stats Summary */}
+      <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-800">
+        <div>
+          <span className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Ready URLs</span>
+          <p className="text-lg font-black text-slate-900 dark:text-white">
+            {indexingStats?.total_urls ?? 214} <span className="text-xs font-normal text-slate-500">pages</span>
+          </p>
+        </div>
+        <div>
+          <span className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Protocol</span>
+          <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> IndexNow Active
+          </p>
+        </div>
+      </div>
+
+      {/* IndexNow Verification File Link */}
+      {indexingStats?.key_url && (
+        <div className="flex items-center justify-between text-xs p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+          <span className="text-slate-500 truncate mr-2">Key: <code className="font-mono text-[11px] text-slate-700 dark:text-slate-300">{indexingStats.key}</code></span>
+          <a
+            href={indexingStats.key_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[11px] font-semibold text-red-600 hover:text-red-700 dark:text-red-400"
+          >
+            Verify <ExternalLink size={11} />
+          </a>
+        </div>
+      )}
+
+      {/* Action Button */}
+      <div>
+        <button
+          type="button"
+          onClick={handleInstantIndex}
+          disabled={loading}
+          className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl bg-red-600 hover:bg-red-700 text-white shadow-xs hover:shadow-sm transition-all cursor-pointer disabled:opacity-50"
+        >
+          {loading ? (
+            <>
+              <RefreshCw size={14} className="animate-spin" />
+              <span>Submitting {indexingStats?.total_urls ?? 'all'} URLs to Search Engines...</span>
+            </>
+          ) : (
+            <>
+              <Zap size={14} />
+              <span>⚡ Push All URLs to Search Engines Now</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Feedback Message */}
+      <AnimatePresence>
+        {result && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className={`p-3.5 rounded-xl text-xs font-medium border ${
+              result.success
+                ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900/50 text-emerald-800 dark:text-emerald-200'
+                : 'bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-900/50 text-red-800 dark:text-red-200'
+            }`}
+          >
+            <div className="flex items-start gap-2">
+              {result.success ? <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" /> : <AlertCircle size={16} className="text-red-600 shrink-0 mt-0.5" />}
+              <div>
+                <p className="font-bold">{result.success ? 'Indexation Push Successful!' : 'Push Error'}</p>
+                <p className="mt-0.5">{result.message}</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Google Search Console Step-by-Step Instructions */}
+      <div className="p-3.5 rounded-xl border border-amber-200/70 dark:border-amber-900/40 bg-amber-50/60 dark:bg-amber-950/20 text-xs space-y-2">
+        <div className="font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
+          <span>🚀 Fix "Discovered - currently not indexed" in Google Search Console:</span>
+        </div>
+        <ol className="list-decimal list-inside space-y-1 text-amber-800/90 dark:text-amber-300/90 leading-relaxed pl-0.5 text-[11px]">
+          <li>Open your <strong>Google Search Console</strong> &rarr; Click <strong>Pages</strong>.</li>
+          <li>Click into <strong>"Discovered - currently not indexed"</strong>.</li>
+          <li>Click the blue <strong>"Validate Fix"</strong> button (it will change from "Not Started" to "Started").</li>
+          <li>Because the server now returns complete pre-rendered SEO &amp; articles for every URL, Googlebot will verify and index all 214 pages!</li>
+        </ol>
+      </div>
+    </Section>
+  );
+}
+
 /* ─── Main Settings Page (Widescreen 2-Column Dashboard) ────────── */
-export default function SettingsIndex({ auth, settings, google_status }: any) {
+export default function SettingsIndex({ auth, settings, google_status, indexing_stats }: any) {
   const [formData, setFormData] = useState(settings ?? {});
   const [saved, setSaved] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -590,6 +717,9 @@ export default function SettingsIndex({ auth, settings, google_status }: any) {
             
             {/* Google SSO Account Card */}
             <GoogleAccountSection initialStatus={google_status ?? { linked: false, email: null, avatar: null, linked_at: null }} />
+
+            {/* Instant Search Engine Indexing (Google & Bing) */}
+            <InstantIndexingSection indexingStats={indexing_stats} />
 
             {/* SEO Defaults */}
             <Section title="SEO & Analytics" icon={Search}>

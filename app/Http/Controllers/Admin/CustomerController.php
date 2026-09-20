@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Comment;
 use App\Models\User;
 use App\Models\UserFavorite;
-use App\Models\UserReadingHistory;
-use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
@@ -34,7 +33,7 @@ class CustomerController extends Controller
             $search = trim($request->input('search'));
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -76,31 +75,31 @@ class CustomerController extends Controller
 
         $customers->getCollection()->transform(function ($customer) {
             return [
-                'id'                     => $customer->id,
-                'name'                   => $customer->name,
-                'email'                  => $customer->email,
-                'avatar'                 => $customer->avatar,
-                'google_avatar'          => $customer->google_avatar,
-                'is_google_linked'       => !empty($customer->google_id),
-                'google_email'           => $customer->google_email,
-                'is_active'              => (bool) $customer->is_active,
-                'comments_count'         => $customer->comments_count ?? 0,
-                'favorites_count'        => $customer->favorites_count ?? 0,
-                'reading_history_count'  => $customer->reading_history_count ?? 0,
-                'last_login_at'          => $customer->last_login_at?->diffForHumans() ?: 'Never',
-                'last_login_ip'          => $customer->last_login_ip ?: '—',
-                'created_at'             => $customer->created_at?->format('M d, Y'),
+                'id' => $customer->id,
+                'name' => $customer->name,
+                'email' => $customer->email,
+                'avatar' => $customer->avatar,
+                'google_avatar' => $customer->google_avatar,
+                'is_google_linked' => ! empty($customer->google_id),
+                'google_email' => $customer->google_email,
+                'is_active' => (bool) $customer->is_active,
+                'comments_count' => $customer->comments_count ?? 0,
+                'favorites_count' => $customer->favorites_count ?? 0,
+                'reading_history_count' => $customer->reading_history_count ?? 0,
+                'last_login_at' => $customer->last_login_at?->diffForHumans() ?: 'Never',
+                'last_login_ip' => $customer->last_login_ip ?: '—',
+                'created_at' => $customer->created_at?->format('M d, Y'),
             ];
         });
 
         return Inertia::render('Admin/Customers/Index', [
             'customers' => $customers,
-            'filters'   => $request->only(['search', 'status', 'google']),
-            'metrics'   => [
-                'total_customers'  => $totalCustomers,
-                'active_today'     => $activeToday,
-                'total_comments'   => $totalComments,
-                'total_favorites'  => $totalFavorites,
+            'filters' => $request->only(['search', 'status', 'google']),
+            'metrics' => [
+                'total_customers' => $totalCustomers,
+                'active_today' => $activeToday,
+                'total_comments' => $totalComments,
+                'total_favorites' => $totalFavorites,
             ],
         ]);
     }
@@ -136,24 +135,24 @@ class CustomerController extends Controller
 
         return response()->json([
             'customer' => [
-                'id'                     => $customer->id,
-                'name'                   => $customer->name,
-                'email'                  => $customer->email,
-                'avatar'                 => $customer->avatar,
-                'google_avatar'          => $customer->google_avatar,
-                'is_google_linked'       => !empty($customer->google_id),
-                'google_email'           => $customer->google_email,
-                'is_active'              => (bool) $customer->is_active,
-                'last_login_at'          => $customer->last_login_at?->diffForHumans() ?: 'Never',
-                'last_login_ip'          => $customer->last_login_ip,
-                'created_at'             => $customer->created_at?->format('M d, Y \a\t H:i'),
-                'comments_count'         => $customer->comments_count,
-                'favorites_count'        => $customer->favorites_count,
-                'reading_history_count'  => $customer->reading_history_count,
+                'id' => $customer->id,
+                'name' => $customer->name,
+                'email' => $customer->email,
+                'avatar' => $customer->avatar,
+                'google_avatar' => $customer->google_avatar,
+                'is_google_linked' => ! empty($customer->google_id),
+                'google_email' => $customer->google_email,
+                'is_active' => (bool) $customer->is_active,
+                'last_login_at' => $customer->last_login_at?->diffForHumans() ?: 'Never',
+                'last_login_ip' => $customer->last_login_ip,
+                'created_at' => $customer->created_at?->format('M d, Y \a\t H:i'),
+                'comments_count' => $customer->comments_count,
+                'favorites_count' => $customer->favorites_count,
+                'reading_history_count' => $customer->reading_history_count,
             ],
-            'recentComments'  => $recentComments,
+            'recentComments' => $recentComments,
             'recentFavorites' => $recentFavorites,
-            'recentReading'   => $recentReading,
+            'recentReading' => $recentReading,
         ]);
     }
 
@@ -167,10 +166,11 @@ class CustomerController extends Controller
             return back()->with('error', 'Cannot perform action on an administrator account.');
         }
 
-        $customer->is_active = !$customer->is_active;
+        $customer->is_active = ! $customer->is_active;
         $customer->save();
 
         $statusText = $customer->is_active ? 'activated' : 'suspended';
+
         return back()->with('message', "Customer {$customer->name} has been {$statusText}.");
     }
 
@@ -185,16 +185,16 @@ class CustomerController extends Controller
         }
 
         $validated = $request->validate([
-            'name'      => ['required', 'string', 'max:255'],
-            'email'     => ['required', 'email', 'unique:users,email,' . $customer->id],
-            'password'  => ['nullable', 'string', 'min:8'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:users,email,'.$customer->id],
+            'password' => ['nullable', 'string', 'min:8'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
         $customer->name = $validated['name'];
         $customer->email = strtolower(trim($validated['email']));
 
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $customer->password = Hash::make($validated['password']);
         }
 

@@ -14,7 +14,7 @@ foreach ($articlesJsonFiles as $jsonFile) {
         $allArticles = array_merge($allArticles, $data);
     }
 }
-usort($allArticles, fn($a, $b) => $a['id'] <=> $b['id']);
+usort($allArticles, fn ($a, $b) => $a['id'] <=> $b['id']);
 
 // Curated high-resolution Unsplash photo IDs for each category / theme (1920x1080)
 $curatedPhotos = [
@@ -105,30 +105,31 @@ $curatedPhotos = [
         'photo-1531403009284-440f080d1e12',
         'photo-1507525428034-b723cf961d3e',
         'photo-1518495973542-4542c06a5843',
-    ]
+    ],
 ];
 
 // Pre-cache downloaded images to avoid re-downloading duplicate photo IDs
-$cacheDir = __DIR__ . '/storage/app/photo_cache';
-if (!is_dir($cacheDir)) {
+$cacheDir = __DIR__.'/storage/app/photo_cache';
+if (! is_dir($cacheDir)) {
     mkdir($cacheDir, 0755, true);
 }
 
 // Helper to download or generate a clean 1920x1080 WebP image
-function getCleanPhoto($photoId, $cacheDir) {
+function getCleanPhoto($photoId, $cacheDir)
+{
     $cachedFile = "{$cacheDir}/{$photoId}.webp";
     if (file_exists($cachedFile) && filesize($cachedFile) > 10000) {
         return $cachedFile;
     }
-    
+
     $url = "https://images.unsplash.com/{$photoId}?auto=format&fit=crop&w=1920&h=1080&q=85";
     $ctx = stream_context_create([
         'http' => [
             'timeout' => 20,
-            'header' => "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36\r\n"
-        ]
+            'header' => "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36\r\n",
+        ],
     ]);
-    
+
     $data = @file_get_contents($url, false, $ctx);
     if ($data) {
         $im = @imagecreatefromstring($data);
@@ -144,24 +145,26 @@ function getCleanPhoto($photoId, $cacheDir) {
                 imagewebp($im, $cachedFile, 85);
             }
             imagedestroy($im);
+
             return $cachedFile;
         }
     }
-    
+
     // Fallback: Elegant clean dark gradient card without any text
     $im = imagecreatetruecolor(1920, 1080);
     $bg1 = [30, 41, 59];
     $bg2 = [15, 23, 42];
     for ($y = 0; $y < 1080; $y++) {
         $ratio = $y / 1080;
-        $r = (int)($bg1[0] * (1 - $ratio) + $bg2[0] * $ratio);
-        $g = (int)($bg1[1] * (1 - $ratio) + $bg2[1] * $ratio);
-        $b = (int)($bg1[2] * (1 - $ratio) + $bg2[2] * $ratio);
+        $r = (int) ($bg1[0] * (1 - $ratio) + $bg2[0] * $ratio);
+        $g = (int) ($bg1[1] * (1 - $ratio) + $bg2[1] * $ratio);
+        $b = (int) ($bg1[2] * (1 - $ratio) + $bg2[2] * $ratio);
         $c = imagecolorallocate($im, $r, $g, $b);
         imageline($im, 0, $y, 1920, $y, $c);
     }
     imagewebp($im, $cachedFile, 85);
     imagedestroy($im);
+
     return $cachedFile;
 }
 
@@ -203,8 +206,12 @@ foreach ($allArticles as $art) {
 
     $destDir1 = "{$baseMediaDir}/{$cat}/{$subcat}/{$slug}";
     $destDir2 = "{$publicMediaDir}/{$cat}/{$subcat}/{$slug}";
-    if (!is_dir($destDir1)) mkdir($destDir1, 0755, true);
-    if (!is_dir($destDir2)) mkdir($destDir2, 0755, true);
+    if (! is_dir($destDir1)) {
+        mkdir($destDir1, 0755, true);
+    }
+    if (! is_dir($destDir2)) {
+        mkdir($destDir2, 0755, true);
+    }
 
     for ($p = 1; $p <= 4; $p++) {
         $photoId = $pool[($p - 1) % count($pool)];

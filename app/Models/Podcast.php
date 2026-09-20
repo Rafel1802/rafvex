@@ -39,15 +39,15 @@ class Podcast extends Model
     protected $casts = [
         'duration_seconds' => 'integer',
         'audio_size_bytes' => 'integer',
-        'episode_number'   => 'integer',
-        'season_number'    => 'integer',
-        'is_featured'      => 'boolean',
-        'published_at'     => 'datetime',
-        'live_started_at'  => 'datetime',
-        'live_scheduled_at'=> 'datetime',
-        'live_ended_at'    => 'datetime',
-        'views_count'      => 'integer',
-        'plays_count'      => 'integer',
+        'episode_number' => 'integer',
+        'season_number' => 'integer',
+        'is_featured' => 'boolean',
+        'published_at' => 'datetime',
+        'live_started_at' => 'datetime',
+        'live_scheduled_at' => 'datetime',
+        'live_ended_at' => 'datetime',
+        'views_count' => 'integer',
+        'plays_count' => 'integer',
     ];
 
     protected $appends = [
@@ -135,7 +135,7 @@ class Podcast extends Model
 
     public function getLiveOffsetSecondsAttribute(): int
     {
-        if ($this->live_status !== 'live' || !$this->live_started_at) {
+        if ($this->live_status !== 'live' || ! $this->live_started_at) {
             return 0;
         }
 

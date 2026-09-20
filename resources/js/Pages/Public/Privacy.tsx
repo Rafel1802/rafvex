@@ -169,8 +169,12 @@ export default function Privacy({ auth }: any) {
               <span className="text-red-600 dark:text-red-400 font-black">8.</span> Contact Us
             </h2>
             <p>
-              If you have any questions, feedback, or requests regarding this Privacy Policy, please reach out via our{' '}
-              <Link href="/contact" className="text-red-600 dark:text-red-400 hover:underline font-bold">Contact Page</Link>.
+              If you have any questions, feedback, or data privacy requests regarding this Privacy Policy, please reach out via our{' '}
+              <Link href="/contact" className="text-red-600 dark:text-red-400 hover:underline font-bold">Contact Page</Link>{' '}
+              or directly by email to{' '}
+              <a href="mailto:rafvexofficial@gmail.com" className="text-red-600 dark:text-red-400 hover:underline font-bold">
+                rafvexofficial@gmail.com
+              </a>.
             </p>
           </section>
 

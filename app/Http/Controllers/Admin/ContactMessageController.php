@@ -17,9 +17,9 @@ class ContactMessageController extends Controller
             $search = trim($request->input('search'));
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('subject', 'like', "%{$search}%")
-                  ->orWhere('message', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('subject', 'like', "%{$search}%")
+                    ->orWhere('message', 'like', "%{$search}%");
             });
         }
 
@@ -35,27 +35,30 @@ class ContactMessageController extends Controller
         $unreadCount = ContactMessage::where('is_read', false)->count();
 
         return Inertia::render('Admin/Messages/Index', [
-            'messages'    => $messages,
+            'messages' => $messages,
             'unreadCount' => $unreadCount,
-            'filters'     => $request->only(['search', 'status']),
+            'filters' => $request->only(['search', 'status']),
         ]);
     }
 
     public function markAsRead(ContactMessage $message)
     {
         $message->update(['is_read' => true]);
+
         return back()->with('message', 'Message marked as read.');
     }
 
     public function markAllAsRead()
     {
         ContactMessage::where('is_read', false)->update(['is_read' => true]);
+
         return back()->with('message', 'All messages marked as read.');
     }
 
     public function destroy(ContactMessage $message)
     {
         $message->delete();
+
         return back()->with('message', 'Message deleted successfully.');
     }
 }

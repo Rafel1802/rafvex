@@ -12,46 +12,47 @@ foreach ($articlesJsonFiles as $jsonFile) {
 }
 
 // Sort by ID
-usort($allArticles, fn($a, $b) => $a['id'] <=> $b['id']);
+usort($allArticles, fn ($a, $b) => $a['id'] <=> $b['id']);
 
-echo "Loaded " . count($allArticles) . " articles from batches.\n";
+echo 'Loaded '.count($allArticles)." articles from batches.\n";
 
 $colorPalettes = [
     0 => [ // Golden Sunrise
         'bg_top' => [44, 62, 80],
         'bg_bot' => [230, 126, 34],
-        'card'   => [253, 246, 227],
+        'card' => [253, 246, 227],
         'text_dark' => [44, 62, 80],
         'accent' => [211, 84, 0],
-        'gold'   => [243, 156, 18],
+        'gold' => [243, 156, 18],
     ],
     1 => [ // Forest Sanctuary
         'bg_top' => [22, 160, 133],
         'bg_bot' => [39, 174, 96],
-        'card'   => [254, 250, 236],
+        'card' => [254, 250, 236],
         'text_dark' => [26, 37, 48],
         'accent' => [22, 160, 133],
-        'gold'   => [214, 137, 16],
+        'gold' => [214, 137, 16],
     ],
     2 => [ // Twilight Lantern
         'bg_top' => [44, 62, 80],
         'bg_bot' => [142, 68, 173],
-        'card'   => [250, 247, 240],
+        'card' => [250, 247, 240],
         'text_dark' => [34, 49, 63],
         'accent' => [142, 68, 173],
-        'gold'   => [241, 196, 15],
+        'gold' => [241, 196, 15],
     ],
     3 => [ // Deep Ocean / Evening Calm
         'bg_top' => [41, 128, 185],
         'bg_bot' => [52, 73, 94],
-        'card'   => [252, 248, 238],
+        'card' => [252, 248, 238],
         'text_dark' => [44, 62, 80],
         'accent' => [41, 128, 185],
-        'gold'   => [230, 126, 34],
+        'gold' => [230, 126, 34],
     ],
 ];
 
-function drawRoundedRect($im, $x1, $y1, $x2, $y2, $radius, $color) {
+function drawRoundedRect($im, $x1, $y1, $x2, $y2, $radius, $color)
+{
     imagefilledrectangle($im, $x1 + $radius, $y1, $x2 - $radius, $y2, $color);
     imagefilledrectangle($im, $x1, $y1 + $radius, $x2, $y2 - $radius, $color);
     imagefilledellipse($im, $x1 + $radius, $y1 + $radius, $radius * 2, $radius * 2, $color);
@@ -60,7 +61,8 @@ function drawRoundedRect($im, $x1, $y1, $x2, $y2, $radius, $color) {
     imagefilledellipse($im, $x2 - $radius, $y2 - $radius, $radius * 2, $radius * 2, $color);
 }
 
-function wordWrapString($string, $maxChars = 90) {
+function wordWrapString($string, $maxChars = 90)
+{
     return explode("\n", wordwrap($string, $maxChars, "\n"));
 }
 
@@ -75,7 +77,7 @@ foreach ($allArticles as $art) {
     $title = $art['title'];
 
     $articleDir = "{$baseMediaDir}/{$cat}/{$subcat}/{$slug}";
-    if (!is_dir($articleDir)) {
+    if (! is_dir($articleDir)) {
         mkdir($articleDir, 0755, true);
         $createdFoldersCount++;
     }
@@ -98,9 +100,9 @@ foreach ($allArticles as $art) {
         // Gradient Background
         for ($y = 0; $y < 1080; $y++) {
             $ratio = $y / 1080;
-            $r = (int)($pal['bg_top'][0] * (1 - $ratio) + $pal['bg_bot'][0] * $ratio);
-            $g = (int)($pal['bg_top'][1] * (1 - $ratio) + $pal['bg_bot'][1] * $ratio);
-            $b = (int)($pal['bg_top'][2] * (1 - $ratio) + $pal['bg_bot'][2] * $ratio);
+            $r = (int) ($pal['bg_top'][0] * (1 - $ratio) + $pal['bg_bot'][0] * $ratio);
+            $g = (int) ($pal['bg_top'][1] * (1 - $ratio) + $pal['bg_bot'][1] * $ratio);
+            $b = (int) ($pal['bg_top'][2] * (1 - $ratio) + $pal['bg_bot'][2] * $ratio);
             $c = imagecolorallocate($im, $r, $g, $b);
             imageline($im, 0, $y, 1920, $y, $c);
         }
@@ -120,15 +122,15 @@ foreach ($allArticles as $art) {
         drawRoundedRect($im, 150, 110, 1770, 200, 16, $accentColor);
 
         // Header text
-        $headerLine1 = "RAFVEX ARTICLE #{$artId}  |  " . strtoupper($cat) . " > " . strtoupper($subcat);
+        $headerLine1 = "RAFVEX ARTICLE #{$artId}  |  ".strtoupper($cat).' > '.strtoupper($subcat);
         imagestring($im, 5, 180, 130, $headerLine1, $white);
-        
-        $headerLine2 = "IMAGE GENERATION CONCEPT " . $pNum . " OF 4  |  STUDIO GHIBLI-INSPIRED AESTHETIC (16:9 • 1920x1080)";
+
+        $headerLine2 = 'IMAGE GENERATION CONCEPT '.$pNum.' OF 4  |  STUDIO GHIBLI-INSPIRED AESTHETIC (16:9 • 1920x1080)';
         imagestring($im, 4, 180, 162, $headerLine2, $goldColor);
 
         // Article Title Banner
-        $titleDisplay = strlen($title) > 90 ? substr($title, 0, 87) . '...' : $title;
-        imagestring($im, 5, 180, 240, "ARTICLE:", $accentColor);
+        $titleDisplay = strlen($title) > 90 ? substr($title, 0, 87).'...' : $title;
+        imagestring($im, 5, 180, 240, 'ARTICLE:', $accentColor);
         imagestring($im, 5, 270, 240, $titleDisplay, $darkTextColor);
 
         // Decorative line
@@ -139,10 +141,10 @@ foreach ($allArticles as $art) {
         $promptBoxColor = imagecolorallocate($im, 242, 237, 222);
         drawRoundedRect($im, 180, 320, 1740, 850, 20, $promptBoxColor);
 
-        imagestring($im, 5, 220, 350, "OPTIMIZED MIDJOURNEY / IMAGEN / DALL-E PROMPT:", $accentColor);
+        imagestring($im, 5, 220, 350, 'OPTIMIZED MIDJOURNEY / IMAGEN / DALL-E PROMPT:', $accentColor);
 
         // Prompt text wrapping
-        $wrappedLines = wordWrapString('"' . $prompt . '"', 85);
+        $wrappedLines = wordWrapString('"'.$prompt.'"', 85);
         $lineY = 400;
         foreach ($wrappedLines as $wLine) {
             imagestring($im, 5, 220, $lineY, trim($wLine), $darkTextColor);
@@ -151,12 +153,12 @@ foreach ($allArticles as $art) {
 
         // Specs block in bottom of prompt box
         imageline($im, 220, 720, 1700, 720, $goldColor);
-        imagestring($im, 4, 220, 745, "PRIMARY FOCUS KEYWORD: " . $art['primary_keyword'], $mutedGray);
-        imagestring($im, 4, 220, 775, "TARGET SLUG: https://rafvex.com/article/" . $slug, $accentColor);
-        imagestring($im, 4, 220, 805, "STYLE: Warm natural lighting, wooden workbenches, parchment, clean screens, anime concept art", $mutedGray);
+        imagestring($im, 4, 220, 745, 'PRIMARY FOCUS KEYWORD: '.$art['primary_keyword'], $mutedGray);
+        imagestring($im, 4, 220, 775, 'TARGET SLUG: https://rafvex.com/article/'.$slug, $accentColor);
+        imagestring($im, 4, 220, 805, 'STYLE: Warm natural lighting, wooden workbenches, parchment, clean screens, anime concept art', $mutedGray);
 
         // Card Footer
-        imagestring($im, 4, 180, 920, "RAFVEX PUBLISHING ENGINE  |  OFFICIAL MEDIA LIBRARY ASSET  |  1920x1080 (16:9)", $mutedGray);
+        imagestring($im, 4, 180, 920, 'RAFVEX PUBLISHING ENGINE  |  OFFICIAL MEDIA LIBRARY ASSET  |  1920x1080 (16:9)', $mutedGray);
         imagestring($im, 4, 1420, 920, "ASSET ID: {$slug}-img-{$pNum}.webp", $accentColor);
 
         // Save WebP Image
@@ -172,7 +174,7 @@ foreach ($allArticles as $art) {
         'category' => $cat,
         'subcategory' => $subcat,
         'slug' => $slug,
-        'image_prompts' => $art['image_prompts']
+        'image_prompts' => $art['image_prompts'],
     ], JSON_PRETTY_PRINT));
 }
 

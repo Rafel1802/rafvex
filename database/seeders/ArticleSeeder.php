@@ -2,18 +2,19 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Article;
-use App\Models\User;
 use App\Models\Category;
-use Illuminate\Support\Str;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class ArticleSeeder extends Seeder
 {
     public function run(): void
     {
         $admin = User::first();
-        if (!$admin) return;
+        if (! $admin) {
+            return;
+        }
 
         $category = Category::whereNotNull('parent_id')->first();
 

@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Schema;
 
 class News extends Model
@@ -47,20 +47,22 @@ class News extends Model
                 try {
                     if (Schema::hasColumn('news', 'breaking_until')) {
                         $q->whereNull('breaking_until')
-                          ->orWhere('breaking_until', '>=', now());
+                            ->orWhere('breaking_until', '>=', now());
                     }
-                } catch (\Throwable $e) {}
+                } catch (\Throwable $e) {
+                }
             });
     }
 
     public function isCurrentlyBreaking(): bool
     {
-        if (!$this->is_breaking) {
+        if (! $this->is_breaking) {
             return false;
         }
         if ($this->breaking_until && $this->breaking_until->isPast()) {
             return false;
         }
+
         return true;
     }
 

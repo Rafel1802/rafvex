@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\RedirectResponse;
 
 class SecurityController extends Controller
 {
@@ -58,11 +58,11 @@ class SecurityController extends Controller
         }
 
         if ($request->filled('search')) {
-            $search = '%' . $request->search . '%';
+            $search = '%'.$request->search.'%';
             $query->where(function ($q) use ($search) {
                 $q->where('login_logs.email', 'like', $search)
-                  ->orWhere('login_logs.ip_address', 'like', $search)
-                  ->orWhere('login_logs.failure_reason', 'like', $search);
+                    ->orWhere('login_logs.ip_address', 'like', $search)
+                    ->orWhere('login_logs.failure_reason', 'like', $search);
             });
         }
 
@@ -141,7 +141,7 @@ class SecurityController extends Controller
             'event_type' => 'ip_blocked_manually',
             'severity' => 'warning',
             'ip_address' => $ip,
-            'user_agent' => substr((string)$request->userAgent(), 0, 500),
+            'user_agent' => substr((string) $request->userAgent(), 0, 500),
             'metadata' => json_encode([
                 'reason' => $reason,
                 'duration' => $duration,
@@ -162,7 +162,7 @@ class SecurityController extends Controller
         $user = Auth::user();
         $isSuperAdmin = $user && ($user->hasRole('Super Admin') || $user->id === 1);
 
-        if (!$isSuperAdmin) {
+        if (! $isSuperAdmin) {
             return back()->with('error', 'Only a Super Admin has authorization to unblock IP addresses.');
         }
 
@@ -176,7 +176,7 @@ class SecurityController extends Controller
                 'event_type' => 'ip_unblocked',
                 'severity' => 'info',
                 'ip_address' => $blocked->ip_address,
-                'user_agent' => substr((string)$request->userAgent(), 0, 500),
+                'user_agent' => substr((string) $request->userAgent(), 0, 500),
                 'metadata' => json_encode(['unblocked_by' => $user->name]),
                 'created_at' => now(),
             ]);

@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
 use App\Models\Article;
-use Illuminate\Http\Request;
+use App\Models\Category;
 use Inertia\Inertia;
 
 class CategoryController extends Controller
@@ -14,11 +13,11 @@ class CategoryController extends Controller
     {
         $aliases = [
             'online-security' => 'basic-online-security',
-            'security'        => 'basic-online-security',
-            'how-to'          => 'troubleshooting',
-            'review'          => 'reviews',
-            'tips'            => 'tips-tricks',
-            'tricks'          => 'tips-tricks',
+            'security' => 'basic-online-security',
+            'how-to' => 'troubleshooting',
+            'review' => 'reviews',
+            'tips' => 'tips-tricks',
+            'tricks' => 'tips-tricks',
         ];
 
         if (isset($aliases[$slug])) {
@@ -27,21 +26,13 @@ class CategoryController extends Controller
 
         $category = Category::where('slug', $slug)->first();
 
-        if (!$category) {
+        if (! $category) {
             $formattedName = ucwords(str_replace(['-', '_'], ' ', $slug));
             $category = Category::where('name', 'like', $formattedName)->first();
         }
 
-        if (!$category) {
-            // Auto-create category if accessed from navigation to prevent 404
-            $formattedName = ucwords(str_replace(['-', '_'], ' ', $slug));
-            $category = Category::create([
-                'slug'        => $slug,
-                'name'        => $formattedName,
-                'description' => "Explore {$formattedName} articles, practical guides, and reviews on Rafvex.",
-                'status'      => 'active',
-                'featured'    => true,
-            ]);
+        if (! $category) {
+            abort(404);
         }
 
         // Determine parent category and child subcategories
@@ -78,7 +69,7 @@ class CategoryController extends Controller
                 ->where(function ($q) use ($keyword) {
                     if ($keyword) {
                         $q->where('title', 'like', "%{$keyword}%")
-                          ->orWhere('excerpt', 'like', "%{$keyword}%");
+                            ->orWhere('excerpt', 'like', "%{$keyword}%");
                     }
                 })
                 ->latest('published_at')
@@ -94,24 +85,25 @@ class CategoryController extends Controller
             }
         }
 
-        // Calculate counts for each subcategory from the loaded articles collection
+        // Calculate counts for each subcategory and only retain subcategories with published content
         $subcategoriesWithCounts = $subcategories->map(function ($sub) use ($articles) {
             $count = $articles->where('category_id', $sub->id)->count();
+
             return [
-                'id'             => $sub->id,
-                'name'           => $sub->name,
-                'slug'           => $sub->slug,
-                'description'    => $sub->description,
+                'id' => $sub->id,
+                'name' => $sub->name,
+                'slug' => $sub->slug,
+                'description' => $sub->description,
                 'articles_count' => $count,
             ];
-        })->values();
+        })->filter(fn ($sub) => $sub['articles_count'] > 0)->values();
 
         return Inertia::render('Public/Category/Show', [
-            'category'       => $category,
+            'category' => $category,
             'parentCategory' => $parentCategory,
-            'subcategories'  => $subcategoriesWithCounts,
-            'articles'       => $articles,
-            'initialSubcat'  => $initialSubcat,
+            'subcategories' => $subcategoriesWithCounts,
+            'articles' => $articles,
+            'initialSubcat' => $initialSubcat,
         ]);
     }
 }

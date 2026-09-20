@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class GoogleAuthController extends Controller
@@ -23,7 +23,7 @@ class GoogleAuthController extends Controller
 
         $googleData = $this->verifyGoogleToken($request->id_token);
 
-        if (!$googleData) {
+        if (! $googleData) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid or expired Google authentication token. Please try again.',
@@ -35,7 +35,7 @@ class GoogleAuthController extends Controller
         $googleAvatar = $googleData['picture'] ?? null;
         $emailVerified = filter_var($googleData['email_verified'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
-        if (!$googleId || !$googleEmail || !$emailVerified) {
+        if (! $googleId || ! $googleEmail || ! $emailVerified) {
             return response()->json([
                 'success' => false,
                 'message' => 'Google account email must be verified to sign in.',
@@ -46,7 +46,7 @@ class GoogleAuthController extends Controller
         $user = User::where('google_id', $googleId)->first();
 
         // 2. Search for user by linked google_email
-        if (!$user) {
+        if (! $user) {
             $user = User::where('google_email', $googleEmail)->first();
             if ($user) {
                 $user->google_id = $googleId;
@@ -55,7 +55,7 @@ class GoogleAuthController extends Controller
         }
 
         // 3. Fallback: Search for user by primary email if matching an existing admin
-        if (!$user) {
+        if (! $user) {
             $user = User::where('email', $googleEmail)->first();
             if ($user) {
                 // Auto-link Google credentials to this matching administrator
@@ -68,7 +68,7 @@ class GoogleAuthController extends Controller
         }
 
         // If no user found, deny login with helpful instructions
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'success' => false,
                 'message' => "The Google account ({$googleEmail}) is not linked to any administrator profile. Please log in with your email & password first, then connect your Google account in Site Settings.",
@@ -76,7 +76,7 @@ class GoogleAuthController extends Controller
         }
 
         // Strictly verify staff privilege
-        if (!$user->isStaff()) {
+        if (! $user->isStaff()) {
             return response()->json([
                 'success' => false,
                 'message' => "Access denied. The Google account ({$googleEmail}) is registered as a website reader, not a CMS administrator.",
@@ -84,7 +84,7 @@ class GoogleAuthController extends Controller
         }
 
         // Check active status
-        if (!$user->is_active) {
+        if (! $user->is_active) {
             return response()->json([
                 'success' => false,
                 'message' => 'Your administrator account has been disabled. Please contact the site owner.',
@@ -98,7 +98,7 @@ class GoogleAuthController extends Controller
         // Update login stats
         $user->last_login_at = now();
         $user->last_login_ip = $request->ip();
-        if ($googleAvatar && !$user->avatar) {
+        if ($googleAvatar && ! $user->avatar) {
             $user->avatar = $googleAvatar;
         }
         $user->save();
@@ -114,7 +114,7 @@ class GoogleAuthController extends Controller
                 'created_at' => now(),
             ]);
         } catch (\Throwable $e) {
-            Log::warning('Could not write login_logs for Google auth: ' . $e->getMessage());
+            Log::warning('Could not write login_logs for Google auth: '.$e->getMessage());
         }
 
         return response()->json([
@@ -135,7 +135,7 @@ class GoogleAuthController extends Controller
 
         $googleData = $this->verifyGoogleToken($request->id_token);
 
-        if (!$googleData) {
+        if (! $googleData) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid or expired Google authentication token.',
@@ -146,7 +146,7 @@ class GoogleAuthController extends Controller
         $googleEmail = $googleData['email'] ?? null;
         $googleAvatar = $googleData['picture'] ?? null;
 
-        if (!$googleId || !$googleEmail) {
+        if (! $googleId || ! $googleEmail) {
             return response()->json([
                 'success' => false,
                 'message' => 'Could not retrieve Google profile details.',
@@ -171,7 +171,7 @@ class GoogleAuthController extends Controller
         $currentUser->google_email = $googleEmail;
         $currentUser->google_avatar = $googleAvatar;
         $currentUser->google_linked_at = now();
-        if (!$currentUser->avatar && $googleAvatar) {
+        if (! $currentUser->avatar && $googleAvatar) {
             $currentUser->avatar = $googleAvatar;
         }
         $currentUser->save();
@@ -217,9 +217,9 @@ class GoogleAuthController extends Controller
                 return $response->json();
             }
 
-            Log::warning('Google token verification failed: ' . $response->body());
+            Log::warning('Google token verification failed: '.$response->body());
         } catch (\Throwable $e) {
-            Log::error('Exception verifying Google token: ' . $e->getMessage());
+            Log::error('Exception verifying Google token: '.$e->getMessage());
         }
 
         return null;

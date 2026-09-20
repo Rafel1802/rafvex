@@ -41,8 +41,8 @@ for filename, size in SIZES.items():
         subprocess.run(["cp", "-f", dest, root_dest], check=True)
     print(f"  ✓ {filename} ({size}x{size})")
 
-# Build multi-resolution ICO (16, 32, 48)
-ico_sizes = [16, 32, 48]
+# Build multi-resolution ICO with 48x48 as primary image (Google Search Central requirement)
+ico_sizes = [48, 32, 16]
 ico_images = []
 for s in ico_sizes:
     path = os.path.join(PUBLIC_DIR, f"favicon-{s}x{s}.png")
@@ -71,24 +71,13 @@ with open(ico_public, "wb") as f:
     f.write(ico_content)
 with open(ico_root, "wb") as f:
     f.write(ico_content)
-print(f"  ✓ favicon.ico ({len(ico_content)} bytes with 16, 32, 48px)")
+print(f"  ✓ favicon.ico ({len(ico_content)} bytes with 48, 32, 16px)")
 
-# High resolution SVG favicon
-high_res_path = os.path.join(PUBLIC_DIR, "android-chrome-512x512.png")
-with open(high_res_path, "rb") as f:
-    b64_str = base64.b64encode(f.read()).decode("ascii")
-
-svg_content = f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <image href="data:image/png;base64,{b64_str}" width="512" height="512" />
-</svg>
-"""
-
-svg_public = os.path.join(PUBLIC_DIR, "favicon.svg")
-svg_root = os.path.join(ROOT_DIR, "favicon.svg")
-with open(svg_public, "w", encoding="utf-8") as f:
-    f.write(svg_content)
-with open(svg_root, "w", encoding="utf-8") as f:
-    f.write(svg_content)
-print("  ✓ favicon.svg (512x512 crisp vector container)")
+# Clean up any legacy fake base64 favicon.svg that causes crawler rendering errors
+for svg_path in [os.path.join(PUBLIC_DIR, "favicon.svg"), os.path.join(ROOT_DIR, "favicon.svg")]:
+    if os.path.exists(svg_path):
+        os.remove(svg_path)
+        print(f"  ✓ Removed legacy pseudo-SVG: {svg_path}")
 
 print("All favicons successfully generated and verified from master favicon.png!")
+

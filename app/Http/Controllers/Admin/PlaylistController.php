@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Playlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class PlaylistController extends Controller
 {
@@ -17,7 +18,7 @@ class PlaylistController extends Controller
             return response()->json($playlists);
         }
 
-        return \Inertia\Inertia::render('Admin/Playlists/Index', [
+        return Inertia::render('Admin/Playlists/Index', [
             'playlists' => $playlists,
         ]);
     }

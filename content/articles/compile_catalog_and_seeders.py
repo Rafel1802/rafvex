@@ -6,7 +6,7 @@ import urllib.parse
 
 # 1. Load All 53 Articles from Batches 1 to 8
 all_articles = []
-for i in range(1, 9):
+for i in range(1, 10):
     batch_file = f'/Applications/XAMPP/xamppfiles/htdocs/Rafelblog/content/articles/batch_{i}.json'
     if os.path.exists(batch_file):
         with open(batch_file) as f:
@@ -555,8 +555,8 @@ $author = User::first();
 if (!$author) {
     echo "Creating default author user...\\n";
     $author = User::create([
-        'name' => 'Dr. Elena Vance',
-        'email' => 'editor@rafvex.com',
+        'name' => 'Mr. Soporadara Rin',
+        'email' => 'rafvexofficial@gmail.com',
         'password' => bcrypt('RafvexResearch2026!'),
         'email_verified_at' => now(),
     ]);

@@ -63,7 +63,7 @@ class PodcastCategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:podcast_categories,slug,' . $podcastCategory->id,
+            'slug' => 'required|string|max:255|unique:podcast_categories,slug,'.$podcastCategory->id,
             'description' => 'nullable|string|max:1000',
             'cover_image_url' => 'nullable|string|max:1000',
             'sort_order' => 'nullable|integer',

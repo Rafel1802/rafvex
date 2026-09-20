@@ -118,7 +118,9 @@ class HomeAdController extends Controller
             if (Schema::hasTable('home_ads') && HomeAd::withTrashed()->exists()) {
                 return true;
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
+
         return false;
     }
 
@@ -127,7 +129,7 @@ class HomeAdController extends Controller
      */
     public static function ensureDbSeeded(): void
     {
-        if (!Schema::hasTable('home_ads')) {
+        if (! Schema::hasTable('home_ads')) {
             return;
         }
 
@@ -140,7 +142,7 @@ class HomeAdController extends Controller
         $initialAds = [];
         if (File::exists($fallbackFile)) {
             $data = json_decode(File::get($fallbackFile), true);
-            if (is_array($data) && !empty($data)) {
+            if (is_array($data) && ! empty($data)) {
                 $initialAds = $data;
             }
         }
@@ -175,7 +177,8 @@ class HomeAdController extends Controller
                     ['value' => '1']
                 );
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
     }
 
     /**
@@ -188,7 +191,8 @@ class HomeAdController extends Controller
                 $ads = HomeAd::orderBy('order', 'asc')->latest()->get()->toArray();
                 self::saveFallbackAds($ads);
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
     }
 
     /**
@@ -199,6 +203,7 @@ class HomeAdController extends Controller
         try {
             if (Schema::hasTable('home_ads')) {
                 self::ensureDbSeeded();
+
                 return HomeAd::orderBy('order', 'asc')->latest()->get()->toArray();
             }
         } catch (\Throwable $e) {
@@ -216,6 +221,7 @@ class HomeAdController extends Controller
         // Seed default demo ads to fallback file only if it doesn't exist
         $demo = self::getDefaultDemoAds();
         self::saveFallbackAds($demo);
+
         return $demo;
     }
 
@@ -225,7 +231,7 @@ class HomeAdController extends Controller
     public static function saveFallbackAds(array $ads): void
     {
         $dir = dirname(self::getFallbackFile());
-        if (!File::exists($dir)) {
+        if (! File::exists($dir)) {
             File::makeDirectory($dir, 0755, true);
         }
         File::put(self::getFallbackFile(), json_encode(array_values($ads), JSON_PRETTY_PRINT));
@@ -242,6 +248,7 @@ class HomeAdController extends Controller
             $ad['ctr'] = $imp > 0 ? round(($clk / $imp) * 100, 1) : 0.0;
             $ad['is_currently_running'] = (bool) ($ad['is_active'] ?? false);
             $ad['status_label'] = $ad['is_currently_running'] ? 'Active' : 'Paused';
+
             return $ad;
         });
 
@@ -296,7 +303,7 @@ class HomeAdController extends Controller
 
         if ($request->hasFile('media_file')) {
             $file = $request->file('media_file');
-            $filename = time() . '_' . Str::slug($validated['title']) . '.' . $file->getClientOriginalExtension();
+            $filename = time().'_'.Str::slug($validated['title']).'.'.$file->getClientOriginalExtension();
             $path = $file->storeAs('home-ads', $filename, 'public');
             $mediaPath = Storage::url($path);
         }
@@ -323,10 +330,12 @@ class HomeAdController extends Controller
                 self::ensureDbSeeded();
                 HomeAd::create($newAdData);
                 self::syncDbToFallback();
+
                 return redirect()->route('admin.home-ads.index')
                     ->with('success', 'Home Ad created successfully!');
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         // Fallback JSON mode
         $allAds = self::loadAllAds();
@@ -356,12 +365,13 @@ class HomeAdController extends Controller
                     ]);
                 }
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         $allAds = self::loadAllAds();
         $ad = collect($allAds)->firstWhere('id', (int) $id);
 
-        if (!$ad) {
+        if (! $ad) {
             return redirect()->route('admin.home-ads.index')
                 ->with('error', 'Home Ad not found.');
         }
@@ -396,7 +406,7 @@ class HomeAdController extends Controller
 
         if ($request->hasFile('media_file')) {
             $file = $request->file('media_file');
-            $filename = time() . '_' . Str::slug($validated['title']) . '.' . $file->getClientOriginalExtension();
+            $filename = time().'_'.Str::slug($validated['title']).'.'.$file->getClientOriginalExtension();
             $path = $file->storeAs('home-ads', $filename, 'public');
             $mediaPath = Storage::url($path);
         }
@@ -423,11 +433,13 @@ class HomeAdController extends Controller
                 if ($dbAd) {
                     $dbAd->update($updateData);
                     self::syncDbToFallback();
+
                     return redirect()->route('admin.home-ads.index')
                         ->with('success', 'Home Ad updated successfully!');
                 }
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         // Fallback JSON mode
         $allAds = self::loadAllAds();
@@ -462,13 +474,15 @@ class HomeAdController extends Controller
                     $dbAd->delete();
                 }
                 self::syncDbToFallback();
+
                 return redirect()->route('admin.home-ads.index')
                     ->with('success', 'Home Ad removed successfully!');
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         $allAds = self::loadAllAds();
-        $allAds = array_values(array_filter($allAds, fn($ad) => (int) ($ad['id'] ?? 0) !== (int) $id));
+        $allAds = array_values(array_filter($allAds, fn ($ad) => (int) ($ad['id'] ?? 0) !== (int) $id));
         self::saveFallbackAds($allAds);
 
         return redirect()->route('admin.home-ads.index')
@@ -485,20 +499,22 @@ class HomeAdController extends Controller
                 self::ensureDbSeeded();
                 $dbAd = HomeAd::find((int) $id);
                 if ($dbAd) {
-                    $dbAd->is_active = !$dbAd->is_active;
+                    $dbAd->is_active = ! $dbAd->is_active;
                     $dbAd->save();
                     self::syncDbToFallback();
                     $label = $dbAd->is_active ? 'Active' : 'Paused';
+
                     return back()->with('success', "Home Ad status toggled to {$label}.");
                 }
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         $allAds = self::loadAllAds();
         $newStatus = false;
         foreach ($allAds as &$ad) {
             if ((int) $ad['id'] === (int) $id) {
-                $ad['is_active'] = !($ad['is_active'] ?? false);
+                $ad['is_active'] = ! ($ad['is_active'] ?? false);
                 $newStatus = $ad['is_active'];
                 break;
             }
@@ -506,6 +522,7 @@ class HomeAdController extends Controller
         self::saveFallbackAds($allAds);
 
         $label = $newStatus ? 'Active' : 'Paused';
+
         return back()->with('success', "Home Ad status toggled to {$label}.");
     }
 
@@ -523,10 +540,12 @@ class HomeAdController extends Controller
                     $dbAd->clicks_count = 0;
                     $dbAd->save();
                     self::syncDbToFallback();
+
                     return back()->with('success', 'Ad metrics successfully reset to zero.');
                 }
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         $allAds = self::loadAllAds();
         foreach ($allAds as &$ad) {

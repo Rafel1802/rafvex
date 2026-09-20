@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Admin\HomeAdController;
 use App\Http\Controllers\Controller;
 use App\Models\HomeAd;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
 class HomeAdTrackerController extends Controller
@@ -15,7 +14,7 @@ class HomeAdTrackerController extends Controller
      */
     public function trackImpression($id)
     {
-        $sessionKey = 'ad_imp_' . $id;
+        $sessionKey = 'ad_imp_'.$id;
         if (session()->has($sessionKey)) {
             return response()->json(['success' => true]);
         }
@@ -26,10 +25,12 @@ class HomeAdTrackerController extends Controller
                 $ad = HomeAd::find((int) $id);
                 if ($ad) {
                     $ad->increment('impressions_count');
+
                     return response()->json(['success' => true]);
                 }
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         // Fallback file tracking
         $all = HomeAdController::loadAllAds();
@@ -54,10 +55,12 @@ class HomeAdTrackerController extends Controller
                 $ad = HomeAd::find((int) $id);
                 if ($ad) {
                     $ad->increment('clicks_count');
+
                     return response()->json(['success' => true]);
                 }
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         // Fallback file tracking
         $all = HomeAdController::loadAllAds();
@@ -84,19 +87,21 @@ class HomeAdTrackerController extends Controller
                 $ad = HomeAd::find((int) $id);
                 if ($ad) {
                     $ad->increment('clicks_count');
-                    if (!empty($ad->link_url)) {
+                    if (! empty($ad->link_url)) {
                         $targetUrl = $ad->link_url;
                     }
+
                     return redirect()->away($targetUrl);
                 }
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         $all = HomeAdController::loadAllAds();
         foreach ($all as &$ad) {
             if ((int) ($ad['id'] ?? 0) === (int) $id) {
                 $ad['clicks_count'] = ((int) ($ad['clicks_count'] ?? 0)) + 1;
-                if (!empty($ad['link_url'])) {
+                if (! empty($ad['link_url'])) {
                     $targetUrl = $ad['link_url'];
                 }
                 break;

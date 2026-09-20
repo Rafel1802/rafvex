@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -15,15 +16,27 @@ Artisan::command('stories:pin {--lead=} {--featured=} {--trending=} {--reset} {-
     $show = $this->option('show');
     $search = $this->option('search');
 
-    $cmd = 'php ' . escapeshellarg(base_path('pin_stories.php'));
-    if ($show) $cmd .= ' --show';
-    if ($reset) $cmd .= ' --reset';
-    if ($lead !== null) $cmd .= ' --lead=' . escapeshellarg($lead);
-    if ($featured !== null) $cmd .= ' --featured=' . escapeshellarg($featured);
-    if ($trending !== null) $cmd .= ' --trending=' . escapeshellarg($trending);
-    if ($search !== null) $cmd .= ' --search=' . escapeshellarg($search);
+    $cmd = 'php '.escapeshellarg(base_path('pin_stories.php'));
+    if ($show) {
+        $cmd .= ' --show';
+    }
+    if ($reset) {
+        $cmd .= ' --reset';
+    }
+    if ($lead !== null) {
+        $cmd .= ' --lead='.escapeshellarg($lead);
+    }
+    if ($featured !== null) {
+        $cmd .= ' --featured='.escapeshellarg($featured);
+    }
+    if ($trending !== null) {
+        $cmd .= ' --trending='.escapeshellarg($trending);
+    }
+    if ($search !== null) {
+        $cmd .= ' --search='.escapeshellarg($search);
+    }
 
     passthru($cmd);
 })->purpose('Manage pinned Top Featured and Trending stories via CLI / SSH');
 
-\Illuminate\Support\Facades\Schedule::command('articles:publish-scheduled')->everyMinute();
+Schedule::command('articles:publish-scheduled')->everyMinute();

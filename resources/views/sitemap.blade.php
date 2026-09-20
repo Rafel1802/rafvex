@@ -61,7 +61,7 @@
         @if(!empty($article->cover_image_url))
         <image:image>
             <image:loc>{{ str_starts_with($article->cover_image_url, 'http') ? $article->cover_image_url : url($article->cover_image_url) }}</image:loc>
-            <image:title>{{ htmlspecialchars($article->title ?? 'Rafvex Article') }}</image:title>
+            <image:title>{{ $article->title ?? 'Rafvex Article' }}</image:title>
         </image:image>
         @endif
     </url>
@@ -78,7 +78,7 @@
         @if(!empty($item->cover_image_url))
         <image:image>
             <image:loc>{{ str_starts_with($item->cover_image_url, 'http') ? $item->cover_image_url : url($item->cover_image_url) }}</image:loc>
-            <image:title>{{ htmlspecialchars($item->title ?? 'Rafvex News') }}</image:title>
+            <image:title>{{ $item->title ?? 'Rafvex News' }}</image:title>
         </image:image>
         @endif
     </url>
@@ -96,7 +96,7 @@
         @if(!empty($podcast->cover_image_url))
         <image:image>
             <image:loc>{{ str_starts_with($podcast->cover_image_url, 'http') ? $podcast->cover_image_url : url($podcast->cover_image_url) }}</image:loc>
-            <image:title>{{ htmlspecialchars($podcast->title ?? 'Rafvex Podcast') }}</image:title>
+            <image:title>{{ $podcast->title ?? 'Rafvex Podcast' }}</image:title>
         </image:image>
         @endif
     </url>

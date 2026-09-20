@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('articles') && !Schema::hasColumn('articles', 'video_url')) {
+        if (Schema::hasTable('articles') && ! Schema::hasColumn('articles', 'video_url')) {
             Schema::table('articles', function (Blueprint $table) {
                 $table->string('video_url')->nullable()->after('cover_image_alt');
             });

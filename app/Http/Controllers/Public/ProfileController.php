@@ -9,7 +9,6 @@ use App\Models\UserReadingHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 
@@ -23,9 +22,9 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         $stats = [
-            'read_count'      => UserReadingHistory::where('user_id', $user->id)->count(),
+            'read_count' => UserReadingHistory::where('user_id', $user->id)->count(),
             'favorites_count' => UserFavorite::where('user_id', $user->id)->count(),
-            'comments_count'  => $user->comments()->count(),
+            'comments_count' => $user->comments()->count(),
         ];
 
         // Recent Saved Articles (limit 12)
@@ -40,7 +39,7 @@ class ProfileController extends Controller
         $readingHistory = $user->readingHistory()
             ->with(['article' => function ($q) {
                 $q->select('id', 'title', 'slug', 'excerpt', 'cover_image_url', 'reading_time', 'published_at', 'category_id', 'user_id')
-                  ->with('category:id,name,slug');
+                    ->with('category:id,name,slug');
             }])
             ->orderBy('read_at', 'desc')
             ->take(15)
@@ -53,21 +52,21 @@ class ProfileController extends Controller
 
         return Inertia::render('Public/Profile/Index', [
             'profile' => [
-                'id'               => $user->id,
-                'name'             => $user->name,
-                'email'            => $user->email,
-                'avatar'           => $user->avatar,
-                'google_avatar'    => $user->google_avatar,
-                'google_email'     => $user->google_email,
-                'google_linked'    => !empty($user->google_id),
-                'member_since'     => $user->created_at?->format('F Y'),
-                'created_at'       => $user->created_at?->toIso8601String(),
-                'has_password'     => !empty($user->password),
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'avatar' => $user->avatar,
+                'google_avatar' => $user->google_avatar,
+                'google_email' => $user->google_email,
+                'google_linked' => ! empty($user->google_id),
+                'member_since' => $user->created_at?->format('F Y'),
+                'created_at' => $user->created_at?->toIso8601String(),
+                'has_password' => ! empty($user->password),
             ],
-            'stats'          => $stats,
-            'savedArticles'  => $savedArticles,
+            'stats' => $stats,
+            'savedArticles' => $savedArticles,
             'readingHistory' => $readingHistory,
-            'notifications'  => $notifications,
+            'notifications' => $notifications,
         ]);
     }
 
@@ -79,8 +78,8 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         $validated = $request->validate([
-            'name'          => ['required', 'string', 'max:255'],
-            'avatar_file'   => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,gif', 'max:4096'],
+            'name' => ['required', 'string', 'max:255'],
+            'avatar_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,gif', 'max:4096'],
             'remove_avatar' => ['nullable', 'boolean'],
         ]);
 
@@ -90,13 +89,13 @@ class ProfileController extends Controller
             $user->avatar = null;
         } elseif ($request->hasFile('avatar_file')) {
             $file = $request->file('avatar_file');
-            $filename = 'user_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $filename = 'user_'.$user->id.'_'.time().'.'.$file->getClientOriginalExtension();
             $destPath = public_path('uploads/avatars');
-            if (!file_exists($destPath)) {
+            if (! file_exists($destPath)) {
                 mkdir($destPath, 0755, true);
             }
             $file->move($destPath, $filename);
-            $user->avatar = '/uploads/avatars/' . $filename;
+            $user->avatar = '/uploads/avatars/'.$filename;
         }
 
         $user->save();
@@ -116,7 +115,7 @@ class ProfileController extends Controller
         ];
 
         // If user already has a password and wasn't solely Google SSO, require current password
-        if (!empty($user->password)) {
+        if (! empty($user->password)) {
             $rules['current_password'] = ['required', 'current_password'];
         }
 

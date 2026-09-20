@@ -21,8 +21,8 @@ class NewsController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('summary', 'like', "%{$search}%")
-                  ->orWhere('source', 'like', "%{$search}%");
+                    ->orWhere('summary', 'like', "%{$search}%")
+                    ->orWhere('source', 'like', "%{$search}%");
             });
         }
 
@@ -38,13 +38,14 @@ class NewsController extends Controller
             'id', 'title', 'slug', 'summary', 'cover_image_url',
             'cover_image_alt', 'video_url', 'source', 'source_url',
             'is_breaking', 'views_count', 'status', 'published_at',
-            'created_at', 'updated_at'
+            'created_at', 'updated_at',
         ];
         try {
             if (Schema::hasColumn('news', 'breaking_until')) {
                 $columns[] = 'breaking_until';
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         $news = $query->select($columns)
             ->latest('published_at')
@@ -96,7 +97,7 @@ class NewsController extends Controller
             'published_at' => 'nullable|date',
         ]);
 
-        $slug = !empty($validated['slug'])
+        $slug = ! empty($validated['slug'])
             ? Str::slug($validated['slug'])
             : Str::slug($validated['title']);
 
@@ -131,10 +132,11 @@ class NewsController extends Controller
         }
 
         try {
-            if (!Schema::hasColumn('news', 'breaking_until')) {
+            if (! Schema::hasColumn('news', 'breaking_until')) {
                 unset($validated['breaking_until']);
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         News::create($validated);
         cache()->forget('active_breaking_news');
@@ -167,7 +169,7 @@ class NewsController extends Controller
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:news,slug,' . $news->id,
+            'slug' => 'required|string|max:255|unique:news,slug,'.$news->id,
             'summary' => 'nullable|string|max:1000',
             'content' => 'required|string',
             'content_raw' => 'nullable|string',
@@ -196,10 +198,11 @@ class NewsController extends Controller
         }
 
         try {
-            if (!Schema::hasColumn('news', 'breaking_until')) {
+            if (! Schema::hasColumn('news', 'breaking_until')) {
                 unset($validated['breaking_until']);
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         $news->update($validated);
         cache()->forget('active_breaking_news');
@@ -210,22 +213,25 @@ class NewsController extends Controller
     public function destroy(News $news)
     {
         $news->delete();
+
         return back()->with('success', 'News dispatch archived.');
     }
 
     public function toggleBreaking(News $news)
     {
-        $newState = !$news->is_breaking;
+        $newState = ! $news->is_breaking;
         $updateData = ['is_breaking' => $newState];
         try {
             if (Schema::hasColumn('news', 'breaking_until')) {
                 // If toggled off or toggled on via quick button, clear expiry so it's clean/forever
                 $updateData['breaking_until'] = null;
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         $news->update($updateData);
         cache()->forget('active_breaking_news');
+
         return back()->with('success', 'Breaking status updated.');
     }
 
@@ -235,12 +241,12 @@ class NewsController extends Controller
      */
     protected function processBase64Images(?string $content, ?string $contentRaw): array
     {
-        if (empty($content) || !str_contains($content, 'data:image/')) {
+        if (empty($content) || ! str_contains($content, 'data:image/')) {
             return [$content, $contentRaw];
         }
 
         try {
-            $dateFolder = 'editor/' . date('Y/m');
+            $dateFolder = 'editor/'.date('Y/m');
             Storage::disk('public')->makeDirectory($dateFolder);
             $manager = new ImageManager(new Driver);
 
@@ -250,13 +256,13 @@ class NewsController extends Controller
             foreach ($matches as $match) {
                 $fullDataUri = $match[0];
                 $binary = base64_decode(preg_replace('/\s+/', '', $match[2]));
-                if (!$binary) {
+                if (! $binary) {
                     continue;
                 }
 
-                $filename = 'news_' . time() . '_' . bin2hex(random_bytes(4)) . '.webp';
-                $relPath = $dateFolder . '/' . $filename;
-                $fullPath = storage_path('app/public/' . $relPath);
+                $filename = 'news_'.time().'_'.bin2hex(random_bytes(4)).'.webp';
+                $relPath = $dateFolder.'/'.$filename;
+                $fullPath = storage_path('app/public/'.$relPath);
 
                 try {
                     $image = $manager->decodeBinary($binary);
@@ -271,15 +277,15 @@ class NewsController extends Controller
                     $content = str_replace($fullDataUri, $publicUrl, $content);
 
                     // Replace in content_raw JSON if present
-                    if (!empty($contentRaw)) {
+                    if (! empty($contentRaw)) {
                         $contentRaw = str_replace($fullDataUri, $publicUrl, $contentRaw);
                     }
                 } catch (\Throwable $imgErr) {
-                    Log::warning('Individual news image conversion failed: ' . $imgErr->getMessage());
+                    Log::warning('Individual news image conversion failed: '.$imgErr->getMessage());
                 }
             }
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('Base64 image processing in NewsController failed: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('Base64 image processing in NewsController failed: '.$e->getMessage());
         }
 
         return [$content, $contentRaw];

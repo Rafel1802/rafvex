@@ -20,20 +20,22 @@ class CheckMaintenance
         $config = $this->getMaintenanceConfig();
 
         // Global maintenance
-        if (!empty($config['global_enabled'])) {
+        if (! empty($config['global_enabled'])) {
             return $this->renderMaintenance($request, $config);
         }
 
         // Per-page maintenance
-        $currentPath = '/' . ltrim($request->path(), '/');
+        $currentPath = '/'.ltrim($request->path(), '/');
         $pages = $config['pages'] ?? [];
 
         foreach ($pages as $page) {
             $pattern = $page['path'] ?? '';
-            if (!$pattern) continue;
+            if (! $pattern) {
+                continue;
+            }
 
             // Support wildcard matching (e.g. /category/*)
-            $regex = '#^' . str_replace('\*', '.*', preg_quote($pattern, '#')) . '$#';
+            $regex = '#^'.str_replace('\*', '.*', preg_quote($pattern, '#')).'$#';
             if (preg_match($regex, $currentPath)) {
                 return $this->renderMaintenance($request, $config);
             }
@@ -56,17 +58,21 @@ class CheckMaintenance
             ])->pluck('value', 'key')->toArray();
 
             $progress = isset($settings['maintenance_progress']) ? (int) $settings['maintenance_progress'] : 88;
-            if ($progress < 10) $progress = 10;
-            if ($progress > 100) $progress = 100;
+            if ($progress < 10) {
+                $progress = 10;
+            }
+            if ($progress > 100) {
+                $progress = 100;
+            }
 
             return [
                 'global_enabled' => filter_var($settings['maintenance_global_enabled'] ?? false, FILTER_VALIDATE_BOOLEAN),
-                'pages'          => json_decode($settings['maintenance_pages'] ?? '[]', true) ?? [],
-                'title'          => $settings['maintenance_title'] ?? 'We\'ll Be Right Back',
-                'message'        => $settings['maintenance_message'] ?? 'We\'re performing scheduled maintenance. Please check back soon.',
-                'end_time'       => $settings['maintenance_end_time'] ?? null,
-                'progress'       => $progress,
-                'logo'           => !empty($settings['logo']) ? $settings['logo'] : '/logo.png',
+                'pages' => json_decode($settings['maintenance_pages'] ?? '[]', true) ?? [],
+                'title' => $settings['maintenance_title'] ?? 'We\'ll Be Right Back',
+                'message' => $settings['maintenance_message'] ?? 'We\'re performing scheduled maintenance. Please check back soon.',
+                'end_time' => $settings['maintenance_end_time'] ?? null,
+                'progress' => $progress,
+                'logo' => ! empty($settings['logo']) ? $settings['logo'] : '/logo.png',
             ];
         });
     }
@@ -79,11 +85,11 @@ class CheckMaintenance
 
         return response(
             Inertia::render('Maintenance', [
-                'title'    => $config['title'],
-                'message'  => $config['message'],
+                'title' => $config['title'],
+                'message' => $config['message'],
                 'end_time' => $config['end_time'],
                 'progress' => $config['progress'] ?? 88,
-                'logo'     => $config['logo'] ?? '/logo.png',
+                'logo' => $config['logo'] ?? '/logo.png',
             ])->toResponse($request)->getContent(),
             503
         );

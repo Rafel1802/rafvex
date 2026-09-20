@@ -19,7 +19,7 @@ class PinnedStoriesController extends Controller
         $pinned = [
             'lead_id' => null,
             'featured_ids' => [],
-            'trending_ids' => []
+            'trending_ids' => [],
         ];
 
         try {
@@ -31,38 +31,40 @@ class PinnedStoriesController extends Controller
                 }
             }
         } catch (\Throwable $e) {
-            \Log::error('PinnedStoriesController index error: ' . $e->getMessage());
+            \Log::error('PinnedStoriesController index error: '.$e->getMessage());
         }
 
         // If pinned is empty, sync from HomeSections if available
         if (empty($pinned['lead_id']) && empty($pinned['featured_ids']) && empty($pinned['trending_ids'])) {
             try {
                 $hs = HomeSectionsController::getActiveSections();
-                if (!empty($hs['hero']['lead_id'])) {
+                if (! empty($hs['hero']['lead_id'])) {
                     $pinned['lead_id'] = (int) $hs['hero']['lead_id'];
                 }
-                if (!empty($hs['hero']['featured_ids']) && is_array($hs['hero']['featured_ids'])) {
+                if (! empty($hs['hero']['featured_ids']) && is_array($hs['hero']['featured_ids'])) {
                     $pinned['featured_ids'] = array_values(array_map('intval', array_filter($hs['hero']['featured_ids'])));
                 }
-                if (!empty($hs['trending']['article_ids']) && is_array($hs['trending']['article_ids'])) {
+                if (! empty($hs['trending']['article_ids']) && is_array($hs['trending']['article_ids'])) {
                     $pinned['trending_ids'] = array_values(array_map('intval', array_filter($hs['trending']['article_ids'])));
                 }
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+            }
         }
 
-        $leadId = !empty($pinned['lead_id']) ? (int) $pinned['lead_id'] : null;
+        $leadId = ! empty($pinned['lead_id']) ? (int) $pinned['lead_id'] : null;
         $leadArticle = null;
         if ($leadId) {
             try {
                 $leadArticle = Article::with('category')->find($leadId);
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+            }
         }
 
-        $featuredIds = is_array($pinned['featured_ids'] ?? null) 
-            ? array_values(array_map('intval', array_filter($pinned['featured_ids']))) 
+        $featuredIds = is_array($pinned['featured_ids'] ?? null)
+            ? array_values(array_map('intval', array_filter($pinned['featured_ids'])))
             : [];
         $featuredArticles = [];
-        if (!empty($featuredIds)) {
+        if (! empty($featuredIds)) {
             try {
                 $fetched = Article::with('category')->whereIn('id', $featuredIds)->get()->keyBy('id');
                 foreach ($featuredIds as $fid) {
@@ -70,14 +72,15 @@ class PinnedStoriesController extends Controller
                         $featuredArticles[] = $fetched[$fid];
                     }
                 }
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+            }
         }
 
-        $trendingIds = is_array($pinned['trending_ids'] ?? null) 
-            ? array_values(array_map('intval', array_filter($pinned['trending_ids']))) 
+        $trendingIds = is_array($pinned['trending_ids'] ?? null)
+            ? array_values(array_map('intval', array_filter($pinned['trending_ids'])))
             : [];
         $trendingArticles = [];
-        if (!empty($trendingIds)) {
+        if (! empty($trendingIds)) {
             try {
                 $fetchedTrending = Article::with('category')->whereIn('id', $trendingIds)->get()->keyBy('id');
                 foreach ($trendingIds as $tid) {
@@ -85,7 +88,8 @@ class PinnedStoriesController extends Controller
                         $trendingArticles[] = $fetchedTrending[$tid];
                     }
                 }
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+            }
         }
 
         // Recent published articles for quick picking
@@ -98,7 +102,8 @@ class PinnedStoriesController extends Controller
                 ->get(['id', 'title', 'slug', 'category_id', 'cover_image_url', 'published_at'])
                 ->values()
                 ->all();
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         return Inertia::render('Admin/Pinned/Index', [
             'pinned' => [
@@ -128,8 +133,8 @@ class PinnedStoriesController extends Controller
                 ->where('status', 'published')
                 ->where(function ($query) use ($q) {
                     $query->where('title', 'like', "%{$q}%")
-                          ->orWhere('slug', 'like', "%{$q}%")
-                          ->orWhereHas('category', fn($cq) => $cq->where('name', 'like', "%{$q}%"));
+                        ->orWhere('slug', 'like', "%{$q}%")
+                        ->orWhereHas('category', fn ($cq) => $cq->where('name', 'like', "%{$q}%"));
                 })
                 ->orderBy('published_at', 'desc')
                 ->take(20)
@@ -178,7 +183,7 @@ class PinnedStoriesController extends Controller
             $sections = HomeSectionsController::getActiveSections();
             $sections['hero']['lead_id'] = $leadId;
             $sections['hero']['featured_ids'] = $featuredIds;
-            if (!empty($trendingIds)) {
+            if (! empty($trendingIds)) {
                 $sections['trending']['article_ids'] = $trendingIds;
                 $sections['trending']['mode'] = 'manual';
             }
@@ -190,7 +195,8 @@ class PinnedStoriesController extends Controller
                     'label' => 'Homepage Sections Configuration',
                 ]
             );
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         Cache::flush();
 

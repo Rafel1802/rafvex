@@ -15,21 +15,22 @@ class EnsureStaff
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login');
         }
 
         $user = Auth::user();
 
         // Ensure user #1 has Super Admin role if missing
-        if ((int) $user->id === 1 && !$user->hasRole('Super Admin')) {
+        if ((int) $user->id === 1 && ! $user->hasRole('Super Admin')) {
             try {
                 $user->assignRole('Super Admin');
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+            }
         }
 
         // Strictly enforce staff privileges for CMS access
-        if (!$user->isStaff()) {
+        if (! $user->isStaff()) {
             return redirect()->route('login')->withErrors([
                 'email' => 'Access denied. The CMS portal is strictly reserved for Administrators and Staff. Readers must sign in on the main website.',
             ]);

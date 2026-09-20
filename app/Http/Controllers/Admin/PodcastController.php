@@ -21,8 +21,8 @@ class PodcastController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('summary', 'like', "%{$search}%")
-                  ->orWhere('host_name', 'like', "%{$search}%");
+                    ->orWhere('summary', 'like', "%{$search}%")
+                    ->orWhere('host_name', 'like', "%{$search}%");
             });
         }
 
@@ -42,9 +42,9 @@ class PodcastController extends Controller
         $categories = PodcastCategory::orderBy('name')->get(['id', 'name']);
 
         return Inertia::render('Admin/Podcasts/Index', [
-            'podcasts'   => $podcasts,
+            'podcasts' => $podcasts,
             'categories' => $categories,
-            'filters'    => $request->only(['search', 'category_id', 'status', 'live_status']),
+            'filters' => $request->only(['search', 'category_id', 'status', 'live_status']),
         ]);
     }
 
@@ -53,43 +53,43 @@ class PodcastController extends Controller
         $categories = PodcastCategory::orderBy('sort_order')->get(['id', 'name', 'slug']);
         $staffRoles = ['Super Admin', 'Administrator', 'Editor', 'Writer', 'Author'];
         $authors = User::where(function ($q) use ($staffRoles) {
-                $q->whereHas('roles', fn($r) => $r->whereIn('name', $staffRoles))
-                  ->orWhereHas('profile');
-            })
+            $q->whereHas('roles', fn ($r) => $r->whereIn('name', $staffRoles))
+                ->orWhereHas('profile');
+        })
             ->with('profile')
             ->get()
-            ->map(fn($u) => [
-                'id'   => $u->id,
+            ->map(fn ($u) => [
+                'id' => $u->id,
                 'name' => $u->profile?->display_name ?: $u->name,
             ]);
 
         return Inertia::render('Admin/Podcasts/Create', [
             'categories' => $categories,
-            'authors'    => $authors,
+            'authors' => $authors,
         ]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'              => 'required|string|max:255',
-            'slug'               => 'nullable|string|max:255|unique:podcasts,slug',
-            'category_id'        => 'nullable|exists:podcast_categories,id',
-            'author_id'          => 'nullable|exists:users,id',
-            'summary'            => 'nullable|string|max:1000',
-            'description'        => 'nullable|string',
-            'audio_file'         => 'nullable|file|mimes:mp3,wav,m4a,aac,ogg,webm|max:102400', // max 100MB
-            'audio_url'          => 'nullable|string|max:1000',
-            'duration_seconds'   => 'nullable|integer|min:0',
-            'cover_image_url'    => 'nullable|string|max:1000',
-            'host_name'          => 'nullable|string|max:255',
-            'episode_number'     => 'nullable|integer|min:1',
-            'season_number'      => 'nullable|integer|min:1',
-            'status'             => 'required|in:draft,published,scheduled',
-            'published_at'       => 'nullable|date',
-            'is_featured'        => 'nullable|boolean',
-            'live_status'        => 'required|in:none,upcoming,live,ended',
-            'live_scheduled_at'  => 'nullable|date',
+            'title' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:podcasts,slug',
+            'category_id' => 'nullable|exists:podcast_categories,id',
+            'author_id' => 'nullable|exists:users,id',
+            'summary' => 'nullable|string|max:1000',
+            'description' => 'nullable|string',
+            'audio_file' => 'nullable|file|mimes:mp3,wav,m4a,aac,ogg,webm|max:102400', // max 100MB
+            'audio_url' => 'nullable|string|max:1000',
+            'duration_seconds' => 'nullable|integer|min:0',
+            'cover_image_url' => 'nullable|string|max:1000',
+            'host_name' => 'nullable|string|max:255',
+            'episode_number' => 'nullable|integer|min:1',
+            'season_number' => 'nullable|integer|min:1',
+            'status' => 'required|in:draft,published,scheduled',
+            'published_at' => 'nullable|date',
+            'is_featured' => 'nullable|boolean',
+            'live_status' => 'required|in:none,upcoming,live,ended',
+            'live_scheduled_at' => 'nullable|date',
         ]);
 
         if (empty($validated['author_id'])) {
@@ -113,8 +113,8 @@ class PodcastController extends Controller
         // Audio file upload with storage efficiency
         if ($request->hasFile('audio_file')) {
             $file = $request->file('audio_file');
-            $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $path = 'podcasts/' . date('Y/m');
+            $filename = time().'_'.Str::random(8).'.'.$file->getClientOriginalExtension();
+            $path = 'podcasts/'.date('Y/m');
             $storedPath = $file->storeAs($path, $filename, 'public');
 
             $validated['audio_path'] = $storedPath;
@@ -144,44 +144,44 @@ class PodcastController extends Controller
         $categories = PodcastCategory::orderBy('sort_order')->get(['id', 'name', 'slug']);
         $staffRoles = ['Super Admin', 'Administrator', 'Editor', 'Writer', 'Author'];
         $authors = User::where(function ($q) use ($staffRoles) {
-                $q->whereHas('roles', fn($r) => $r->whereIn('name', $staffRoles))
-                  ->orWhereHas('profile');
-            })
+            $q->whereHas('roles', fn ($r) => $r->whereIn('name', $staffRoles))
+                ->orWhereHas('profile');
+        })
             ->with('profile')
             ->get()
-            ->map(fn($u) => [
-                'id'   => $u->id,
+            ->map(fn ($u) => [
+                'id' => $u->id,
                 'name' => $u->profile?->display_name ?: $u->name,
             ]);
 
         return Inertia::render('Admin/Podcasts/Edit', [
-            'podcast'    => $podcast,
+            'podcast' => $podcast,
             'categories' => $categories,
-            'authors'    => $authors,
+            'authors' => $authors,
         ]);
     }
 
     public function update(Request $request, Podcast $podcast)
     {
         $validated = $request->validate([
-            'title'              => 'required|string|max:255',
-            'slug'               => 'required|string|max:255|unique:podcasts,slug,' . $podcast->id,
-            'category_id'        => 'nullable|exists:podcast_categories,id',
-            'author_id'          => 'nullable|exists:users,id',
-            'summary'            => 'nullable|string|max:1000',
-            'description'        => 'nullable|string',
-            'audio_file'         => 'nullable|file|mimes:mp3,wav,m4a,aac,ogg,webm|max:102400',
-            'audio_url'          => 'nullable|string|max:1000',
-            'duration_seconds'   => 'nullable|integer|min:0',
-            'cover_image_url'    => 'nullable|string|max:1000',
-            'host_name'          => 'nullable|string|max:255',
-            'episode_number'     => 'nullable|integer|min:1',
-            'season_number'      => 'nullable|integer|min:1',
-            'status'             => 'required|in:draft,published,scheduled',
-            'published_at'       => 'nullable|date',
-            'is_featured'        => 'nullable|boolean',
-            'live_status'        => 'required|in:none,upcoming,live,ended',
-            'live_scheduled_at'  => 'nullable|date',
+            'title' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:podcasts,slug,'.$podcast->id,
+            'category_id' => 'nullable|exists:podcast_categories,id',
+            'author_id' => 'nullable|exists:users,id',
+            'summary' => 'nullable|string|max:1000',
+            'description' => 'nullable|string',
+            'audio_file' => 'nullable|file|mimes:mp3,wav,m4a,aac,ogg,webm|max:102400',
+            'audio_url' => 'nullable|string|max:1000',
+            'duration_seconds' => 'nullable|integer|min:0',
+            'cover_image_url' => 'nullable|string|max:1000',
+            'host_name' => 'nullable|string|max:255',
+            'episode_number' => 'nullable|integer|min:1',
+            'season_number' => 'nullable|integer|min:1',
+            'status' => 'required|in:draft,published,scheduled',
+            'published_at' => 'nullable|date',
+            'is_featured' => 'nullable|boolean',
+            'live_status' => 'required|in:none,upcoming,live,ended',
+            'live_scheduled_at' => 'nullable|date',
         ]);
 
         $validated['slug'] = Str::slug($validated['slug']);
@@ -193,8 +193,8 @@ class PodcastController extends Controller
             }
 
             $file = $request->file('audio_file');
-            $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $path = 'podcasts/' . date('Y/m');
+            $filename = time().'_'.Str::random(8).'.'.$file->getClientOriginalExtension();
+            $path = 'podcasts/'.date('Y/m');
             $storedPath = $file->storeAs($path, $filename, 'public');
 
             $validated['audio_path'] = $storedPath;
@@ -210,7 +210,7 @@ class PodcastController extends Controller
             $validated['live_ended_at'] = now();
         }
 
-        if ($validated['status'] === 'published' && !$podcast->published_at) {
+        if ($validated['status'] === 'published' && ! $podcast->published_at) {
             $validated['published_at'] = now();
         }
 
@@ -218,7 +218,7 @@ class PodcastController extends Controller
 
         $podcast->update($validated);
 
-        return redirect('/ourcms/podcasts/' . $podcast->id . '/edit')->with('message', 'Podcast episode updated successfully.');
+        return redirect('/ourcms/podcasts/'.$podcast->id.'/edit')->with('message', 'Podcast episode updated successfully.');
     }
 
     public function toggleLive(Request $request, Podcast $podcast)
@@ -227,15 +227,15 @@ class PodcastController extends Controller
 
         if ($action === 'start') {
             $podcast->update([
-                'live_status'     => 'live',
+                'live_status' => 'live',
                 'live_started_at' => now(),
-                'live_ended_at'   => null,
-                'status'          => 'published',
+                'live_ended_at' => null,
+                'status' => 'published',
             ]);
             $msg = 'Podcast is now BROADCASTING LIVE on the website!';
         } else {
             $podcast->update([
-                'live_status'   => 'ended',
+                'live_status' => 'ended',
                 'live_ended_at' => now(),
             ]);
             $msg = 'Live broadcast concluded. Full replay is now active on website.';

@@ -16,7 +16,7 @@ class UserInteractionController extends Controller
      */
     public function toggleFavorite(Request $request, Article $article)
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return response()->json([
                 'success' => false,
                 'require_auth' => true,
@@ -36,7 +36,7 @@ class UserInteractionController extends Controller
             $message = 'Article removed from your saved list.';
         } else {
             UserFavorite::create([
-                'user_id'    => $userId,
+                'user_id' => $userId,
                 'article_id' => $article->id,
             ]);
             $favorited = true;
@@ -46,10 +46,10 @@ class UserInteractionController extends Controller
         $totalFavorites = UserFavorite::where('article_id', $article->id)->count();
 
         return response()->json([
-            'success'         => true,
-            'favorited'       => $favorited,
+            'success' => true,
+            'favorited' => $favorited,
             'total_favorites' => $totalFavorites,
-            'message'         => $message,
+            'message' => $message,
         ]);
     }
 
@@ -61,7 +61,7 @@ class UserInteractionController extends Controller
         if (Auth::check()) {
             $userId = Auth::id();
             $history = UserReadingHistory::firstOrNew([
-                'user_id'    => $userId,
+                'user_id' => $userId,
                 'article_id' => $article->id,
             ]);
 
@@ -81,9 +81,9 @@ class UserInteractionController extends Controller
      */
     public function getUserInteractions(Request $request)
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return response()->json([
-                'read_ids'     => [],
+                'read_ids' => [],
                 'favorite_ids' => [],
             ]);
         }
@@ -99,7 +99,7 @@ class UserInteractionController extends Controller
             ->toArray();
 
         return response()->json([
-            'read_ids'     => array_values(array_unique($readIds)),
+            'read_ids' => array_values(array_unique($readIds)),
             'favorite_ids' => array_values(array_unique($favoriteIds)),
         ]);
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -195,7 +196,7 @@ class MediaController extends Controller
     {
         try {
             $manager = new ImageManager(new Driver);
-            $dateFolder = 'editor/' . date('Y/m');
+            $dateFolder = 'editor/'.date('Y/m');
             Storage::disk('public')->makeDirectory($dateFolder);
 
             // Case 1: Base64 data URI provided
@@ -204,13 +205,13 @@ class MediaController extends Controller
                 if (preg_match('/^data:image\/([a-zA-Z0-9.+-]+);base64,(.+)$/s', $base64Data, $matches)) {
                     $cleanB64 = preg_replace('/\s+/', '', $matches[2]);
                     $binary = base64_decode($cleanB64);
-                    if (!$binary) {
+                    if (! $binary) {
                         return response()->json(['success' => false, 'message' => 'Invalid base64 encoding'], 422);
                     }
 
-                    $filename = 'paste_' . time() . '_' . bin2hex(random_bytes(4)) . '.webp';
-                    $relPath = $dateFolder . '/' . $filename;
-                    $fullPath = storage_path('app/public/' . $relPath);
+                    $filename = 'paste_'.time().'_'.bin2hex(random_bytes(4)).'.webp';
+                    $relPath = $dateFolder.'/'.$filename;
+                    $fullPath = storage_path('app/public/'.$relPath);
 
                     $image = $manager->decodeBinary($binary);
                     if ($image->width() > 1920) {
@@ -220,8 +221,8 @@ class MediaController extends Controller
 
                     return response()->json([
                         'success' => true,
-                        'url'     => Storage::url($relPath),
-                        'name'    => $filename,
+                        'url' => Storage::url($relPath),
+                        'name' => $filename,
                     ]);
                 }
             }
@@ -240,7 +241,7 @@ class MediaController extends Controller
 
             $uploaded = [];
             foreach ($files as $file) {
-                if (!$file->isValid()) {
+                if (! $file->isValid()) {
                     continue;
                 }
 
@@ -249,13 +250,13 @@ class MediaController extends Controller
                 $cleanName = Str::slug($origName) ?: 'image';
 
                 if ($mime === 'image/svg+xml') {
-                    $filename = $cleanName . '_' . time() . '_' . bin2hex(random_bytes(3)) . '.svg';
-                    $relPath = $dateFolder . '/' . $filename;
+                    $filename = $cleanName.'_'.time().'_'.bin2hex(random_bytes(3)).'.svg';
+                    $relPath = $dateFolder.'/'.$filename;
                     Storage::disk('public')->putFileAs($dateFolder, $file, $filename);
                 } else {
-                    $filename = $cleanName . '_' . time() . '_' . bin2hex(random_bytes(3)) . '.webp';
-                    $relPath = $dateFolder . '/' . $filename;
-                    $fullPath = storage_path('app/public/' . $relPath);
+                    $filename = $cleanName.'_'.time().'_'.bin2hex(random_bytes(3)).'.webp';
+                    $relPath = $dateFolder.'/'.$filename;
+                    $fullPath = storage_path('app/public/'.$relPath);
 
                     $image = $manager->decodePath($file->getRealPath());
                     if ($image->width() > 1920) {
@@ -265,7 +266,7 @@ class MediaController extends Controller
                 }
 
                 $uploaded[] = [
-                    'url'  => Storage::url($relPath),
+                    'url' => Storage::url($relPath),
                     'name' => $filename,
                 ];
             }
@@ -276,12 +277,13 @@ class MediaController extends Controller
 
             return response()->json([
                 'success' => true,
-                'url'     => $uploaded[0]['url'],
-                'files'   => $uploaded,
+                'url' => $uploaded[0]['url'],
+                'files' => $uploaded,
             ]);
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Editor image upload failed: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Image processing failed: ' . $e->getMessage()], 500);
+            Log::error('Editor image upload failed: '.$e->getMessage());
+
+            return response()->json(['success' => false, 'message' => 'Image processing failed: '.$e->getMessage()], 500);
         }
     }
 }

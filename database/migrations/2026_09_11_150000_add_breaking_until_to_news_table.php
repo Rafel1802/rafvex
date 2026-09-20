@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('news') && !Schema::hasColumn('news', 'breaking_until')) {
+        if (Schema::hasTable('news') && ! Schema::hasColumn('news', 'breaking_until')) {
             Schema::table('news', function (Blueprint $table) {
                 $table->dateTime('breaking_until')->nullable()->after('is_breaking');
             });

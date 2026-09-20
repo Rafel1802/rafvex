@@ -2,8 +2,14 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Article;
+use App\Models\Category;
+use App\Models\News;
+use App\Models\PopupAd;
 use App\Models\Setting;
+use App\Models\UserNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -24,10 +30,10 @@ class HandleInertiaRequests extends Middleware
         // depends on both the X-Inertia header and the Accept header.
         $currentVary = $response->headers->get('Vary');
         $varyHeaders = array_filter(array_map('trim', explode(',', $currentVary ?? '')));
-        if (!in_array('X-Inertia', $varyHeaders)) {
+        if (! in_array('X-Inertia', $varyHeaders)) {
             $varyHeaders[] = 'X-Inertia';
         }
-        if (!in_array('Accept', $varyHeaders)) {
+        if (! in_array('Accept', $varyHeaders)) {
             $varyHeaders[] = 'Accept';
         }
         $response->headers->set('Vary', implode(', ', $varyHeaders));
@@ -57,7 +63,7 @@ class HandleInertiaRequests extends Middleware
                     'youtube_url', 'instagram_url', 'github_url',
                     'contact_email', 'contact_phone', 'contact_address',
                     'founder_name', 'founder_title', 'founder_bio', 'founder_avatar',
-                    'adsense_client_id', 'adsense_slot_home', 'adsense_slot_article'
+                    'adsense_client_id', 'adsense_slot_home', 'adsense_slot_article',
                 ])
                     ->get()
                     ->pluck('value', 'key')
@@ -70,22 +76,22 @@ class HandleInertiaRequests extends Middleware
         // Cache active mega menu categories
         $megaMenuCategories = cache()->remember('mega_menu_categories', 180, function () {
             try {
-                return \App\Models\Category::whereNull('parent_id')
+                return Category::whereNull('parent_id')
                     ->with([
-                        'children' => fn($q) => $q->select(['id', 'parent_id', 'name', 'slug', 'sort_order'])
-                            ->withCount(['articles' => fn($aq) => $aq->where('status', 'published')])
-                            ->orderBy('sort_order', 'asc')
+                        'children' => fn ($q) => $q->select(['id', 'parent_id', 'name', 'slug', 'sort_order'])
+                            ->withCount(['articles' => fn ($aq) => $aq->where('status', 'published')])
+                            ->orderBy('sort_order', 'asc'),
                     ])
-                    ->withCount(['articles' => fn($q) => $q->where('status', 'published')])
+                    ->withCount(['articles' => fn ($q) => $q->where('status', 'published')])
                     ->orderBy('sort_order', 'asc')
                     ->get(['id', 'name', 'slug', 'description', 'sort_order'])
-                    ->map(fn($cat) => [
+                    ->map(fn ($cat) => [
                         'id' => $cat->id,
                         'name' => $cat->name,
                         'slug' => $cat->slug,
                         'description' => $cat->description,
                         'total_articles' => (int) ($cat->articles_count + $cat->children->sum('articles_count')),
-                        'subcategories' => $cat->children->map(fn($sub) => [
+                        'subcategories' => $cat->children->map(fn ($sub) => [
                             'id' => $sub->id,
                             'name' => $sub->name,
                             'slug' => $sub->slug,
@@ -178,15 +184,16 @@ class HandleInertiaRequests extends Middleware
         });
 
         // Ensure megaMenuCategories is always a clean zero-indexed PHP array for JSON encoding
-        $safeMegaMenuCategories = is_array($megaMenuCategories) 
-            ? array_values($megaMenuCategories) 
+        $safeMegaMenuCategories = is_array($megaMenuCategories)
+            ? array_values($megaMenuCategories)
             : (is_iterable($megaMenuCategories) ? array_values(iterator_to_array($megaMenuCategories)) : []);
 
         // Fetch active sponsored popup ad if available
         $activePopupAd = null;
         try {
-            $activePopupAd = \App\Models\PopupAd::active()->latest()->first();
-        } catch (\Throwable $e) {}
+            $activePopupAd = PopupAd::active()->latest()->first();
+        } catch (\Throwable $e) {
+        }
 
         // Fetch active breaking news & blogs (for sliding header ticker)
         $breakingItems = [];
@@ -196,69 +203,73 @@ class HandleInertiaRequests extends Middleware
 
                 // 1. Breaking News
                 try {
-                    $newsItems = \App\Models\News::query()
+                    $newsItems = News::query()
                         ->where('status', 'published')
                         ->where('is_breaking', true)
                         ->where(function ($q) {
                             try {
-                                if (\Illuminate\Support\Facades\Schema::hasColumn('news', 'breaking_until')) {
+                                if (Schema::hasColumn('news', 'breaking_until')) {
                                     $q->whereNull('breaking_until')
-                                      ->orWhere('breaking_until', '>=', now());
+                                        ->orWhere('breaking_until', '>=', now());
                                 }
-                            } catch (\Throwable $e) {}
+                            } catch (\Throwable $e) {
+                            }
                         })
                         ->orderByRaw('COALESCE(published_at, created_at) DESC')
                         ->take(5)
                         ->get(['id', 'title', 'slug', 'summary', 'is_breaking', 'breaking_until', 'published_at', 'created_at']);
 
                     foreach ($newsItems as $n) {
-                        if (!empty($n->title) && !empty($n->slug)) {
+                        if (! empty($n->title) && ! empty($n->slug)) {
                             $items->push([
-                                'id' => 'news_' . $n->id,
+                                'id' => 'news_'.$n->id,
                                 'title' => (string) $n->title,
                                 'slug' => (string) $n->slug,
                                 'type' => 'news',
-                                'url' => '/news/' . $n->slug,
+                                'url' => '/news/'.$n->slug,
                                 'badge' => 'BREAKING',
                                 'published_at' => $n->published_at?->toISOString() ?? $n->created_at?->toISOString(),
                             ]);
                         }
                     }
-                } catch (\Throwable $e) {}
+                } catch (\Throwable $e) {
+                }
 
                 // 2. Breaking Articles / Blogs
                 try {
-                    if (\Illuminate\Support\Facades\Schema::hasColumn('articles', 'is_breaking')) {
-                        $articleItems = \App\Models\Article::query()
+                    if (Schema::hasColumn('articles', 'is_breaking')) {
+                        $articleItems = Article::query()
                             ->where('status', 'published')
                             ->where('is_breaking', true)
                             ->where(function ($q) {
                                 try {
-                                    if (\Illuminate\Support\Facades\Schema::hasColumn('articles', 'breaking_until')) {
+                                    if (Schema::hasColumn('articles', 'breaking_until')) {
                                         $q->whereNull('breaking_until')
-                                          ->orWhere('breaking_until', '>=', now());
+                                            ->orWhere('breaking_until', '>=', now());
                                     }
-                                } catch (\Throwable $e) {}
+                                } catch (\Throwable $e) {
+                                }
                             })
                             ->orderByRaw('COALESCE(published_at, created_at) DESC')
                             ->take(5)
                             ->get(['id', 'title', 'slug', 'excerpt', 'is_breaking', 'breaking_until', 'published_at', 'created_at']);
 
                         foreach ($articleItems as $a) {
-                            if (!empty($a->title) && !empty($a->slug)) {
+                            if (! empty($a->title) && ! empty($a->slug)) {
                                 $items->push([
-                                    'id' => 'article_' . $a->id,
+                                    'id' => 'article_'.$a->id,
                                     'title' => (string) $a->title,
                                     'slug' => (string) $a->slug,
                                     'type' => 'article',
-                                    'url' => '/article/' . $a->slug,
+                                    'url' => '/article/'.$a->slug,
                                     'badge' => 'BREAKING',
                                     'published_at' => $a->published_at?->toISOString() ?? $a->created_at?->toISOString(),
                                 ]);
                             }
                         }
                     }
-                } catch (\Throwable $e) {}
+                } catch (\Throwable $e) {
+                }
 
                 // Plain PHP array guarantees ZERO Eloquent incomplete class serialization issue
                 return $items->values()->toArray();
@@ -267,7 +278,7 @@ class HandleInertiaRequests extends Middleware
             $breakingItems = [];
         }
 
-        $activeBreakingNews = !empty($breakingItems) ? $breakingItems[0] : null;
+        $activeBreakingNews = ! empty($breakingItems) ? $breakingItems[0] : null;
 
         return [
             ...parent::share($request),
@@ -275,50 +286,50 @@ class HandleInertiaRequests extends Middleware
             'breaking_items' => $breakingItems,
             'auth' => [
                 'user' => $request->user() ? [
-                    'id'                         => $request->user()->id,
-                    'name'                       => $request->user()->name,
-                    'email'                      => $request->user()->email,
-                    'avatar'                     => $request->user()->avatar,
-                    'roles'                      => $request->user()->getRoleNames(),
-                    'is_staff'                   => $request->user()->isStaff(),
-                    'primary_role'               => $request->user()->isStaff() ? ($request->user()->getRoleNames()->first(fn($r) => in_array($r, ['Super Admin', 'Administrator', 'Editor', 'Writer', 'Author'])) ?? 'Administrator') : 'Reader',
-                    'permissions'                => $request->user()->getAllPermissions()->pluck('name'),
-                    'unread_notifications_count' => \App\Models\UserNotification::where('user_id', $request->user()->id)->whereNull('read_at')->count(),
-                    'google_id'                  => $request->user()->google_id,
-                    'google_email'               => $request->user()->google_email,
-                    'google_avatar'              => $request->user()->google_avatar,
-                    'google_linked_at'           => $request->user()->google_linked_at?->toDateString(),
+                    'id' => $request->user()->id,
+                    'name' => $request->user()->name,
+                    'email' => $request->user()->email,
+                    'avatar' => $request->user()->avatar,
+                    'roles' => $request->user()->getRoleNames(),
+                    'is_staff' => $request->user()->isStaff(),
+                    'primary_role' => $request->user()->isStaff() ? ($request->user()->getRoleNames()->first(fn ($r) => in_array($r, ['Super Admin', 'Administrator', 'Editor', 'Writer', 'Author'])) ?? 'Administrator') : 'Reader',
+                    'permissions' => $request->user()->getAllPermissions()->pluck('name'),
+                    'unread_notifications_count' => UserNotification::where('user_id', $request->user()->id)->whereNull('read_at')->count(),
+                    'google_id' => $request->user()->google_id,
+                    'google_email' => $request->user()->google_email,
+                    'google_avatar' => $request->user()->google_avatar,
+                    'google_linked_at' => $request->user()->google_linked_at?->toDateString(),
                 ] : null,
             ],
             'flash' => [
                 'message' => fn () => $request->session()->get('message') ?? $request->session()->get('success') ?? $request->session()->get('status'),
-                'error'   => fn () => $request->session()->get('error'),
+                'error' => fn () => $request->session()->get('error'),
             ],
             'site' => [
-                'name'             => $settings['site_name']            ?? config('app.name', 'Rafvex'),
+                'name' => $settings['site_name'] ?? config('app.name', 'Rafvex'),
                 'google_client_id' => '424918974382-qbnphracdndii7vf9fhc1vf0n5e7qdgp.apps.googleusercontent.com',
-                'tagline'         => $settings['site_tagline']         ?? 'Technology, AI, Guides & Knowledge',
-                'description'     => $settings['site_description']     ?? 'Explore technology, AI, how-to guides, useful apps and websites, English reading stories, tutorials, and informative articles. Learn something new with Rafvex.',
-                'logo'            => $settings['logo']            ?? null,
-                'favicon'         => $settings['favicon']         ?? null,
-                'login_bg_image'  => $settings['login_bg_image']  ?? null,
-                'twitter_handle'  => $settings['twitter_handle']  ?? null,
-                'facebook_url'    => $settings['facebook_url']    ?? null,
-                'telegram_url'    => $settings['telegram_url']    ?? null,
-                'linkedin_url'    => $settings['linkedin_url']    ?? null,
-                'youtube_url'     => $settings['youtube_url']     ?? null,
-                'instagram_url'   => $settings['instagram_url']   ?? null,
-                'github_url'      => $settings['github_url']      ?? null,
-                'contact_email'   => $settings['contact_email']   ?? 'rafvexofficial@gmail.com',
-                'contact_phone'   => $settings['contact_phone']   ?? null,
+                'tagline' => $settings['site_tagline'] ?? 'Technology, AI, Guides & Knowledge',
+                'description' => $settings['site_description'] ?? 'Explore technology, AI, how-to guides, useful apps and websites, English reading stories, tutorials, and informative articles. Learn something new with Rafvex.',
+                'logo' => $settings['logo'] ?? null,
+                'favicon' => $settings['favicon'] ?? null,
+                'login_bg_image' => $settings['login_bg_image'] ?? null,
+                'twitter_handle' => $settings['twitter_handle'] ?? null,
+                'facebook_url' => $settings['facebook_url'] ?? null,
+                'telegram_url' => $settings['telegram_url'] ?? null,
+                'linkedin_url' => $settings['linkedin_url'] ?? null,
+                'youtube_url' => $settings['youtube_url'] ?? null,
+                'instagram_url' => $settings['instagram_url'] ?? null,
+                'github_url' => $settings['github_url'] ?? null,
+                'contact_email' => $settings['contact_email'] ?? 'rafvexofficial@gmail.com',
+                'contact_phone' => $settings['contact_phone'] ?? null,
                 'contact_address' => $settings['contact_address'] ?? null,
-                'founder_name'    => $settings['founder_name']    ?? 'Soporadara Rin',
-                'founder_title'   => $settings['founder_title']   ?? 'Founder, Writer & Lead Researcher',
-                'founder_bio'     => $settings['founder_bio']     ?? 'Author',
-                'founder_avatar'  => $settings['founder_avatar']  ?? null,
+                'founder_name' => $settings['founder_name'] ?? 'Soporadara Rin',
+                'founder_title' => $settings['founder_title'] ?? 'Founder, Writer & Lead Researcher',
+                'founder_bio' => $settings['founder_bio'] ?? 'Author',
+                'founder_avatar' => $settings['founder_avatar'] ?? null,
             ],
             'mega_menu_categories' => $safeMegaMenuCategories,
-            'active_popup_ad'      => $activePopupAd,
+            'active_popup_ad' => $activePopupAd,
         ];
     }
 }

@@ -14,10 +14,10 @@ class NotificationController extends Controller
      */
     public function index(Request $request)
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return response()->json([
                 'notifications' => [],
-                'unread_count'  => 0,
+                'unread_count' => 0,
             ]);
         }
 
@@ -34,7 +34,7 @@ class NotificationController extends Controller
 
         return response()->json([
             'notifications' => $notifications,
-            'unread_count'  => $unreadCount,
+            'unread_count' => $unreadCount,
         ]);
     }
 
@@ -43,14 +43,14 @@ class NotificationController extends Controller
      */
     public function markAsRead(Request $request, UserNotification $notification)
     {
-        if (!Auth::check() || $notification->user_id !== Auth::id()) {
+        if (! Auth::check() || $notification->user_id !== Auth::id()) {
             return response()->json(['success' => false], 403);
         }
 
         $notification->markAsRead();
 
         return response()->json([
-            'success'      => true,
+            'success' => true,
             'unread_count' => UserNotification::where('user_id', Auth::id())->whereNull('read_at')->count(),
         ]);
     }
@@ -60,7 +60,7 @@ class NotificationController extends Controller
      */
     public function markAllAsRead(Request $request)
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return response()->json(['success' => false], 401);
         }
 
@@ -69,7 +69,7 @@ class NotificationController extends Controller
             ->update(['read_at' => now()]);
 
         return response()->json([
-            'success'      => true,
+            'success' => true,
             'unread_count' => 0,
         ]);
     }

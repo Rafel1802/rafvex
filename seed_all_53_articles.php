@@ -1,25 +1,26 @@
 <?php
 
-require __DIR__ . '/vendor/autoload.php';
-$app = require_once __DIR__ . '/bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+require __DIR__.'/vendor/autoload.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
+$kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 
-use App\Models\Category;
 use App\Models\Article;
+use App\Models\Category;
 use App\Models\User;
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Str;
 
-echo "====================================================================\\n";
-echo "       RAFVEX 53 ARTICLES MASTER DATABASE SYNC / SEEDER              \\n";
-echo "====================================================================\\n";
+echo '====================================================================\\n';
+echo '       RAFVEX 53 ARTICLES MASTER DATABASE SYNC / SEEDER              \\n';
+echo '====================================================================\\n';
 
 $author = User::first();
-if (!$author) {
-    echo "Creating default author user...\\n";
+if (! $author) {
+    echo 'Creating default author user...\\n';
     $author = User::create([
-        'name' => 'Dr. Elena Vance',
-        'email' => 'editor@rafvex.com',
+        'name' => 'Mr. Soporadara Rin',
+        'email' => 'rafvexofficial@gmail.com',
         'password' => bcrypt('RafvexResearch2026!'),
         'email_verified_at' => now(),
     ]);
@@ -27,12 +28,12 @@ if (!$author) {
 $authorId = $author->id;
 
 // Load precompiled articles cache
-$cacheFile = __DIR__ . '/content/compiled_articles_cache.json';
-if (!file_exists($cacheFile)) {
-    die("Error: compiled_articles_cache.json not found! Run compile_catalog_and_seeders.py first.\\n");
+$cacheFile = __DIR__.'/content/compiled_articles_cache.json';
+if (! file_exists($cacheFile)) {
+    exit('Error: compiled_articles_cache.json not found! Run compile_catalog_and_seeders.py first.\\n');
 }
 $articles = json_decode(file_get_contents($cacheFile), true);
-echo "Loaded " . count($articles) . " precompiled articles from cache.\\n";
+echo 'Loaded '.count($articles).' precompiled articles from cache.\\n';
 
 $categoryCache = [];
 
@@ -44,7 +45,7 @@ foreach ($articles as $art) {
 
     // 1. Ensure Parent Category
     $parentSlug = Str::slug($catName);
-    if (!isset($categoryCache[$parentSlug])) {
+    if (! isset($categoryCache[$parentSlug])) {
         $parentCat = Category::firstOrCreate(
             ['slug' => $parentSlug],
             [
@@ -61,7 +62,7 @@ foreach ($articles as $art) {
 
     // 2. Ensure Subcategory
     $subcatSlug = Str::slug($subcatName);
-    if (!isset($categoryCache[$subcatSlug])) {
+    if (! isset($categoryCache[$subcatSlug])) {
         $subCat = Category::firstOrCreate(
             ['slug' => $subcatSlug],
             [
@@ -97,7 +98,7 @@ foreach ($articles as $art) {
             'cover_image_alt' => $coverImageAlt,
             'meta_title' => $art['seo_meta_title'],
             'meta_description' => $art['meta_description'],
-            'reading_time' => max(8, (int)(str_word_count(strip_tags($htmlContent)) / 200)),
+            'reading_time' => max(8, (int) (str_word_count(strip_tags($htmlContent)) / 200)),
             'featured' => in_array($art['id'], [1, 2, 6, 9, 14, 16, 22, 28, 35, 41, 44, 48, 51]),
             'allow_comments' => true,
             'ai_assisted' => true,
@@ -107,6 +108,6 @@ foreach ($articles as $art) {
     echo "Synced Article #{$art['id']}: {$title} [ID: {$dbArticle->id}]\\n";
 }
 
-echo "====================================================================\\n";
-echo "✓ All 53 Articles Successfully Seeded / Updated in Database!        \\n";
-echo "====================================================================\\n";
+echo '====================================================================\\n';
+echo '✓ All 53 Articles Successfully Seeded / Updated in Database!        \\n';
+echo '====================================================================\\n';

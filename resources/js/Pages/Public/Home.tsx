@@ -25,6 +25,7 @@ import { format } from 'date-fns';
 import AdBanner from '@/Components/AdBanner';
 import BookmarkButton from '@/Components/Public/BookmarkButton';
 import ReadBadge from '@/Components/Public/ReadBadge';
+import ReviewsSection from '@/Components/Public/ReviewsSection';
 
 /* ── Helpers ── */
 function ReadingTime({ minutes }: { minutes?: number }) {
@@ -1026,6 +1027,9 @@ export default function Home({
             </aside>
           </div>
         </section>
+
+        {/* ── Global Community & Reader Reviews Section (Google Rich Snippets & AI Detection) ── */}
+        <ReviewsSection />
 
       </div>
     </PublicLayout>

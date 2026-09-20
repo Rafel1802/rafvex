@@ -4,21 +4,20 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\PopupAd;
-use Illuminate\Http\Request;
 
 class PopupAdTrackerController extends Controller
 {
     public function trackImpression(PopupAd $popupAd)
     {
-        $sessionKey = 'popup_imp_' . $popupAd->id;
-        if (!session()->has($sessionKey)) {
+        $sessionKey = 'popup_imp_'.$popupAd->id;
+        if (! session()->has($sessionKey)) {
             $popupAd->timestamps = false;
             $popupAd->increment('impressions_count');
             session()->put($sessionKey, now()->timestamp);
         }
 
         return response()->json([
-            'success'     => true,
+            'success' => true,
             'impressions' => $popupAd->impressions_count,
         ]);
     }
@@ -30,7 +29,7 @@ class PopupAdTrackerController extends Controller
 
         return response()->json([
             'success' => true,
-            'clicks'  => $popupAd->clicks_count,
+            'clicks' => $popupAd->clicks_count,
         ]);
     }
 

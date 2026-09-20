@@ -46,6 +46,7 @@ class HomeAd extends Model
         if ($this->impressions_count > 0) {
             return round(($this->clicks_count / $this->impressions_count) * 100, 1);
         }
+
         return 0.0;
     }
 

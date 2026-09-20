@@ -3,15 +3,16 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class RoleAndPermissionSeeder extends Seeder
 {
     public function run(): void
     {
         // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Create permissions
         $permissions = [
@@ -21,14 +22,14 @@ class RoleAndPermissionSeeder extends Seeder
             'users.view', 'users.create', 'users.edit', 'users.delete',
             'security.view', 'security.manage', 'security.block_ip',
             'settings.view', 'settings.manage',
-            'ads.view', 'ads.manage'
+            'ads.view', 'ads.manage',
         ];
 
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
         }
-        
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Create roles and assign created permissions
 
@@ -45,7 +46,7 @@ class RoleAndPermissionSeeder extends Seeder
         $editor->givePermissionTo([
             'articles.view', 'articles.create', 'articles.edit', 'articles.publish', 'articles.manage_revisions',
             'categories.view', 'categories.manage',
-            'media.view', 'media.upload', 'media.delete'
+            'media.view', 'media.upload', 'media.delete',
         ]);
 
         // Administrator (can manage users and settings)

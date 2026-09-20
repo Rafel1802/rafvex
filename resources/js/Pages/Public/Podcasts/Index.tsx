@@ -412,12 +412,20 @@ export default function PodcastsIndex({
           })}
 
           {categories.length === 0 && (
-            <div className="py-24 text-center bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800 p-8">
-              <Headphones size={48} className="mx-auto text-slate-300 dark:text-slate-600 mb-3" />
-              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200">No podcast channels active yet</h3>
-              <p className="text-xs text-slate-400 max-w-md mx-auto mt-1 mb-4">
-                Podcast categories and episodes created in the CMS will appear here in clean 5-episode collections.
+            <div className="py-16 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-xs max-w-2xl mx-auto">
+              <Headphones size={44} className="mx-auto text-red-600 dark:text-red-400 mb-3" />
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">Rafvex Audio Briefings &amp; Tech Talks</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-300 max-w-lg mx-auto mt-2 mb-6 leading-relaxed">
+                Our audio explainers and technical discussions are produced alongside our deep research publications. In the meantime, explore our verified written tutorials across Artificial Intelligence, Operating Systems, and Digital Security.
               </p>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <Link href="/category/ai-tools" className="px-5 py-2.5 rounded-xl bg-red-600 text-white text-xs font-bold hover:bg-red-700 transition-colors shadow-xs">
+                  Explore AI Guides
+                </Link>
+                <Link href="/popular" className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                  View Popular Tutorials
+                </Link>
+              </div>
             </div>
           )}
         </div>

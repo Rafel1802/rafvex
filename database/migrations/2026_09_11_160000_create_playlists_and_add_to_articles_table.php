@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('playlists')) {
+        if (! Schema::hasTable('playlists')) {
             Schema::create('playlists', function (Blueprint $table) {
                 $table->id();
                 $table->string('title');
@@ -24,11 +24,11 @@ return new class extends Migration
 
         if (Schema::hasTable('articles')) {
             Schema::table('articles', function (Blueprint $table) {
-                if (!Schema::hasColumn('articles', 'playlist_id')) {
+                if (! Schema::hasColumn('articles', 'playlist_id')) {
                     $table->unsignedBigInteger('playlist_id')->nullable()->after('category_id');
                     $table->foreign('playlist_id')->references('id')->on('playlists')->nullOnDelete();
                 }
-                if (!Schema::hasColumn('articles', 'playlist_order')) {
+                if (! Schema::hasColumn('articles', 'playlist_order')) {
                     $table->integer('playlist_order')->default(0)->after('playlist_id');
                 }
             });

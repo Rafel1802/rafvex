@@ -98,11 +98,13 @@ class HomeSectionsController extends Controller
                                 $defaults[$secKey] = array_merge($secVal, $decoded[$secKey]);
                             }
                         }
+
                         return $defaults;
                     }
                 }
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         $fallbackFile = storage_path('app/home_sections.json');
         if (File::exists($fallbackFile)) {
@@ -135,18 +137,35 @@ class HomeSectionsController extends Controller
                     ->orderBy('name')
                     ->get(['id', 'name', 'slug']);
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         // Gather referenced article IDs to hydrate previews
         $referencedIds = collect();
-        if (!empty($sections['hero']['lead_id'])) $referencedIds->push($sections['hero']['lead_id']);
-        if (!empty($sections['hero']['featured_ids'])) $referencedIds = $referencedIds->concat($sections['hero']['featured_ids']);
-        if (!empty($sections['hero']['sub_featured_ids'])) $referencedIds = $referencedIds->concat($sections['hero']['sub_featured_ids']);
-        if (!empty($sections['trending']['article_ids'])) $referencedIds = $referencedIds->concat($sections['trending']['article_ids']);
-        if (!empty($sections['spotlight']['main_id'])) $referencedIds->push($sections['spotlight']['main_id']);
-        if (!empty($sections['spotlight']['sub_ids'])) $referencedIds = $referencedIds->concat($sections['spotlight']['sub_ids']);
-        if (!empty($sections['troubleshooting']['article_ids'])) $referencedIds = $referencedIds->concat($sections['troubleshooting']['article_ids']);
-        if (!empty($sections['reading_stories']['article_ids'])) $referencedIds = $referencedIds->concat($sections['reading_stories']['article_ids']);
+        if (! empty($sections['hero']['lead_id'])) {
+            $referencedIds->push($sections['hero']['lead_id']);
+        }
+        if (! empty($sections['hero']['featured_ids'])) {
+            $referencedIds = $referencedIds->concat($sections['hero']['featured_ids']);
+        }
+        if (! empty($sections['hero']['sub_featured_ids'])) {
+            $referencedIds = $referencedIds->concat($sections['hero']['sub_featured_ids']);
+        }
+        if (! empty($sections['trending']['article_ids'])) {
+            $referencedIds = $referencedIds->concat($sections['trending']['article_ids']);
+        }
+        if (! empty($sections['spotlight']['main_id'])) {
+            $referencedIds->push($sections['spotlight']['main_id']);
+        }
+        if (! empty($sections['spotlight']['sub_ids'])) {
+            $referencedIds = $referencedIds->concat($sections['spotlight']['sub_ids']);
+        }
+        if (! empty($sections['troubleshooting']['article_ids'])) {
+            $referencedIds = $referencedIds->concat($sections['troubleshooting']['article_ids']);
+        }
+        if (! empty($sections['reading_stories']['article_ids'])) {
+            $referencedIds = $referencedIds->concat($sections['reading_stories']['article_ids']);
+        }
 
         $hydratedArticles = collect();
         try {
@@ -156,7 +175,8 @@ class HomeSectionsController extends Controller
                     ->get(['id', 'title', 'slug', 'category_id', 'cover_image_url', 'published_at'])
                     ->keyBy('id');
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         // Recent articles for quick selecting
         $recentArticles = collect();
@@ -168,7 +188,8 @@ class HomeSectionsController extends Controller
                     ->take(50)
                     ->get(['id', 'title', 'slug', 'category_id', 'cover_image_url', 'published_at']);
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         // Auto-detected items for each section (so CMS always displays visual preview cards, never text-only)
         $autoDetected = [
@@ -210,7 +231,7 @@ class HomeSectionsController extends Controller
                     ->where('status', 'published')
                     ->whereHas('category', function ($cq) use ($spotCatSlug) {
                         $cq->where('slug', $spotCatSlug)
-                           ->orWhereHas('parent', fn($pq) => $pq->where('slug', $spotCatSlug));
+                            ->orWhereHas('parent', fn ($pq) => $pq->where('slug', $spotCatSlug));
                     })
                     ->orderByRaw('COALESCE(published_at, created_at) DESC')
                     ->take(5)
@@ -228,7 +249,7 @@ class HomeSectionsController extends Controller
                     ->where('status', 'published')
                     ->whereHas('category', function ($cq) use ($tbCatSlug) {
                         $cq->where('slug', $tbCatSlug)
-                           ->orWhereHas('parent', fn($pq) => $pq->where('slug', $tbCatSlug));
+                            ->orWhereHas('parent', fn ($pq) => $pq->where('slug', $tbCatSlug));
                     })
                     ->orderByRaw('COALESCE(published_at, created_at) DESC')
                     ->take(4)
@@ -245,7 +266,7 @@ class HomeSectionsController extends Controller
                     ->where('status', 'published')
                     ->whereHas('category', function ($cq) use ($rsCatSlug) {
                         $cq->where('slug', $rsCatSlug)
-                           ->orWhereHas('parent', fn($pq) => $pq->where('slug', $rsCatSlug));
+                            ->orWhereHas('parent', fn ($pq) => $pq->where('slug', $rsCatSlug));
                     })
                     ->orderByRaw('COALESCE(published_at, created_at) DESC')
                     ->take(4)
@@ -258,7 +279,7 @@ class HomeSectionsController extends Controller
 
                 // Merge all auto-detected articles into hydratedArticles so frontend has instant access
                 foreach ([$autoDetected['hero_lead'], $autoDetected['spotlight_main']] as $singleArt) {
-                    if ($singleArt && !isset($hydratedArticles[$singleArt->id])) {
+                    if ($singleArt && ! isset($hydratedArticles[$singleArt->id])) {
                         $hydratedArticles[$singleArt->id] = $singleArt;
                     }
                 }
@@ -270,12 +291,13 @@ class HomeSectionsController extends Controller
                     $autoDetected['troubleshooting'] ?? [],
                     $autoDetected['reading_stories'] ?? []
                 ) as $listArt) {
-                    if ($listArt && !isset($hydratedArticles[$listArt->id])) {
+                    if ($listArt && ! isset($hydratedArticles[$listArt->id])) {
                         $hydratedArticles[$listArt->id] = $listArt;
                     }
                 }
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         return Inertia::render('Admin/HomeSections/Index', [
             'sections' => $sections,
@@ -300,16 +322,16 @@ class HomeSectionsController extends Controller
                 ->where('status', 'published');
 
             // Category filtering (by slug or id, including child categories)
-            if (!empty($categorySlug) && $categorySlug !== 'all') {
+            if (! empty($categorySlug) && $categorySlug !== 'all') {
                 $category = Category::where('slug', $categorySlug)->first();
                 if ($category) {
                     $subIds = Category::where('parent_id', $category->id)->pluck('id');
                     $allCatIds = $subIds->push($category->id);
                     $query->whereIn('category_id', $allCatIds);
                 } else {
-                    $query->whereHas('category', fn($cq) => $cq->where('slug', $categorySlug));
+                    $query->whereHas('category', fn ($cq) => $cq->where('slug', $categorySlug));
                 }
-            } elseif (!empty($categoryId) && $categoryId !== 'all') {
+            } elseif (! empty($categoryId) && $categoryId !== 'all') {
                 $category = Category::find($categoryId);
                 if ($category) {
                     $subIds = Category::where('parent_id', $category->id)->pluck('id');
@@ -320,11 +342,11 @@ class HomeSectionsController extends Controller
                 }
             }
 
-            if (!empty($q)) {
+            if (! empty($q)) {
                 $query->where(function ($sq) use ($q) {
                     $sq->where('title', 'like', "%{$q}%")
-                       ->orWhere('slug', 'like', "%{$q}%")
-                       ->orWhereHas('category', fn($cq) => $cq->where('name', 'like', "%{$q}%"));
+                        ->orWhere('slug', 'like', "%{$q}%")
+                        ->orWhereHas('category', fn ($cq) => $cq->where('name', 'like', "%{$q}%"));
                 });
             }
 
@@ -383,13 +405,15 @@ class HomeSectionsController extends Controller
                     ]
                 );
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         // Always save to fallback file
         try {
             $fallbackFile = storage_path('app/home_sections.json');
             File::put($fallbackFile, json_encode($defaults, JSON_PRETTY_PRINT));
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         Cache::flush();
 

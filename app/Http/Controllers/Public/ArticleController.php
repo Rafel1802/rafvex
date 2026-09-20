@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\Article;
-use Illuminate\Http\Request;
+use App\Models\Category;
+use App\Models\Tag;
 use Inertia\Inertia;
 
 class ArticleController extends Controller
@@ -14,18 +15,18 @@ class ArticleController extends Controller
         $article = Article::published()
             ->with(['category', 'author.profile', 'tags', 'playlist', 'comments' => function ($q) {
                 $q->whereNull('parent_id')
-                  ->where('status', 'approved')
-                  ->with(['replies' => function ($q) {
-                      $q->where('status', 'approved')->orderBy('created_at', 'asc');
-                  }])
-                  ->orderBy('created_at', 'desc');
+                    ->where('status', 'approved')
+                    ->with(['replies' => function ($q) {
+                        $q->where('status', 'approved')->orderBy('created_at', 'asc');
+                    }])
+                    ->orderBy('created_at', 'desc');
             }])
             ->where('slug', $slug)
             ->firstOrFail();
 
         // Increment views with session deduplication to record genuine, real reader visits
-        $sessionKey = 'viewed_article_' . $article->id;
-        if (!session()->has($sessionKey)) {
+        $sessionKey = 'viewed_article_'.$article->id;
+        if (! session()->has($sessionKey)) {
             $article->increment('views_count');
             session()->put($sessionKey, now()->timestamp);
         }
@@ -90,7 +91,7 @@ class ArticleController extends Controller
             $clusterPlaylist = $clusterQuery->orderBy('id', 'asc')->get();
 
             if ($clusterPlaylist->count() < 3 && $article->category && $article->category->parent_id) {
-                $siblingCatIds = \App\Models\Category::where('parent_id', $article->category->parent_id)->pluck('id');
+                $siblingCatIds = Category::where('parent_id', $article->category->parent_id)->pluck('id');
                 $clusterPlaylist = Article::published()
                     ->select(['id', 'title', 'slug', 'category_id', 'reading_time', 'featured', 'published_at'])
                     ->whereIn('category_id', $siblingCatIds)
@@ -102,8 +103,8 @@ class ArticleController extends Controller
         }
 
         // Curated / Featured Categories for Left Sidebar
-        $sidebarCategories = \App\Models\Category::whereNull('parent_id')
-            ->withCount(['articles' => fn($q) => $q->published()])
+        $sidebarCategories = Category::whereNull('parent_id')
+            ->withCount(['articles' => fn ($q) => $q->published()])
             ->where('status', 'active')
             ->orderBy('featured', 'desc')
             ->orderBy('sort_order', 'asc')
@@ -112,7 +113,7 @@ class ArticleController extends Controller
 
         // Tags for the article and publication
         $articleTags = $article->tags;
-        $popularTags = \App\Models\Tag::withCount('articles')
+        $popularTags = Tag::withCount('articles')
             ->orderBy('articles_count', 'desc')
             ->take(12)
             ->get(['id', 'name', 'slug']);

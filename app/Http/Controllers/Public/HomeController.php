@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Http\Controllers\Admin\HomeAdController;
+use App\Http\Controllers\Admin\HomeSectionsController;
 use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Category;
-use App\Models\Setting;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Admin\HomeAdController;
-use App\Http\Controllers\Admin\HomeSectionsController;
 use Inertia\Inertia;
 
 class HomeController extends Controller
@@ -28,19 +26,21 @@ class HomeController extends Controller
         $usedIds = collect();
 
         if ($heroMode === 'manual') {
-            $leadId = !empty($heroConfig['lead_id']) ? (int) $heroConfig['lead_id'] : null;
+            $leadId = ! empty($heroConfig['lead_id']) ? (int) $heroConfig['lead_id'] : null;
             if ($leadId) {
                 $leadStory = Article::with(['category', 'author'])
                     ->where('id', $leadId)
                     ->where('status', 'published')
                     ->first();
-                if ($leadStory) $usedIds->push($leadStory->id);
+                if ($leadStory) {
+                    $usedIds->push($leadStory->id);
+                }
             }
 
-            $featuredIds = !empty($heroConfig['featured_ids']) && is_array($heroConfig['featured_ids'])
+            $featuredIds = ! empty($heroConfig['featured_ids']) && is_array($heroConfig['featured_ids'])
                 ? array_map('intval', array_slice($heroConfig['featured_ids'], 0, 2))
                 : [];
-            if (!empty($featuredIds)) {
+            if (! empty($featuredIds)) {
                 $fetched = Article::with(['category', 'author'])
                     ->whereIn('id', $featuredIds)
                     ->where('status', 'published')
@@ -54,10 +54,10 @@ class HomeController extends Controller
                 }
             }
 
-            $subIds = !empty($heroConfig['sub_featured_ids']) && is_array($heroConfig['sub_featured_ids'])
+            $subIds = ! empty($heroConfig['sub_featured_ids']) && is_array($heroConfig['sub_featured_ids'])
                 ? array_map('intval', array_slice($heroConfig['sub_featured_ids'], 0, 2))
                 : [];
-            if (!empty($subIds)) {
+            if (! empty($subIds)) {
                 $fetchedSubs = Article::with(['category', 'author'])
                     ->whereIn('id', $subIds)
                     ->where('status', 'published')
@@ -73,13 +73,15 @@ class HomeController extends Controller
         }
 
         // Auto-detect or fallbacks for unfilled hero slots (pulls newest published articles)
-        if (!$leadStory) {
+        if (! $leadStory) {
             $leadStory = Article::with(['category', 'author'])
                 ->where('status', 'published')
                 ->whereNotIn('id', $usedIds)
                 ->orderByRaw('COALESCE(published_at, created_at) DESC')
                 ->first();
-            if ($leadStory) $usedIds->push($leadStory->id);
+            if ($leadStory) {
+                $usedIds->push($leadStory->id);
+            }
         }
 
         while ($secondaryStories->count() < 2) {
@@ -88,7 +90,9 @@ class HomeController extends Controller
                 ->whereNotIn('id', $usedIds)
                 ->orderByRaw('COALESCE(published_at, created_at) DESC')
                 ->first();
-            if (!$fallback) break;
+            if (! $fallback) {
+                break;
+            }
             $secondaryStories->push($fallback);
             $usedIds->push($fallback->id);
         }
@@ -99,7 +103,9 @@ class HomeController extends Controller
                 ->whereNotIn('id', $usedIds)
                 ->orderByRaw('COALESCE(published_at, created_at) DESC')
                 ->first();
-            if (!$fallback) break;
+            if (! $fallback) {
+                break;
+            }
             $subFeaturedStories->push($fallback);
             $usedIds->push($fallback->id);
         }
@@ -109,7 +115,7 @@ class HomeController extends Controller
         $trendingMode = $trendingConfig['mode'] ?? 'auto';
         $trendingStories = collect();
 
-        if ($trendingMode === 'manual' && !empty($trendingConfig['article_ids'])) {
+        if ($trendingMode === 'manual' && ! empty($trendingConfig['article_ids'])) {
             $trendingIds = array_map('intval', array_slice($trendingConfig['article_ids'], 0, 4));
             $fetchedTrending = Article::with(['category', 'author'])
                 ->whereIn('id', $trendingIds)
@@ -130,7 +136,9 @@ class HomeController extends Controller
                 ->orderBy('views_count', 'desc')
                 ->orderByRaw('COALESCE(published_at, created_at) DESC')
                 ->first();
-            if (!$fallbackTrending) break;
+            if (! $fallbackTrending) {
+                break;
+            }
             $trendingStories->push($fallbackTrending);
         }
 
@@ -170,7 +178,7 @@ class HomeController extends Controller
         $readingSlug = $readingConfig['category_slug'] ?? 'english-reading-stories';
         $storyStories = collect();
 
-        if (($readingConfig['mode'] ?? 'category') === 'manual' && !empty($readingConfig['article_ids'])) {
+        if (($readingConfig['mode'] ?? 'category') === 'manual' && ! empty($readingConfig['article_ids'])) {
             $fetchedReading = Article::with(['category', 'author'])
                 ->whereIn('id', $readingConfig['article_ids'])
                 ->where('status', 'published')
@@ -186,17 +194,17 @@ class HomeController extends Controller
         if ($storyStories->count() < 4) {
             $catStories = Article::with(['category', 'author'])
                 ->where('status', 'published')
-                ->where(function($q) use ($readingSlug) {
-                    $q->whereHas('category', function($cq) use ($readingSlug) {
+                ->where(function ($q) use ($readingSlug) {
+                    $q->whereHas('category', function ($cq) use ($readingSlug) {
                         $cq->where('slug', $readingSlug)
-                           ->orWhere('slug', 'like', "%{$readingSlug}%")
-                           ->orWhere('slug', 'like', '%story%')
-                           ->orWhere('slug', 'like', '%stories%')
-                           ->orWhere('slug', 'like', '%english%');
+                            ->orWhere('slug', 'like', "%{$readingSlug}%")
+                            ->orWhere('slug', 'like', '%story%')
+                            ->orWhere('slug', 'like', '%stories%')
+                            ->orWhere('slug', 'like', '%english%');
                     })->orWhere('title', 'like', "%{$readingSlug}%")
-                      ->orWhere('title', 'like', '%story%')
-                      ->orWhere('title', 'like', '%english%')
-                      ->orWhere('title', 'like', '%reading%');
+                        ->orWhere('title', 'like', '%story%')
+                        ->orWhere('title', 'like', '%english%')
+                        ->orWhere('title', 'like', '%reading%');
                 })
                 ->whereNotIn('id', $storyStories->pluck('id'))
                 ->orderByRaw('COALESCE(published_at, created_at) DESC')
@@ -220,7 +228,7 @@ class HomeController extends Controller
         $tbSlug = $tbConfig['category_slug'] ?? 'troubleshooting';
         $troubleshootingStories = collect();
 
-        if (($tbConfig['mode'] ?? 'category') === 'manual' && !empty($tbConfig['article_ids'])) {
+        if (($tbConfig['mode'] ?? 'category') === 'manual' && ! empty($tbConfig['article_ids'])) {
             $fetchedTb = Article::with(['category', 'author'])
                 ->whereIn('id', $tbConfig['article_ids'])
                 ->where('status', 'published')
@@ -236,24 +244,24 @@ class HomeController extends Controller
         if ($troubleshootingStories->count() < 4) {
             $catTb = Article::with(['category', 'author'])
                 ->where('status', 'published')
-                ->where(function($q) use ($tbSlug) {
-                    $q->whereHas('category', function($cq) use ($tbSlug) {
+                ->where(function ($q) use ($tbSlug) {
+                    $q->whereHas('category', function ($cq) use ($tbSlug) {
                         $cq->where('slug', $tbSlug)
-                           ->orWhere('slug', 'like', "%{$tbSlug}%")
-                           ->orWhere('slug', 'like', '%troubleshoot%')
-                           ->orWhere('slug', 'like', '%how-to%')
-                           ->orWhere('slug', 'like', '%fix%')
-                           ->orWhere('slug', 'like', '%guide%');
+                            ->orWhere('slug', 'like', "%{$tbSlug}%")
+                            ->orWhere('slug', 'like', '%troubleshoot%')
+                            ->orWhere('slug', 'like', '%how-to%')
+                            ->orWhere('slug', 'like', '%fix%')
+                            ->orWhere('slug', 'like', '%guide%');
                     })->orWhere('title', 'like', "%{$tbSlug}%")
-                      ->orWhere('title', 'like', '%troubleshoot%')
-                      ->orWhere('title', 'like', '%how to%')
-                      ->orWhere('title', 'like', '%how-to%')
-                      ->orWhere('title', 'like', '%fix%')
-                      ->orWhere('title', 'like', '%guide%')
-                      ->orWhere('title', 'like', '%battery%')
-                      ->orWhere('title', 'like', '%audio%')
-                      ->orWhere('title', 'like', '%wifi%')
-                      ->orWhere('title', 'like', '%settings%');
+                        ->orWhere('title', 'like', '%troubleshoot%')
+                        ->orWhere('title', 'like', '%how to%')
+                        ->orWhere('title', 'like', '%how-to%')
+                        ->orWhere('title', 'like', '%fix%')
+                        ->orWhere('title', 'like', '%guide%')
+                        ->orWhere('title', 'like', '%battery%')
+                        ->orWhere('title', 'like', '%audio%')
+                        ->orWhere('title', 'like', '%wifi%')
+                        ->orWhere('title', 'like', '%settings%');
                 })
                 ->whereNotIn('id', $troubleshootingStories->pluck('id'))
                 ->orderByRaw('COALESCE(published_at, created_at) DESC')
@@ -275,12 +283,12 @@ class HomeController extends Controller
         // 8. Enriched Categories for Directory & Department Showcases
         $categories = Category::whereNull('parent_id')
             ->with([
-                'children' => function($q) {
+                'children' => function ($q) {
                     $q->select(['id', 'parent_id', 'name', 'slug'])
-                      ->withCount(['articles' => fn($aq) => $aq->where('status', 'published')]);
-                }
+                        ->withCount(['articles' => fn ($aq) => $aq->where('status', 'published')]);
+                },
             ])
-            ->withCount(['articles' => function($query) {
+            ->withCount(['articles' => function ($query) {
                 $query->where('status', 'published');
             }])
             ->orderBy('articles_count', 'desc')
@@ -293,13 +301,13 @@ class HomeController extends Controller
         $spotlightSubs = collect();
 
         if (($spotlightConfig['mode'] ?? 'category') === 'manual') {
-            if (!empty($spotlightConfig['main_id'])) {
+            if (! empty($spotlightConfig['main_id'])) {
                 $spotlightMain = Article::with(['category', 'author'])
                     ->where('id', $spotlightConfig['main_id'])
                     ->where('status', 'published')
                     ->first();
             }
-            if (!empty($spotlightConfig['sub_ids']) && is_array($spotlightConfig['sub_ids'])) {
+            if (! empty($spotlightConfig['sub_ids']) && is_array($spotlightConfig['sub_ids'])) {
                 $fetchedSubs = Article::with(['category', 'author'])
                     ->whereIn('id', $spotlightConfig['sub_ids'])
                     ->where('status', 'published')
@@ -315,13 +323,13 @@ class HomeController extends Controller
 
         // If category mode or fallbacks needed
         $catSlug = $spotlightConfig['category_slug'] ?? 'ai-tools';
-        if (!$spotlightMain || $spotlightSubs->count() < 4) {
+        if (! $spotlightMain || $spotlightSubs->count() < 4) {
             $catArticles = Article::with(['category', 'author'])
                 ->where('status', 'published')
-                ->where(function($q) use ($catSlug) {
-                    $q->whereHas('category', function($cq) use ($catSlug) {
+                ->where(function ($q) use ($catSlug) {
+                    $q->whereHas('category', function ($cq) use ($catSlug) {
                         $cq->where('slug', $catSlug)
-                           ->orWhere('slug', 'like', "%{$catSlug}%");
+                            ->orWhere('slug', 'like', "%{$catSlug}%");
                     })->orWhere('title', 'like', "%{$catSlug}%");
                 })
                 ->orderByRaw('COALESCE(published_at, created_at) DESC')
@@ -339,14 +347,16 @@ class HomeController extends Controller
                 $catArticles = $catArticles->concat($extraCat);
             }
 
-            if (!$spotlightMain && $catArticles->isNotEmpty()) {
+            if (! $spotlightMain && $catArticles->isNotEmpty()) {
                 $spotlightMain = $catArticles->first();
             }
 
             $remaining = $catArticles->where('id', '!=', $spotlightMain?->id)->values();
             foreach ($remaining as $rem) {
-                if ($spotlightSubs->count() >= 4) break;
-                if (!$spotlightSubs->contains('id', $rem->id)) {
+                if ($spotlightSubs->count() >= 4) {
+                    break;
+                }
+                if (! $spotlightSubs->contains('id', $rem->id)) {
                     $spotlightSubs->push($rem);
                 }
             }
@@ -354,17 +364,19 @@ class HomeController extends Controller
 
         // Guarantee exactly 4 sub-articles
         while ($spotlightSubs->count() < 4) {
-            $filler = $latest->first(function($art) use ($spotlightMain, $spotlightSubs) {
-                return $art->id !== $spotlightMain?->id && !$spotlightSubs->contains('id', $art->id);
+            $filler = $latest->first(function ($art) use ($spotlightMain, $spotlightSubs) {
+                return $art->id !== $spotlightMain?->id && ! $spotlightSubs->contains('id', $art->id);
             });
-            if (!$filler) break;
+            if (! $filler) {
+                break;
+            }
             $spotlightSubs->push($filler);
         }
 
         // 10. Load Active Home Ads (Up to 4 responsive ads for sidebar widget)
         $allAds = HomeAdController::loadAllAds();
         $homeAds = collect($allAds)
-            ->filter(fn($ad) => !empty($ad['is_active']))
+            ->filter(fn ($ad) => ! empty($ad['is_active']))
             ->sortBy('order')
             ->values()
             ->take(4);
@@ -390,5 +402,3 @@ class HomeController extends Controller
         ]);
     }
 }
-
-

@@ -10,10 +10,10 @@ return new class extends Migration
     {
         if (Schema::hasTable('articles')) {
             Schema::table('articles', function (Blueprint $table) {
-                if (!Schema::hasColumn('articles', 'is_breaking')) {
+                if (! Schema::hasColumn('articles', 'is_breaking')) {
                     $table->boolean('is_breaking')->default(false)->after('status');
                 }
-                if (!Schema::hasColumn('articles', 'breaking_until')) {
+                if (! Schema::hasColumn('articles', 'breaking_until')) {
                     $table->dateTime('breaking_until')->nullable()->after('is_breaking');
                 }
             });

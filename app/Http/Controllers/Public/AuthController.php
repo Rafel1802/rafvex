@@ -22,8 +22,8 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', Password::min(8), 'confirmed'],
         ]);
 
@@ -31,10 +31,10 @@ class AuthController extends Controller
         Role::firstOrCreate(['name' => 'Customer', 'guard_name' => 'web']);
 
         $user = User::create([
-            'name'          => $validated['name'],
-            'email'         => strtolower(trim($validated['email'])),
-            'password'      => Hash::make($validated['password']),
-            'is_active'     => true,
+            'name' => $validated['name'],
+            'email' => strtolower(trim($validated['email'])),
+            'password' => Hash::make($validated['password']),
+            'is_active' => true,
             'last_login_at' => now(),
             'last_login_ip' => $request->ip(),
         ]);
@@ -48,12 +48,12 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => "Welcome to Rafvex, {$user->name}!",
-                'user'    => [
-                    'id'     => $user->id,
-                    'name'   => $user->name,
-                    'email'  => $user->email,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
                     'avatar' => $user->avatar,
-                    'roles'  => $user->getRoleNames(),
+                    'roles' => $user->getRoleNames(),
                 ],
             ]);
         }
@@ -67,7 +67,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email'    => ['required', 'email'],
+            'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ]);
 
@@ -93,7 +93,7 @@ class AuthController extends Controller
 
         $remember = $request->boolean('remember', true);
 
-        if (!Auth::attempt($credentials, $remember)) {
+        if (! Auth::attempt($credentials, $remember)) {
             if ($request->wantsJson()) {
                 return response()->json([
                     'success' => false,
@@ -107,7 +107,7 @@ class AuthController extends Controller
 
         $user = Auth::user();
 
-        if (!$user->is_active) {
+        if (! $user->is_active) {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
@@ -132,12 +132,12 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => "Welcome back, {$user->name}!",
-                'user'    => [
-                    'id'     => $user->id,
-                    'name'   => $user->name,
-                    'email'  => $user->email,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
                     'avatar' => $user->avatar,
-                    'roles'  => $user->getRoleNames(),
+                    'roles' => $user->getRoleNames(),
                 ],
             ]);
         }
@@ -156,20 +156,20 @@ class AuthController extends Controller
 
         $googleData = $this->verifyGoogleToken($request->id_token);
 
-        if (!$googleData) {
+        if (! $googleData) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid or expired Google authentication token. Please try again.',
             ], 422);
         }
 
-        $googleId      = $googleData['sub'] ?? null;
-        $googleEmail   = strtolower(trim($googleData['email'] ?? ''));
-        $googleName    = $googleData['name'] ?? explode('@', $googleEmail)[0];
-        $googleAvatar  = $googleData['picture'] ?? null;
+        $googleId = $googleData['sub'] ?? null;
+        $googleEmail = strtolower(trim($googleData['email'] ?? ''));
+        $googleName = $googleData['name'] ?? explode('@', $googleEmail)[0];
+        $googleAvatar = $googleData['picture'] ?? null;
         $emailVerified = filter_var($googleData['email_verified'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
-        if (!$googleId || !$googleEmail || !$emailVerified) {
+        if (! $googleId || ! $googleEmail || ! $emailVerified) {
             return response()->json([
                 'success' => false,
                 'message' => 'A verified Google account email is required to sign in.',
@@ -182,7 +182,7 @@ class AuthController extends Controller
         $user = User::where('google_id', $googleId)->first();
 
         // 2. Find by google_email
-        if (!$user) {
+        if (! $user) {
             $user = User::where('google_email', $googleEmail)->first();
             if ($user) {
                 $user->google_id = $googleId;
@@ -191,12 +191,12 @@ class AuthController extends Controller
         }
 
         // 3. Find by email (auto-link)
-        if (!$user) {
+        if (! $user) {
             $user = User::where('email', $googleEmail)->first();
             if ($user) {
-                $user->google_id        = $googleId;
-                $user->google_email     = $googleEmail;
-                $user->google_avatar    = $googleAvatar;
+                $user->google_id = $googleId;
+                $user->google_email = $googleEmail;
+                $user->google_avatar = $googleAvatar;
                 $user->google_linked_at = now();
                 if (empty($user->avatar) && $googleAvatar) {
                     $user->avatar = $googleAvatar;
@@ -206,25 +206,25 @@ class AuthController extends Controller
         }
 
         // 4. If no user exists, create new Customer account automatically!
-        if (!$user) {
+        if (! $user) {
             $user = User::create([
-                'name'             => $googleName,
-                'email'            => $googleEmail,
-                'password'         => Hash::make(Str::random(32)),
-                'google_id'        => $googleId,
-                'google_email'     => $googleEmail,
-                'google_avatar'    => $googleAvatar,
-                'avatar'           => $googleAvatar,
+                'name' => $googleName,
+                'email' => $googleEmail,
+                'password' => Hash::make(Str::random(32)),
+                'google_id' => $googleId,
+                'google_email' => $googleEmail,
+                'google_avatar' => $googleAvatar,
+                'avatar' => $googleAvatar,
                 'google_linked_at' => now(),
-                'is_active'        => true,
-                'last_login_at'    => now(),
-                'last_login_ip'    => $request->ip(),
+                'is_active' => true,
+                'last_login_at' => now(),
+                'last_login_ip' => $request->ip(),
             ]);
 
             $user->assignRole('Customer');
         }
 
-        if (!$user->is_active) {
+        if (! $user->is_active) {
             return response()->json([
                 'success' => false,
                 'message' => 'Your account has been deactivated. Please contact support.',
@@ -244,12 +244,12 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => "Welcome, {$user->name}!",
-            'user'    => [
-                'id'     => $user->id,
-                'name'   => $user->name,
-                'email'  => $user->email,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
                 'avatar' => $user->avatar,
-                'roles'  => $user->getRoleNames(),
+                'roles' => $user->getRoleNames(),
             ],
         ]);
     }
@@ -287,9 +287,9 @@ class AuthController extends Controller
                 return $response->json();
             }
 
-            Log::warning('Google public token verification failed: ' . $response->body());
+            Log::warning('Google public token verification failed: '.$response->body());
         } catch (\Throwable $e) {
-            Log::error('Exception verifying Google token: ' . $e->getMessage());
+            Log::error('Exception verifying Google token: '.$e->getMessage());
         }
 
         return null;

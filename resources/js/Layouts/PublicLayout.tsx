@@ -4,7 +4,7 @@ import {
   Search, X, ArrowRight, ExternalLink, Shield, Compass, BookOpen, 
   Sparkles, Loader2, FileText, Clock, User, LogOut, Bookmark, 
   History, LayoutDashboard, ChevronDown, Bell, Sun, Moon, Headphones, Radio,
-  ChevronLeft, ChevronRight
+  ChevronLeft, ChevronRight, Mail
 } from 'lucide-react';
 import axios from 'axios';
 import SponsoredPopupModal from '@/Components/Public/SponsoredPopupModal';
@@ -36,11 +36,11 @@ const MAIN_NAV_LINKS = [
   { label: 'English', href: '/category/english-reading-stories', slug: 'english-reading-stories' },
 ];
 
-/* ── Editorial Sub-Header Bar (Podcast, Popular & News) ── */
+/* ── Editorial Sub-Header Bar (Popular, News & Sitemap) ── */
 const EDITORIAL_TICKER = [
-  { label: 'PODCAST', href: '/podcasts', icon: Headphones },
-  { label: 'POPULAR', href: '/popular' },
-  { label: 'NEWS', href: '/news' },
+  { label: 'POPULAR GUIDES', href: '/popular' },
+  { label: 'TECH DISPATCHES', href: '/news' },
+  { label: 'TOPIC DIRECTORY', href: '/sitemap' },
 ];
 
 export default function PublicLayout({ children, auth }: any) {
@@ -1445,8 +1445,8 @@ export default function PublicLayout({ children, auth }: any) {
               </p>
               <ul className="space-y-2.5 text-xs text-slate-600 dark:text-slate-400">
                 <li><Link href="/category/english-reading-stories" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">English Reading Stories</Link></li>
-                <li><Link href="/category/education" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Digital Education</Link></li>
-                <li><Link href="/category/interesting" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Interesting Curations</Link></li>
+                <li><Link href="/category/ai-for-students-work" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">AI for Students &amp; Learning</Link></li>
+                <li><Link href="/popular" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Popular Tutorials</Link></li>
                 <li><Link href="/search" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Search All Knowledge</Link></li>
               </ul>
             </div>
@@ -1462,6 +1462,13 @@ export default function PublicLayout({ children, auth }: any) {
                 <li><Link href="/contact" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Contact Us</Link></li>
                 <li><Link href="/privacy-policy" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Privacy Policy</Link></li>
                 <li><Link href="/terms-of-service" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Terms of Service</Link></li>
+                <li><Link href="/disclaimer" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">Disclaimer</Link></li>
+                <li className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <a href="mailto:rafvexofficial@gmail.com" className="hover:text-red-600 dark:hover:text-red-400 transition-colors flex items-center gap-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                    <Mail size={12} className="shrink-0 text-red-500" />
+                    <span>rafvexofficial@gmail.com</span>
+                  </a>
+                </li>
               </ul>
             </div>
 

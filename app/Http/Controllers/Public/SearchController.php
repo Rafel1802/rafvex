@@ -11,20 +11,21 @@ class SearchController extends Controller
 {
     public function index(Request $request)
     {
-        $q = trim($request->get("q", ""));
+        $q = trim($request->get('q', ''));
         $articles = collect();
         if (strlen($q) >= 2) {
-            $articles = Article::with(["category", "author"])
-                ->where("status", "published")
-                ->where(fn($query) => $query->where("title", "like", "%{$q}%")->orWhere("excerpt", "like", "%{$q}%"))
-                ->latest("published_at")->take(30)->get();
+            $articles = Article::with(['category', 'author'])
+                ->where('status', 'published')
+                ->where(fn ($query) => $query->where('title', 'like', "%{$q}%")->orWhere('excerpt', 'like', "%{$q}%"))
+                ->latest('published_at')->take(30)->get();
         }
-        return Inertia::render("Public/Search", ["query" => $q, "results" => $articles]);
+
+        return Inertia::render('Public/Search', ['query' => $q, 'results' => $articles]);
     }
 
     public function live(Request $request)
     {
-        $q = trim($request->get("q", ""));
+        $q = trim($request->get('q', ''));
         if (strlen($q) < 2) {
             return response()->json([
                 'results' => [],
@@ -36,7 +37,7 @@ class SearchController extends Controller
             ->where('status', 'published')
             ->where(function ($query) use ($q) {
                 $query->where('title', 'like', "%{$q}%")
-                      ->orWhere('excerpt', 'like', "%{$q}%");
+                    ->orWhere('excerpt', 'like', "%{$q}%");
             })
             ->latest('published_at')
             ->take(15)

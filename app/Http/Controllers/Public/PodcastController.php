@@ -21,14 +21,14 @@ class PodcastController extends Controller
 
         // 2. Featured podcast (if live exists, prioritize live; otherwise featured or latest)
         $featuredPodcast = $livePodcast;
-        if (!$featuredPodcast) {
+        if (! $featuredPodcast) {
             $featuredPodcast = Podcast::published()
                 ->where('is_featured', true)
                 ->with(['category', 'author.profile'])
                 ->latest('published_at')
                 ->first();
         }
-        if (!$featuredPodcast) {
+        if (! $featuredPodcast) {
             $featuredPodcast = Podcast::published()
                 ->with(['category', 'author.profile'])
                 ->latest('published_at')
@@ -39,10 +39,10 @@ class PodcastController extends Controller
         $categories = PodcastCategory::where('is_active', true)
             ->with(['podcasts' => function ($q) {
                 $q->published()
-                  ->with(['category', 'author.profile'])
-                  ->latest('published_at')
-                  ->latest('id')
-                  ->take(5);
+                    ->with(['category', 'author.profile'])
+                    ->latest('published_at')
+                    ->latest('id')
+                    ->take(5);
             }])
             ->orderBy('sort_order', 'asc')
             ->get();
@@ -56,10 +56,10 @@ class PodcastController extends Controller
             ->get();
 
         return Inertia::render('Public/Podcasts/Index', [
-            'livePodcast'     => $livePodcast,
+            'livePodcast' => $livePodcast,
             'featuredPodcast' => $featuredPodcast,
-            'categories'      => $categories,
-            'recentPodcasts'  => $recentPodcasts,
+            'categories' => $categories,
+            'recentPodcasts' => $recentPodcasts,
         ]);
     }
 
@@ -71,8 +71,8 @@ class PodcastController extends Controller
             ->firstOrFail();
 
         // Increment view count with session deduplication
-        $sessionKey = 'viewed_podcast_' . $podcast->id;
-        if (!session()->has($sessionKey)) {
+        $sessionKey = 'viewed_podcast_'.$podcast->id;
+        if (! session()->has($sessionKey)) {
             $podcast->increment('views_count');
             session()->put($sessionKey, now()->timestamp);
         }
@@ -80,7 +80,7 @@ class PodcastController extends Controller
         // Related episodes in the same category
         $relatedPodcasts = Podcast::published()
             ->where('id', '!=', $podcast->id)
-            ->when($podcast->category_id, fn($q) => $q->where('category_id', $podcast->category_id))
+            ->when($podcast->category_id, fn ($q) => $q->where('category_id', $podcast->category_id))
             ->with(['category', 'author.profile'])
             ->latest('published_at')
             ->take(5)
@@ -93,9 +93,9 @@ class PodcastController extends Controller
             ->first();
 
         return Inertia::render('Public/Podcasts/Show', [
-            'podcast'         => $podcast,
+            'podcast' => $podcast,
             'relatedPodcasts' => $relatedPodcasts,
-            'stationLive'     => $stationLive,
+            'stationLive' => $stationLive,
         ]);
     }
 

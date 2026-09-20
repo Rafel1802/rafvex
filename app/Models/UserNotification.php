@@ -36,8 +36,10 @@ class UserNotification extends Model
     {
         if (is_null($this->read_at)) {
             $this->read_at = now();
+
             return $this->save();
         }
+
         return true;
     }
 }

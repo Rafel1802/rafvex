@@ -1,9 +1,13 @@
 <?php
 
+use App\Http\Middleware\CheckIsActive;
+use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Spatie\Permission\Middleware\PermissionMiddleware;
+use Spatie\Permission\Middleware\RoleMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -18,12 +22,12 @@ return Application::configure(basePath: dirname(__DIR__))
             users: '/ourcms/dashboard',
         );
         $middleware->web(append: [
-            \App\Http\Middleware\HandleInertiaRequests::class,
+            HandleInertiaRequests::class,
         ]);
         $middleware->alias([
-            'active' => \App\Http\Middleware\CheckIsActive::class,
-            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
-            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'active' => CheckIsActive::class,
+            'role' => RoleMiddleware::class,
+            'permission' => PermissionMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
@@ -31,12 +35,13 @@ return Application::configure(basePath: dirname(__DIR__))
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
 
-        $exceptions->respond(function ($response, \Throwable $e, Request $request) {
+        $exceptions->respond(function ($response, Throwable $e, Request $request) {
             if ($response->getStatusCode() === 419) {
                 return back()->with([
                     'error' => 'Your security session has expired. Please try submitting again.',
                 ]);
             }
+
             return $response;
         });
     })->create();

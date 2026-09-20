@@ -2,16 +2,21 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\NewArticlePublishedEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Category;
-use App\Events\NewArticlePublishedEvent;
+use App\Models\Playlist;
+use App\Models\User;
+use App\Models\UserNotification;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Inertia\Inertia;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 
@@ -24,13 +29,13 @@ class ArticleController extends Controller
         // Enhanced search (title, slug, excerpt, or category)
         if ($request->filled('search')) {
             $search = trim($request->get('search'));
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('slug', 'like', "%{$search}%")
-                  ->orWhere('excerpt', 'like', "%{$search}%")
-                  ->orWhereHas('category', function($catQ) use ($search) {
-                      $catQ->where('name', 'like', "%{$search}%");
-                  });
+                    ->orWhere('slug', 'like', "%{$search}%")
+                    ->orWhere('excerpt', 'like', "%{$search}%")
+                    ->orWhereHas('category', function ($catQ) use ($search) {
+                        $catQ->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -47,7 +52,7 @@ class ArticleController extends Controller
         elseif ($request->filled('category') && $request->get('category') !== 'all') {
             $catId = $request->get('category');
             if ($catId === 'uncategorized') {
-                $query->where(function($q) {
+                $query->where(function ($q) {
                     $q->whereNull('category_id')->orWhere('category_id', 0);
                 });
             } else {
@@ -65,13 +70,13 @@ class ArticleController extends Controller
         $articles = $query->paginate(20)->withQueryString();
 
         // Load all parent categories with their subcategories for the filter component
-        $categories = Category::with(['children' => function($q) {
+        $categories = Category::with(['children' => function ($q) {
             $q->orderBy('sort_order')->orderBy('name');
         }])
-        ->whereNull('parent_id')
-        ->orderBy('sort_order')
-        ->orderBy('name')
-        ->get();
+            ->whereNull('parent_id')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
 
         $uncategorizedCount = Article::whereNull('category_id')->orWhere('category_id', 0)->count();
 
@@ -87,27 +92,27 @@ class ArticleController extends Controller
     {
         $categories = Category::all();
         $staffRoles = ['Super Admin', 'Administrator', 'Editor', 'Writer', 'Author'];
-        $authors = \App\Models\User::where(function ($q) use ($staffRoles) {
-                $q->whereHas('roles', fn($r) => $r->whereIn('name', $staffRoles))
-                  ->orWhereHas('profile');
-            })
+        $authors = User::where(function ($q) use ($staffRoles) {
+            $q->whereHas('roles', fn ($r) => $r->whereIn('name', $staffRoles))
+                ->orWhereHas('profile');
+        })
             ->with('profile')
             ->get()
             ->map(function ($u) {
                 return [
-                    'id'        => $u->id,
-                    'name'      => $u->profile?->display_name ?: $u->name,
-                    'avatar'    => $u->profile?->avatar ?: $u->avatar,
+                    'id' => $u->id,
+                    'name' => $u->profile?->display_name ?: $u->name,
+                    'avatar' => $u->profile?->avatar ?: $u->avatar,
                     'job_title' => $u->profile?->job_title ?: 'Author',
                 ];
             });
-        
-        $playlists = \App\Models\Playlist::orderBy('title')->get(['id', 'title', 'slug']);
-        
+
+        $playlists = Playlist::orderBy('title')->get(['id', 'title', 'slug']);
+
         return Inertia::render('Admin/Articles/Create', [
             'categories' => $categories,
-            'authors'    => $authors,
-            'playlists'  => $playlists,
+            'authors' => $authors,
+            'playlists' => $playlists,
         ]);
     }
 
@@ -172,7 +177,7 @@ class ArticleController extends Controller
         if (empty($validated['user_id'])) {
             $validated['user_id'] = Auth::id();
         }
-        
+
         // Handle slug
         if (empty($validated['slug'])) {
             $baseSlug = Str::slug($validated['title']);
@@ -185,13 +190,13 @@ class ArticleController extends Controller
         } else {
             $validated['slug'] = Str::slug($validated['slug']);
         }
-        
+
         if ($validated['status'] === 'published') {
             $validated['published_at'] = now();
         } elseif ($validated['status'] === 'scheduled') {
             if (empty($validated['scheduled_at'])) {
                 $validated['scheduled_at'] = now()->addDay();
-            } elseif (\Illuminate\Support\Carbon::parse($validated['scheduled_at'])->isPast()) {
+            } elseif (Carbon::parse($validated['scheduled_at'])->isPast()) {
                 $validated['status'] = 'published';
                 $validated['published_at'] = $validated['scheduled_at'];
             }
@@ -209,39 +214,39 @@ class ArticleController extends Controller
             $this->notifyNewPublishedArticle($article);
         }
 
-        $flashMessage = $article->status === 'draft' 
-            ? 'Article draft saved successfully.' 
+        $flashMessage = $article->status === 'draft'
+            ? 'Article draft saved successfully.'
             : ($article->status === 'scheduled' ? 'Article scheduled successfully.' : 'Article published successfully.');
 
-        return redirect('/ourcms/articles/' . $article->id . '/edit')->with('message', $flashMessage);
+        return redirect('/ourcms/articles/'.$article->id.'/edit')->with('message', $flashMessage);
     }
 
     public function edit(Article $article)
     {
         $article->load(['category', 'tags', 'author.profile', 'playlist']);
         $categories = Category::all();
-        $playlists = \App\Models\Playlist::orderBy('title')->get(['id', 'title', 'slug']);
+        $playlists = Playlist::orderBy('title')->get(['id', 'title', 'slug']);
         $staffRoles = ['Super Admin', 'Administrator', 'Editor', 'Writer', 'Author'];
-        $authors = \App\Models\User::where(function ($q) use ($staffRoles) {
-                $q->whereHas('roles', fn($r) => $r->whereIn('name', $staffRoles))
-                  ->orWhereHas('profile');
-            })
+        $authors = User::where(function ($q) use ($staffRoles) {
+            $q->whereHas('roles', fn ($r) => $r->whereIn('name', $staffRoles))
+                ->orWhereHas('profile');
+        })
             ->with('profile')
             ->get()
             ->map(function ($u) {
                 return [
-                    'id'        => $u->id,
-                    'name'      => $u->profile?->display_name ?: $u->name,
-                    'avatar'    => $u->profile?->avatar ?: $u->avatar,
+                    'id' => $u->id,
+                    'name' => $u->profile?->display_name ?: $u->name,
+                    'avatar' => $u->profile?->avatar ?: $u->avatar,
                     'job_title' => $u->profile?->job_title ?: 'Author',
                 ];
             });
 
         return Inertia::render('Admin/Articles/Edit', [
-            'article'    => $article,
+            'article' => $article,
             'categories' => $categories,
-            'authors'    => $authors,
-            'playlists'  => $playlists,
+            'authors' => $authors,
+            'playlists' => $playlists,
         ]);
     }
 
@@ -279,7 +284,7 @@ class ArticleController extends Controller
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:articles,slug,' . $article->id,
+            'slug' => 'required|string|max:255|unique:articles,slug,'.$article->id,
             'category_id' => 'nullable|exists:categories,id',
             'user_id' => 'nullable|exists:users,id',
             'status' => 'required|in:draft,review,approved,scheduled,published',
@@ -308,13 +313,13 @@ class ArticleController extends Controller
         $validated['slug'] = Str::slug($validated['slug']);
 
         if ($validated['status'] === 'published') {
-            if (!$article->published_at) {
+            if (! $article->published_at) {
                 $validated['published_at'] = now();
             }
         } elseif ($validated['status'] === 'scheduled') {
             if (empty($validated['scheduled_at'])) {
                 $validated['scheduled_at'] = $article->scheduled_at ?: now()->addDay();
-            } elseif (\Illuminate\Support\Carbon::parse($validated['scheduled_at'])->isPast()) {
+            } elseif (Carbon::parse($validated['scheduled_at'])->isPast()) {
                 $validated['status'] = 'published';
                 $validated['published_at'] = $validated['scheduled_at'];
             }
@@ -328,7 +333,7 @@ class ArticleController extends Controller
 
         $article->update($validated);
 
-        if (!$wasPublished && $article->status === 'published') {
+        if (! $wasPublished && $article->status === 'published') {
             $this->notifyNewPublishedArticle($article);
         }
 
@@ -343,7 +348,7 @@ class ArticleController extends Controller
         ]);
         $article->increment('revision_count');
 
-        return redirect('/ourcms/articles/' . $article->id . '/edit')->with('message', 'Article saved successfully.');
+        return redirect('/ourcms/articles/'.$article->id.'/edit')->with('message', 'Article saved successfully.');
     }
 
     private function notifyNewPublishedArticle(Article $article): void
@@ -351,45 +356,46 @@ class ArticleController extends Controller
         try {
             $article->loadMissing('category');
             $payload = [
-                'id'              => $article->id,
-                'title'           => $article->title,
-                'slug'            => $article->slug,
-                'excerpt'         => Str::limit(strip_tags($article->excerpt ?: $article->content), 120),
+                'id' => $article->id,
+                'title' => $article->title,
+                'slug' => $article->slug,
+                'excerpt' => Str::limit(strip_tags($article->excerpt ?: $article->content), 120),
                 'cover_image_url' => $article->cover_image_url,
-                'category_name'   => $article->category?->name,
-                'published_at'    => now()->diffForHumans(),
+                'category_name' => $article->category?->name,
+                'published_at' => now()->diffForHumans(),
             ];
 
             // Broadcast real-time Pusher event
             broadcast(new NewArticlePublishedEvent($payload));
 
             // Create in-app notifications for registered customers
-            $customerIds = \App\Models\User::role('Customer')->pluck('id');
+            $customerIds = User::role('Customer')->pluck('id');
             $now = now();
             $notifications = [];
             foreach ($customerIds as $cId) {
                 $notifications[] = [
-                    'user_id'    => $cId,
-                    'type'       => 'new_article',
-                    'title'      => '🔥 New Article: ' . Str::limit($article->title, 50),
-                    'message'    => Str::limit(strip_tags($article->excerpt ?: $article->title), 100),
-                    'link'       => '/article/' . $article->slug,
-                    'data'       => json_encode(['article_id' => $article->id, 'article_slug' => $article->slug]),
+                    'user_id' => $cId,
+                    'type' => 'new_article',
+                    'title' => '🔥 New Article: '.Str::limit($article->title, 50),
+                    'message' => Str::limit(strip_tags($article->excerpt ?: $article->title), 100),
+                    'link' => '/article/'.$article->slug,
+                    'data' => json_encode(['article_id' => $article->id, 'article_slug' => $article->slug]),
                     'created_at' => $now,
                     'updated_at' => $now,
                 ];
             }
-            if (!empty($notifications)) {
-                \App\Models\UserNotification::insert($notifications);
+            if (! empty($notifications)) {
+                UserNotification::insert($notifications);
             }
         } catch (\Throwable $e) {
-            Log::warning('Failed to broadcast new article notification: ' . $e->getMessage());
+            Log::warning('Failed to broadcast new article notification: '.$e->getMessage());
         }
     }
 
     public function destroy(Article $article)
     {
         $article->delete();
+
         return redirect('/ourcms/articles')->with('message', 'Article moved to trash.');
     }
 
@@ -399,12 +405,12 @@ class ArticleController extends Controller
      */
     protected function processBase64Images(?string $content, ?string $contentRaw): array
     {
-        if (empty($content) || !str_contains($content, 'data:image/')) {
+        if (empty($content) || ! str_contains($content, 'data:image/')) {
             return [$content, $contentRaw];
         }
 
         try {
-            $dateFolder = 'editor/' . date('Y/m');
+            $dateFolder = 'editor/'.date('Y/m');
             Storage::disk('public')->makeDirectory($dateFolder);
             $manager = new ImageManager(new Driver);
 
@@ -414,13 +420,13 @@ class ArticleController extends Controller
             foreach ($matches as $match) {
                 $fullDataUri = $match[0];
                 $binary = base64_decode(preg_replace('/\s+/', '', $match[2]));
-                if (!$binary) {
+                if (! $binary) {
                     continue;
                 }
 
-                $filename = 'art_' . time() . '_' . bin2hex(random_bytes(4)) . '.webp';
-                $relPath = $dateFolder . '/' . $filename;
-                $fullPath = storage_path('app/public/' . $relPath);
+                $filename = 'art_'.time().'_'.bin2hex(random_bytes(4)).'.webp';
+                $relPath = $dateFolder.'/'.$filename;
+                $fullPath = storage_path('app/public/'.$relPath);
 
                 try {
                     $image = $manager->decodeBinary($binary);
@@ -435,15 +441,15 @@ class ArticleController extends Controller
                     $content = str_replace($fullDataUri, $publicUrl, $content);
 
                     // Replace in content_raw JSON if present
-                    if (!empty($contentRaw)) {
+                    if (! empty($contentRaw)) {
                         $contentRaw = str_replace($fullDataUri, $publicUrl, $contentRaw);
                     }
                 } catch (\Throwable $imgErr) {
-                    Log::warning('Individual image conversion failed: ' . $imgErr->getMessage());
+                    Log::warning('Individual image conversion failed: '.$imgErr->getMessage());
                 }
             }
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('Base64 image processing in ArticleController failed: ' . $e->getMessage());
+            Log::warning('Base64 image processing in ArticleController failed: '.$e->getMessage());
         }
 
         return [$content, $contentRaw];
@@ -451,16 +457,17 @@ class ArticleController extends Controller
 
     public function toggleBreaking(Article $article)
     {
-        $newState = !$article->is_breaking;
+        $newState = ! $article->is_breaking;
         $updateData = ['is_breaking' => $newState];
-        if (\Illuminate\Support\Facades\Schema::hasColumn('articles', 'breaking_until')) {
-            if (!$newState) {
+        if (Schema::hasColumn('articles', 'breaking_until')) {
+            if (! $newState) {
                 $updateData['breaking_until'] = null;
             }
         }
         $article->update($updateData);
         cache()->forget('active_breaking_news');
         cache()->forget('active_breaking_items');
+
         return back()->with('success', 'Article breaking status updated.');
     }
 }

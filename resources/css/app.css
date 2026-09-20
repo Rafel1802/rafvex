@@ -274,36 +274,80 @@
     display: block !important;
     white-space: pre !important;
   }
-  /* Force all nested text, paragraphs, or spans in terminal blocks to be full opacity & crystal-clear */
+
+  /* Force all code elements, pre tags, and children to 100% full opacity & crisp white contrast */
+  .article-prose pre,
+  .article-prose pre *,
+  .article-prose pre code,
+  .article-prose pre p,
+  .article-prose pre span,
+  .article-prose pre div,
+  .code-terminal-block,
+  .code-terminal-block pre,
+  .code-terminal-block code,
+  .code-terminal-block pre *,
   .code-terminal-block p,
   .code-terminal-block div:not(.copy-code-btn),
   .code-terminal-block span:not(.copy-code-btn span):not([class*="rounded-full"]) {
     color: #f8fafc !important;
     opacity: 1 !important;
+    -webkit-text-fill-color: #f8fafc !important;
   }
-  .code-terminal-block p {
+
+  /* Override any Tailwind slate/gray/zinc text utility classes that may be nested inside code blocks */
+  .article-prose pre [class*="text-slate-"],
+  .article-prose pre [class*="text-gray-"],
+  .article-prose pre [class*="text-zinc-"],
+  .article-prose pre [class*="text-neutral-"],
+  .code-terminal-block [class*="text-slate-"],
+  .code-terminal-block [class*="text-gray-"],
+  .code-terminal-block [class*="text-zinc-"],
+  .code-terminal-block [class*="text-neutral-"] {
+    color: #f8fafc !important;
+    opacity: 1 !important;
+    -webkit-text-fill-color: #f8fafc !important;
+  }
+
+  /* Reset any nested <p> tags inside <pre> so they don't break code layout or appearance */
+  .article-prose pre p,
+  .code-terminal-block pre p {
     margin: 0 !important;
-    padding: 0.75rem 1.25rem !important;
+    padding: 0 !important;
+    color: #f8fafc !important;
+    opacity: 1 !important;
+    -webkit-text-fill-color: #f8fafc !important;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
-    font-size: 0.875rem !important;
+    font-size: inherit !important;
     line-height: 1.7 !important;
     white-space: pre-wrap !important;
+    display: block !important;
   }
-  /* Comments in terminal code blocks: high-contrast readable slate-300, never dim or washed out */
+
+  /* Comments in terminal code blocks: high-contrast readable slate-400, never dim or washed out */
+  .article-prose pre .hljs-comment,
+  .article-prose pre code .comment,
+  .article-prose pre .token.comment,
   .code-terminal-block .hljs-comment,
   .code-terminal-block code .comment,
   .code-terminal-block .token.comment {
     color: #94a3b8 !important;
+    -webkit-text-fill-color: #94a3b8 !important;
     opacity: 1 !important;
   }
+  .article-prose pre .hljs-keyword,
+  .article-prose pre .token.keyword,
   .code-terminal-block .hljs-keyword,
   .code-terminal-block .token.keyword {
     color: #38bdf8 !important;
+    -webkit-text-fill-color: #38bdf8 !important;
     opacity: 1 !important;
   }
+  .article-prose pre .hljs-string,
+  .article-prose pre .token.string,
   .code-terminal-block .hljs-string,
   .code-terminal-block .token.string {
     color: #4ade80 !important;
+    -webkit-text-fill-color: #4ade80 !important;
     opacity: 1 !important;
   }
 

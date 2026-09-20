@@ -10,6 +10,7 @@ use App\Models\Podcast;
 use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
@@ -23,7 +24,7 @@ class SitemapController extends Controller
         try {
             // 1. Fetch all top-level categories with subcategories
             $parentCategories = Category::whereNull('parent_id')
-                ->with(['children' => fn($q) => $q->select(['id', 'parent_id', 'name', 'slug'])])
+                ->with(['children' => fn ($q) => $q->select(['id', 'parent_id', 'name', 'slug'])])
                 ->get();
 
             // 2. Build structured category groups with their articles
@@ -32,7 +33,7 @@ class SitemapController extends Controller
 
                 $articles = Article::whereIn('category_id', $categoryIds)
                     ->where('status', 'published')
-                    ->where(fn($q) => $q->whereNull('noindex')->orWhere('noindex', false))
+                    ->where(fn ($q) => $q->whereNull('noindex')->orWhere('noindex', false))
                     ->latest('published_at')
                     ->select(['id', 'category_id', 'title', 'slug', 'published_at', 'reading_time', 'views_count', 'cover_image_url'])
                     ->limit(12)
@@ -40,7 +41,7 @@ class SitemapController extends Controller
 
                 $totalCount = Article::whereIn('category_id', $categoryIds)
                     ->where('status', 'published')
-                    ->where(fn($q) => $q->whereNull('noindex')->orWhere('noindex', false))
+                    ->where(fn ($q) => $q->whereNull('noindex')->orWhere('noindex', false))
                     ->count();
 
                 return [
@@ -49,12 +50,12 @@ class SitemapController extends Controller
                     'slug' => $cat->slug,
                     'description' => $cat->description,
                     'total_articles' => $totalCount,
-                    'subcategories' => $cat->children->map(fn($c) => [
+                    'subcategories' => $cat->children->map(fn ($c) => [
                         'id' => $c->id,
                         'name' => $c->name,
                         'slug' => $c->slug,
                     ]),
-                    'articles' => $articles->map(fn($a) => [
+                    'articles' => $articles->map(fn ($a) => [
                         'id' => $a->id,
                         'title' => $a->title,
                         'slug' => $a->slug,
@@ -68,14 +69,14 @@ class SitemapController extends Controller
 
             // 3. Trending / Viral Highlights (Most viewed & featured articles)
             $trendingArticles = Article::where('status', 'published')
-                ->where(fn($q) => $q->whereNull('noindex')->orWhere('noindex', false))
+                ->where(fn ($q) => $q->whereNull('noindex')->orWhere('noindex', false))
                 ->with(['category:id,name,slug'])
                 ->orderByDesc('featured')
                 ->orderByDesc('views_count')
                 ->latest('published_at')
                 ->take(4)
                 ->get(['id', 'category_id', 'title', 'slug', 'excerpt', 'cover_image_url', 'reading_time', 'published_at', 'views_count'])
-                ->map(fn($a) => [
+                ->map(fn ($a) => [
                     'id' => $a->id,
                     'title' => $a->title,
                     'slug' => $a->slug,
@@ -89,13 +90,13 @@ class SitemapController extends Controller
 
             // 4. Random Article Slug for "🎲 Surprise Me / Random Guide" viral feature
             $randomArticleSlug = Article::where('status', 'published')
-                ->where(fn($q) => $q->whereNull('noindex')->orWhere('noindex', false))
+                ->where(fn ($q) => $q->whereNull('noindex')->orWhere('noindex', false))
                 ->inRandomOrder()
                 ->value('slug');
 
             // 5. Stats for header
             $totalArticles = Article::where('status', 'published')
-                ->where(fn($q) => $q->whereNull('noindex')->orWhere('noindex', false))
+                ->where(fn ($q) => $q->whereNull('noindex')->orWhere('noindex', false))
                 ->count();
             $totalCategories = Category::count();
             $latestArticleDate = Article::where('status', 'published')
@@ -109,6 +110,7 @@ class SitemapController extends Controller
                 ['name' => 'Institutional Contact & Inquiries', 'slug' => 'contact', 'desc' => 'Direct lines for academic collaboration, licensing, and editorial feedback.'],
                 ['name' => 'Privacy Policy & Data Rights', 'slug' => 'privacy-policy', 'desc' => 'GDPR/CCPA compliance, telemetry policies, and cryptographic security standards.'],
                 ['name' => 'Terms of Service', 'slug' => 'terms-of-service', 'desc' => 'Usage terms, open source attribution, and intellectual property.'],
+                ['name' => 'Editorial & Technical Disclaimer', 'slug' => 'disclaimer', 'desc' => 'Official guidelines on tech guides, commands, AdSense disclosures, and third-party software.'],
             ];
         } catch (\Throwable $e) {
             $categoriesData = collect();
@@ -139,7 +141,7 @@ class SitemapController extends Controller
     public function index(): Response
     {
         $articles = Article::where('status', 'published')
-            ->where(fn($q) => $q->whereNull('noindex')->orWhere('noindex', false))
+            ->where(fn ($q) => $q->whereNull('noindex')->orWhere('noindex', false))
             ->latest('published_at')
             ->get(['slug', 'title', 'cover_image_url', 'updated_at', 'published_at']);
 
@@ -149,7 +151,7 @@ class SitemapController extends Controller
 
         $podcasts = collect();
         try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('podcasts')) {
+            if (Schema::hasTable('podcasts')) {
                 $podcasts = Podcast::where('status', 'published')
                     ->latest('published_at')
                     ->get(['slug', 'title', 'cover_image_url', 'updated_at', 'published_at']);
@@ -158,7 +160,10 @@ class SitemapController extends Controller
             $podcasts = collect();
         }
 
-        $categories = Category::get(['slug', 'updated_at']);
+        // Only include active categories that have published articles to eliminate thin/ghost pages
+        $categories = Category::whereHas('articles', function ($q) {
+            $q->where('status', 'published');
+        })->get(['slug', 'updated_at']);
 
         $latestArticle = $articles->first();
         $latestNews = $news->first();
@@ -169,11 +174,11 @@ class SitemapController extends Controller
             $latestNews?->updated_at ?? $latestNews?->published_at,
             $latestPodcast?->updated_at ?? $latestPodcast?->published_at,
         ]);
-        $latestTimestamp = !empty($candidates) ? max($candidates) : now();
+        $latestTimestamp = ! empty($candidates) ? max($candidates) : now();
         $homeLastmod = Carbon::parse($latestTimestamp)->toAtomString();
 
         $staticPages = [
-            ['loc' => rtrim(url('/'), '/') . '/', 'priority' => '1.0', 'changefreq' => 'daily', 'lastmod' => $homeLastmod],
+            ['loc' => rtrim(url('/'), '/').'/', 'priority' => '1.0', 'changefreq' => 'daily', 'lastmod' => $homeLastmod],
             ['loc' => url('/sitemap'), 'priority' => '0.8', 'changefreq' => 'daily', 'lastmod' => $homeLastmod],
             ['loc' => url('/popular'), 'priority' => '0.9', 'changefreq' => 'daily', 'lastmod' => $homeLastmod],
             ['loc' => url('/news'), 'priority' => '0.9', 'changefreq' => 'hourly', 'lastmod' => $latestNews ? Carbon::parse($latestNews->updated_at ?? $latestNews->published_at)->toAtomString() : $homeLastmod],
@@ -182,10 +187,16 @@ class SitemapController extends Controller
             ['loc' => url('/contact'), 'priority' => '0.7', 'changefreq' => 'monthly', 'lastmod' => now()->subDays(7)->toAtomString()],
             ['loc' => url('/privacy-policy'), 'priority' => '0.5', 'changefreq' => 'monthly', 'lastmod' => now()->subDays(30)->toAtomString()],
             ['loc' => url('/terms-of-service'), 'priority' => '0.5', 'changefreq' => 'monthly', 'lastmod' => now()->subDays(30)->toAtomString()],
+            ['loc' => url('/disclaimer'), 'priority' => '0.5', 'changefreq' => 'monthly', 'lastmod' => now()->toAtomString()],
         ];
 
         $xml = view('sitemap', compact('articles', 'categories', 'news', 'podcasts', 'staticPages'))->render();
-        return response($xml, 200, ['Content-Type' => 'application/xml; charset=utf-8']);
+
+        return response($xml, 200, [
+            'Content-Type' => 'application/xml; charset=utf-8',
+            'Cache-Control' => 'public, max-age=3600, s-maxage=3600',
+            'X-Robots-Tag' => 'noindex, follow',
+        ]);
     }
 
     /**
@@ -199,13 +210,14 @@ class SitemapController extends Controller
         $siteLogoUrl = 'https://rafvex.com/logo.png';
 
         $articles = Article::where('status', 'published')
-            ->where(fn($q) => $q->whereNull('noindex')->orWhere('noindex', false))
+            ->where(fn ($q) => $q->whereNull('noindex')->orWhere('noindex', false))
             ->with(['category:id,name,slug', 'author:id,name'])
             ->latest('published_at')
             ->take(30)
             ->get();
 
         $xml = view('feed', compact('siteName', 'siteTagline', 'siteDescription', 'siteLogoUrl', 'articles'))->render();
+
         return response($xml, 200, ['Content-Type' => 'application/rss+xml; charset=utf-8']);
     }
 
@@ -220,6 +232,7 @@ class SitemapController extends Controller
         } else {
             $content = "# Rafvex\n\n> Technology, AI, Guides & Knowledge\n\nhttps://rafvex.com\n";
         }
+
         return response($content, 200, ['Content-Type' => 'text/plain; charset=utf-8']);
     }
 
@@ -229,101 +242,104 @@ class SitemapController extends Controller
     public function robots(): Response
     {
         $content = implode("\n", [
-            "# Standard Search Engine Crawlers (Google, Bing, Yahoo, DuckDuckGo)",
-            "User-agent: *",
-            "Allow: /",
-            "Allow: /article/",
-            "Allow: /category/",
-            "Allow: /news/",
-            "Allow: /podcasts",
-            "Allow: /podcast/",
-            "Allow: /popular",
-            "Allow: /search",
-            "Allow: /blog/",
-            "Allow: /sitemap",
-            "Allow: /feed",
-            "Allow: /rss.xml",
-            "Allow: /llms.txt",
-            "Disallow: /ourcms/",
-            "Disallow: /ourcms",
-            "Disallow: /api/",
-            "",
-            "# Google Search & Favicon Crawlers",
-            "User-agent: Googlebot",
-            "Allow: /",
-            "Allow: /article/",
-            "Allow: /category/",
-            "Allow: /news/",
-            "Allow: /podcasts",
-            "Allow: /podcast/",
-            "Allow: /popular",
-            "Allow: /blog/",
-            "Allow: /sitemap",
-            "Allow: /favicon.ico",
-            "Allow: /favicon*.png",
-            "Allow: /apple-touch-icon.png",
-            "Allow: /android-chrome*.png",
-            "Allow: /site.webmanifest",
-            "Allow: /storage/",
-            "Allow: /feed",
-            "Allow: /llms.txt",
-            "Disallow: /ourcms/",
-            "Disallow: /api/",
-            "",
-            "# Google AdSense & Advertising Crawlers",
-            "User-agent: Mediapartners-Google",
-            "Allow: /",
-            "",
-            "User-agent: AdsBot-Google",
-            "Allow: /",
-            "",
-            "User-agent: AdsBot-Google-Mobile",
-            "Allow: /",
-            "",
-            "User-agent: Googlebot-Image",
-            "Allow: /",
-            "Allow: /favicon.ico",
-            "Allow: /favicon*.png",
-            "Allow: /apple-touch-icon.png",
-            "Allow: /android-chrome*.png",
-            "Allow: /site.webmanifest",
-            "Allow: /storage/",
-            "",
-            "# AI Crawlers & Agents (GPTBot, Claude, Perplexity, Google-Extended, Cohere, Meta)",
-            "User-agent: GPTBot",
-            "Allow: /",
-            "",
-            "User-agent: ChatGPT-User",
-            "Allow: /",
-            "",
-            "User-agent: Google-Extended",
-            "Allow: /",
-            "",
-            "User-agent: ClaudeBot",
-            "Allow: /",
-            "",
-            "User-agent: anthropic-ai",
-            "Allow: /",
-            "",
-            "User-agent: PerplexityBot",
-            "Allow: /",
-            "",
-            "User-agent: Applebot-Extended",
-            "Allow: /",
-            "",
-            "User-agent: cohere-ai",
-            "Allow: /",
-            "",
-            "User-agent: Meta-ExternalAgent",
-            "Allow: /",
-            "",
-            "User-agent: CCBot",
-            "Allow: /",
-            "",
-            "# Sitemaps & Feeds",
-            "Sitemap: " . url("/sitemap.xml"),
-            "Sitemap: " . url("/feed"),
+            '# Standard Search Engine Crawlers (Google, Bing, Yahoo, DuckDuckGo)',
+            'User-agent: *',
+            'Allow: /',
+            'Allow: /article/',
+            'Allow: /category/',
+            'Allow: /news/',
+            'Allow: /podcasts',
+            'Allow: /podcast/',
+            'Allow: /popular',
+            'Allow: /search',
+            'Allow: /blog/',
+            'Allow: /sitemap',
+            'Allow: /feed',
+            'Allow: /rss.xml',
+            'Allow: /llms.txt',
+            'Allow: /*.txt',
+            'Disallow: /ourcms/',
+            'Disallow: /ourcms',
+            'Disallow: /api/',
+            '',
+            '# Google Search & Favicon Crawlers',
+            'User-agent: Googlebot',
+            'Allow: /',
+            'Allow: /article/',
+            'Allow: /category/',
+            'Allow: /news/',
+            'Allow: /podcasts',
+            'Allow: /podcast/',
+            'Allow: /popular',
+            'Allow: /blog/',
+            'Allow: /sitemap',
+            'Allow: /favicon.ico',
+            'Allow: /favicon*.png',
+            'Allow: /apple-touch-icon.png',
+            'Allow: /android-chrome*.png',
+            'Allow: /site.webmanifest',
+            'Allow: /storage/',
+            'Allow: /*.txt',
+            'Allow: /feed',
+            'Allow: /llms.txt',
+            'Disallow: /ourcms/',
+            'Disallow: /api/',
+            '',
+            '# Google AdSense & Advertising Crawlers',
+            'User-agent: Mediapartners-Google',
+            'Allow: /',
+            '',
+            'User-agent: AdsBot-Google',
+            'Allow: /',
+            '',
+            'User-agent: AdsBot-Google-Mobile',
+            'Allow: /',
+            '',
+            'User-agent: Googlebot-Image',
+            'Allow: /',
+            'Allow: /favicon.ico',
+            'Allow: /favicon*.png',
+            'Allow: /apple-touch-icon.png',
+            'Allow: /android-chrome*.png',
+            'Allow: /site.webmanifest',
+            'Allow: /storage/',
+            '',
+            '# AI Crawlers & Agents (GPTBot, Claude, Perplexity, Google-Extended, Cohere, Meta)',
+            'User-agent: GPTBot',
+            'Allow: /',
+            '',
+            'User-agent: ChatGPT-User',
+            'Allow: /',
+            '',
+            'User-agent: Google-Extended',
+            'Allow: /',
+            '',
+            'User-agent: ClaudeBot',
+            'Allow: /',
+            '',
+            'User-agent: anthropic-ai',
+            'Allow: /',
+            '',
+            'User-agent: PerplexityBot',
+            'Allow: /',
+            '',
+            'User-agent: Applebot-Extended',
+            'Allow: /',
+            '',
+            'User-agent: cohere-ai',
+            'Allow: /',
+            '',
+            'User-agent: Meta-ExternalAgent',
+            'Allow: /',
+            '',
+            'User-agent: CCBot',
+            'Allow: /',
+            '',
+            '# Sitemaps & Feeds',
+            'Sitemap: '.url('/sitemap.xml'),
+            'Sitemap: '.url('/feed'),
         ]);
+
         return response($content, 200, ['Content-Type' => 'text/plain; charset=utf-8']);
     }
 }

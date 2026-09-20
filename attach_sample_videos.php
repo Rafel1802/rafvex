@@ -1,11 +1,12 @@
 <?php
 
-require __DIR__ . '/vendor/autoload.php';
-$app = require_once __DIR__ . '/bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+require __DIR__.'/vendor/autoload.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
+$kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 
 use App\Models\Article;
+use Illuminate\Contracts\Console\Kernel;
 
 // Attach a YouTube video to Article 2 (AI Tools for Students)
 $art2 = Article::find(2);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Rafvex Homepage Pinned Stories Manager CLI
  *
@@ -14,35 +15,42 @@
  *     php pin_stories.php --reset
  */
 
-require __DIR__ . '/vendor/autoload.php';
-$app = require_once __DIR__ . '/bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+require __DIR__.'/vendor/autoload.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
+$kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 
 use App\Models\Article;
 use App\Models\Setting;
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Cache;
 
-function getPinnedData(): array {
+function getPinnedData(): array
+{
     $raw = Setting::where('key', 'pinned_stories')->value('value');
-    if (!$raw) return ['lead_id' => null, 'featured_ids' => [], 'trending_ids' => []];
+    if (! $raw) {
+        return ['lead_id' => null, 'featured_ids' => [], 'trending_ids' => []];
+    }
     $data = json_decode($raw, true);
+
     return is_array($data) ? $data : ['lead_id' => null, 'featured_ids' => [], 'trending_ids' => []];
 }
 
-function savePinnedData(array $data): void {
+function savePinnedData(array $data): void
+{
     Setting::updateOrCreate(
         ['key' => 'pinned_stories'],
         [
             'value' => json_encode($data),
             'group' => 'general',
-            'label' => 'Pinned Stories'
+            'label' => 'Pinned Stories',
         ]
     );
     Cache::flush();
 }
 
-function printHeader(): void {
+function printHeader(): void
+{
     echo "\033[1;31m";
     echo "====================================================================\n";
     echo "            RAFVEX HOMEPAGE PINNED STORIES MANAGER (SSH)             \n";
@@ -50,12 +58,13 @@ function printHeader(): void {
     echo "\033[0m";
 }
 
-function showCurrentPinned(): void {
+function showCurrentPinned(): void
+{
     $pinned = getPinnedData();
     echo "\033[1;36m>>> Current Homepage Pinned Stories:\033[0m\n";
-    
+
     // 1. Lead Story
-    if (!empty($pinned['lead_id'])) {
+    if (! empty($pinned['lead_id'])) {
         $lead = Article::find($pinned['lead_id']);
         $leadTitle = $lead ? "#{$lead->id} - {$lead->title} ({$lead->category?->name})" : "(Article ID {$pinned['lead_id']} not found)";
         echo "  \033[1;32m[Main Lead Hero (Image 3)]\033[0m: $leadTitle\n";
@@ -65,11 +74,11 @@ function showCurrentPinned(): void {
 
     // 2. Top Featured Stories (2)
     echo "  \033[1;32m[Top Featured Stories (2 on Right)]\033[0m:\n";
-    if (!empty($pinned['featured_ids'])) {
+    if (! empty($pinned['featured_ids'])) {
         foreach ($pinned['featured_ids'] as $idx => $id) {
             $art = Article::find($id);
             $title = $art ? "#{$art->id} - {$art->title} ({$art->category?->name})" : "(Article ID $id not found)";
-            echo "    " . ($idx + 1) . ") $title\n";
+            echo '    '.($idx + 1).") $title\n";
         }
     } else {
         echo "    (Default: 2 most recent featured stories)\n";
@@ -77,11 +86,11 @@ function showCurrentPinned(): void {
 
     // 3. Trending on Rafvex (4)
     echo "  \033[1;32m[Trending on Rafvex (4)]\033[0m:\n";
-    if (!empty($pinned['trending_ids'])) {
+    if (! empty($pinned['trending_ids'])) {
         foreach ($pinned['trending_ids'] as $idx => $id) {
             $art = Article::find($id);
             $title = $art ? "#{$art->id} - {$art->title} ({$art->category?->name})" : "(Article ID $id not found)";
-            echo "    " . ($idx + 1) . ") $title\n";
+            echo '    '.($idx + 1).") $title\n";
         }
     } else {
         echo "    (Default: 4 highest viewed stories)\n";
@@ -89,38 +98,41 @@ function showCurrentPinned(): void {
     echo "--------------------------------------------------------------------\n";
 }
 
-function searchArticles(string $query): void {
+function searchArticles(string $query): void
+{
     $articles = Article::with('category')
         ->where('status', 'published')
         ->where(function ($q) use ($query) {
             $q->where('title', 'like', "%{$query}%")
-              ->orWhere('slug', 'like', "%{$query}%")
-              ->orWhereHas('category', fn($cq) => $cq->where('name', 'like', "%{$query}%"));
+                ->orWhere('slug', 'like', "%{$query}%")
+                ->orWhereHas('category', fn ($cq) => $cq->where('name', 'like', "%{$query}%"));
         })
         ->orderBy('published_at', 'desc')
         ->take(15)
         ->get();
 
-    echo "\033[1;34mSearch Results for '{$query}' (" . count($articles) . " found):\033[0m\n";
+    echo "\033[1;34mSearch Results for '{$query}' (".count($articles)." found):\033[0m\n";
     if ($articles->isEmpty()) {
         echo "  No published articles found matching '{$query}'.\n";
+
         return;
     }
     foreach ($articles as $art) {
-        $cat = $art->category ? "[{$art->category->name}]" : "";
+        $cat = $art->category ? "[{$art->category->name}]" : '';
         echo "  \033[1;33m#{$art->id}\033[0m - {$art->title} \033[0;36m{$cat}\033[0m\n";
     }
 }
 
-function listAllArticles(): void {
+function listAllArticles(): void
+{
     $articles = Article::with('category')
         ->where('status', 'published')
         ->orderBy('id', 'desc')
         ->get();
 
-    echo "\033[1;34mAll Published Articles (" . count($articles) . " total):\033[0m\n";
+    echo "\033[1;34mAll Published Articles (".count($articles)." total):\033[0m\n";
     foreach ($articles as $art) {
-        $cat = $art->category ? "[{$art->category->name}]" : "";
+        $cat = $art->category ? "[{$art->category->name}]" : '';
         echo "  \033[1;33m#{$art->id}\033[0m - {$art->title} \033[0;36m{$cat}\033[0m\n";
     }
 }
@@ -179,13 +191,13 @@ if (isset($options['lead']) || isset($options['featured']) || isset($options['tr
         $ids = array_filter(array_map('intval', explode(',', $options['featured'])));
         $validIds = Article::whereIn('id', $ids)->pluck('id')->toArray();
         $pinned['featured_ids'] = array_slice($validIds, 0, 2);
-        echo "✓ Top Featured Stories set to: " . (empty($pinned['featured_ids']) ? '(none)' : implode(', ', $pinned['featured_ids'])) . "\n";
+        echo '✓ Top Featured Stories set to: '.(empty($pinned['featured_ids']) ? '(none)' : implode(', ', $pinned['featured_ids']))."\n";
     }
     if (isset($options['trending'])) {
         $ids = array_filter(array_map('intval', explode(',', $options['trending'])));
         $validIds = Article::whereIn('id', $ids)->pluck('id')->toArray();
         $pinned['trending_ids'] = array_slice($validIds, 0, 4);
-        echo "✓ Trending Stories set to: " . (empty($pinned['trending_ids']) ? '(none)' : implode(', ', $pinned['trending_ids'])) . "\n";
+        echo '✓ Trending Stories set to: '.(empty($pinned['trending_ids']) ? '(none)' : implode(', ', $pinned['trending_ids']))."\n";
     }
     savePinnedData($pinned);
     echo "\033[1;32m✓ Saved successfully and cache cleared!\033[0m\n";
@@ -229,7 +241,7 @@ while (true) {
         if ($term !== '') {
             searchArticles($term);
         }
-        echo "Enter Article ID for Main Lead Story (0 to clear): ";
+        echo 'Enter Article ID for Main Lead Story (0 to clear): ';
         $id = (int) trim(fgets($handle));
         if ($id === 0) {
             $pinned['lead_id'] = null;
@@ -247,9 +259,9 @@ while (true) {
         if ($term !== '') {
             searchArticles($term);
         }
-        echo "Enter first Featured Article ID (right card #1): ";
+        echo 'Enter first Featured Article ID (right card #1): ';
         $id1 = (int) trim(fgets($handle));
-        echo "Enter second Featured Article ID (right card #2): ";
+        echo 'Enter second Featured Article ID (right card #2): ';
         $id2 = (int) trim(fgets($handle));
         $ids = array_filter([$id1, $id2]);
         $validIds = Article::whereIn('id', $ids)->where('status', 'published')->pluck('id')->toArray();
@@ -262,7 +274,7 @@ while (true) {
         if ($term !== '') {
             searchArticles($term);
         }
-        echo "Enter 4 Article IDs separated by comma (e.g. 1, 5, 9, 14): ";
+        echo 'Enter 4 Article IDs separated by comma (e.g. 1, 5, 9, 14): ';
         $input = trim(fgets($handle));
         $ids = array_map('intval', explode(',', $input));
         $validIds = Article::whereIn('id', $ids)->where('status', 'published')->pluck('id')->toArray();

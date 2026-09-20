@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -49,7 +49,7 @@ class AuthController extends Controller
 
         if ($blocked) {
             throw ValidationException::withMessages([
-                'email' => 'Your device / IP address (' . $clientIp . ') has been blocked. Reason: ' . ($blocked->reason ?: 'Security policy') . '. Only a Super Admin can unblock your access.',
+                'email' => 'Your device / IP address ('.$clientIp.') has been blocked. Reason: '.($blocked->reason ?: 'Security policy').'. Only a Super Admin can unblock your access.',
             ]);
         }
 
@@ -77,7 +77,7 @@ class AuthController extends Controller
                 'event_type' => 'brute_force_blocked',
                 'severity' => 'critical',
                 'ip_address' => $clientIp,
-                'user_agent' => substr((string)$request->userAgent(), 0, 500),
+                'user_agent' => substr((string) $request->userAgent(), 0, 500),
                 'metadata' => json_encode(['email' => $request->email, 'failed_attempts' => $recentFailedAttempts + 1]),
                 'created_at' => now(),
             ]);
@@ -85,24 +85,24 @@ class AuthController extends Controller
             \DB::table('login_logs')->insert([
                 'email' => $request->email,
                 'ip_address' => $clientIp,
-                'user_agent' => substr((string)$request->userAgent(), 0, 500),
+                'user_agent' => substr((string) $request->userAgent(), 0, 500),
                 'successful' => false,
                 'failure_reason' => 'Blocked: 7 failed attempts reached',
                 'created_at' => now(),
             ]);
 
             throw ValidationException::withMessages([
-                'email' => 'Too many failed login attempts (7). Your IP (' . $clientIp . ') has been blocked. Only a Super Admin can unblock your access.',
+                'email' => 'Too many failed login attempts (7). Your IP ('.$clientIp.') has been blocked. Only a Super Admin can unblock your access.',
             ]);
         }
 
         // 3. Strictly verify that the user is an Administrator / Staff member before authenticating
         $attemptUser = User::where('email', $credentials['email'])->first();
-        if ($attemptUser && !$attemptUser->isStaff()) {
+        if ($attemptUser && ! $attemptUser->isStaff()) {
             \DB::table('login_logs')->insert([
                 'email' => $request->email,
                 'ip_address' => $clientIp,
-                'user_agent' => substr((string)$request->userAgent(), 0, 500),
+                'user_agent' => substr((string) $request->userAgent(), 0, 500),
                 'successful' => false,
                 'failure_reason' => 'Denied: Public reader account attempted CMS login',
                 'created_at' => now(),
@@ -115,18 +115,18 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            
+
             // Log successful login
             $user = Auth::user();
             $user->last_login_at = now();
             $user->last_login_ip = $clientIp;
             $user->save();
-            
+
             \DB::table('login_logs')->insert([
                 'user_id' => $user->id,
                 'email' => $request->email,
                 'ip_address' => $clientIp,
-                'user_agent' => substr((string)$request->userAgent(), 0, 500),
+                'user_agent' => substr((string) $request->userAgent(), 0, 500),
                 'successful' => true,
                 'created_at' => now(),
             ]);
@@ -144,7 +144,7 @@ class AuthController extends Controller
         \DB::table('login_logs')->insert([
             'email' => $request->email,
             'ip_address' => $clientIp,
-            'user_agent' => substr((string)$request->userAgent(), 0, 500),
+            'user_agent' => substr((string) $request->userAgent(), 0, 500),
             'successful' => false,
             'failure_reason' => 'Invalid credentials',
             'created_at' => now(),
@@ -153,7 +153,7 @@ class AuthController extends Controller
         $remainingAttempts = max(0, 7 - ($recentFailedAttempts + 1));
 
         throw ValidationException::withMessages([
-            'email' => 'The provided credentials do not match our records. (' . $remainingAttempts . ' attempt(s) remaining before IP lockout)',
+            'email' => 'The provided credentials do not match our records. ('.$remainingAttempts.' attempt(s) remaining before IP lockout)',
         ]);
     }
 

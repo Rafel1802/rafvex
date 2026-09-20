@@ -1,21 +1,21 @@
 <?php
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
-$app = require_once __DIR__ . '/bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+$app = require_once __DIR__.'/bootstrap/app.php';
+$kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 
-use App\Models\Category;
 use App\Models\Article;
+use App\Models\Category;
 use App\Models\User;
-use Illuminate\Support\Str;
+use Illuminate\Contracts\Console\Kernel;
 
 echo "Starting article and category seeder...\n";
 
 // Get Primary Author (User 1 or first user)
 $user = User::first();
-if (!$user) {
+if (! $user) {
     echo "Error: No user found in database!\n";
     exit(1);
 }
@@ -340,7 +340,7 @@ $insertedCount = 0;
 foreach ($sampleArticles as $art) {
     // Find category by slug
     $category = Category::where('slug', $art['category_slug'])->first();
-    if (!$category) {
+    if (! $category) {
         // Fallback to parent
         $category = Category::where('slug', 'reviews')->first() ?? Category::first();
     }
@@ -370,7 +370,7 @@ foreach ($sampleArticles as $art) {
             'views_count' => 0,
             'featured' => ($insertedCount % 3 === 0),
             'allow_comments' => true,
-            'meta_title' => $art['title'] . ' — Rafvex',
+            'meta_title' => $art['title'].' — Rafvex',
             'meta_description' => $art['excerpt'],
         ]);
         $insertedCount++;

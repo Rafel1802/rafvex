@@ -33,8 +33,8 @@ class CommentController extends Controller
         ]);
 
         $comment->status = $validated['status'];
-        
-        if ($validated['status'] === 'approved' && !$comment->approved_at) {
+
+        if ($validated['status'] === 'approved' && ! $comment->approved_at) {
             $comment->approved_at = now();
             $comment->approved_by = auth()->id();
         }
