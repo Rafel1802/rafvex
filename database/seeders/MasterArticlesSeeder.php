@@ -87,6 +87,11 @@ class MasterArticlesSeeder extends Seeder
             61 => '5g-vs-fiber-speed-test',
             62 => 'eliminate-wifi-dead-zones',
             63 => 'speed-test-privacy-breakdown',
+            64 => 'free-speed-test-multi-lang',
+            65 => 'ai-network-routing-latency',
+            66 => 'gamers-guide-ping-ip-lookup',
+            67 => 'tech-english-vocabulary',
+            68 => 'ai-english-language-revolution',
         ];
 
         $batchFiles = glob(base_path('content/articles/batch_*.json'));
